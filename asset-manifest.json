@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/ETF-DIY-F2E/static/css/main.073c9b0a.css",
+    "main.js": "/ETF-DIY-F2E/static/js/main.a9aa6ffc.js",
+    "static/js/787.28cb0dcd.chunk.js": "/ETF-DIY-F2E/static/js/787.28cb0dcd.chunk.js",
+    "index.html": "/ETF-DIY-F2E/index.html",
+    "main.073c9b0a.css.map": "/ETF-DIY-F2E/static/css/main.073c9b0a.css.map",
+    "main.a9aa6ffc.js.map": "/ETF-DIY-F2E/static/js/main.a9aa6ffc.js.map",
+    "787.28cb0dcd.chunk.js.map": "/ETF-DIY-F2E/static/js/787.28cb0dcd.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.073c9b0a.css",
+    "static/js/main.a9aa6ffc.js"
+  ]
+}

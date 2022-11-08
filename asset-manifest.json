@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/ETF-DIY-F2E/static/css/main.073c9b0a.css",
-    "main.js": "/ETF-DIY-F2E/static/js/main.a9aa6ffc.js",
+    "main.css": "/ETF-DIY-F2E/static/css/main.ea1e73a4.css",
+    "main.js": "/ETF-DIY-F2E/static/js/main.01946bed.js",
     "static/js/787.28cb0dcd.chunk.js": "/ETF-DIY-F2E/static/js/787.28cb0dcd.chunk.js",
     "index.html": "/ETF-DIY-F2E/index.html",
-    "main.073c9b0a.css.map": "/ETF-DIY-F2E/static/css/main.073c9b0a.css.map",
-    "main.a9aa6ffc.js.map": "/ETF-DIY-F2E/static/js/main.a9aa6ffc.js.map",
+    "main.ea1e73a4.css.map": "/ETF-DIY-F2E/static/css/main.ea1e73a4.css.map",
+    "main.01946bed.js.map": "/ETF-DIY-F2E/static/js/main.01946bed.js.map",
     "787.28cb0dcd.chunk.js.map": "/ETF-DIY-F2E/static/js/787.28cb0dcd.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.073c9b0a.css",
-    "static/js/main.a9aa6ffc.js"
+    "static/css/main.ea1e73a4.css",
+    "static/js/main.01946bed.js"
   ]
 }

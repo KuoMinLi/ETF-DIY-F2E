@@ -1,7 +1,7 @@
 import { Outlet,  useNavigate } from "react-router-dom";
 import { ETFData } from "../data/ETFdata";
 
-function ETFIndex() {
+const ETFIndex = () => {
   let navigate = useNavigate();
   const handleETFcode = (code) => {
     navigate(`/etfindex/${code}`);

@@ -3,7 +3,13 @@ import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS} from 'chart.js/auto';
 
 function PieChart({ chartData }) {
-  console.log(chartData);
+  if (chartData.length === 5) {
+    chartData.push({
+      name: '其他',
+      percentage: 100 - (chartData.reduce((acc, item) => acc + item.percentage, 0)).toFixed(2),
+    });
+  }
+  
   const data = {
     labels: chartData.map((item) => item.name),
     datasets: [

@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .bg-btn-primary {
+    @apply from-[#345FF8] to-[#703EFF] bg-gradient-97;
+  }
+  .text-btn-primary {
+    @apply text-transparent from-[#345FF8] to-[#703EFF] bg-gradient-97 bg-clip-text;
+  }
+  .btn {
+    @apply text-L1 bg-btn-primary py-3 px-6 sm:py-4 sm:px-10 sm:mt-8  rounded-full;
+  }
+  .h1 {
+    @apply font-bold text-[40px] leading-[48px] 
+  }
+  .h2 {
+    @apply font-medium text-[32px] leading-[38.4px] 
+  }
+  .h3 {
+    @apply font-normal text-[24px] leading-[35.8px] 
+  }
+  .h4 {
+    @apply font-normal text-[20px] leading-[24px] 
+  }
+  .h5 {
+    @apply font-normal text-[16px] leading-[19.2px] 
+  }
+}
+
+@layer base {
+  html {
+    font-family: 'Noto Sans TC', 'sans-serif';
+  }
+}

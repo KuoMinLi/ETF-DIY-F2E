@@ -1,5 +1,6 @@
 import { Navbar, Button, Dropdown, Avatar } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const Header = () => {
   let navigate = useNavigate();
@@ -12,111 +13,74 @@ const Header = () => {
   const handleLogout = () => {
     navigate("/login");
   };
+  const [show, setShow] = useState(false);
+  const handleShow = () => {
+    setShow(!show);
+  };
+  const isShow = show ? "block" : "hidden";
 
   return (
     <>
-      <nav className="bg-[#191919] py-6 px-5 flex items-baseline text-[28px] justify-between">
-        <div className=" w-[136.5px] leading-10   font-black text-btn-primary ">ETF自由配</div>
-        <div className="text-white ">
-          <i className="fa-solid fa-bars"></i>
+      {/* <div className="bg-[#191919] ">
+        <div className="max-w-[1280px] mx-auto flex items-baseline  justify-between p-10  text-[28px]">
+          <div className=" w-[136.5px] leading-10   font-black text-btn-primary cursor-pointer">
+            ETF自由配
+          </div>
+          <div className="text-L2 h3 flex space-x-5">
+            <div className="">ETF專區</div>
+            <div className="">自組ETF</div>
+            <div className="">績效比較</div>
+          </div>
+          <div className="text-white sm:hidden">
+            <i className="fa-solid fa-bars"></i>
+          </div>
+          <button className="md:order-2  h4 text-L1 bg-btn-primary py-3 px-6  rounded-full ">
+            登入/註冊
+          </button>
         </div>
-      </nav>
-      {/* <Navbar fluid={true} rounded={true}>
-        <Navbar.Brand href="https://flowbite.com/">
-          <img
-            src="https://flowbite.com/docs/images/logo.svg"
-            className="mr-3 h-6 sm:h-9"
-            alt="Flowbite Logo"
-          />
-          <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-            ETF-DIY
-          </span>
-        </Navbar.Brand>
-        <div className="flex md:order-2">
-          <Button className="mx-2" onClick={() => handleLogin()}>
-            登入
-          </Button>
-          <Button className="mx-2" onClick={() => handleRegister()}>
-            註冊
-          </Button>
-          <Dropdown
-            arrowIcon={false}
-            inline={true}
-            label={
-              <Avatar
-                alt="User settings"
-                img="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                rounded={true}
-              />
-            }
-          >
-            <Dropdown.Header>
-              <span className="block text-sm">Bonnie Green</span>
-              <span className="block truncate text-sm font-medium">
-                name@flowbite.com
-              </span>
-            </Dropdown.Header>
-            <Dropdown.Item>Dashboard</Dropdown.Item>
-            <Dropdown.Item>Settings</Dropdown.Item>
-            <Dropdown.Item>Earnings</Dropdown.Item>
-            <Dropdown.Divider />
-            <Dropdown.Item onClick={() => handleLogout()}>
-              Sign out
-            </Dropdown.Item>
-          </Dropdown>
+      </div> */}
+      <div className="bg-[#191919] py-[12.5px] ">
+        <Navbar className=" bg-transparent max-w-[1232px] mx-auto flex items-baseline  justify-between  ">
+          <Navbar.Brand onClick={() => navigate("/")}>
+            <span className=" text-[28px] w-[136.5px] leading-10  font-black text-btn-primary cursor-pointer">
+              ETF自由配
+            </span>
+          </Navbar.Brand>
           <Navbar.Toggle />
-        </div>
-        <Navbar.Collapse>
-          <div className="px-8">
-            <Dropdown
-                arrowIcon={false}
-                inline={true}
-                label={'ETF專區'}
-              >
-              <Dropdown.Item onClick={() => navigate("/etfindex")}>指數型</Dropdown.Item>
-              <Dropdown.Item>高股息</Dropdown.Item>
-              <Dropdown.Item>低波動</Dropdown.Item>
-              <Dropdown.Item>主題型</Dropdown.Item>
-            </Dropdown>
-          </div>
-          <div className="px-8">
-            <Dropdown
-                arrowIcon={false}
-                inline={true}
-                label={'ETF專區'}
-              >
-              <Dropdown.Item>指數型</Dropdown.Item>
-              <Dropdown.Item>高股息</Dropdown.Item>
-              <Dropdown.Item>低波動</Dropdown.Item>
-              <Dropdown.Item>主題型</Dropdown.Item>
-            </Dropdown>
-          </div>
-          <div className="px-8">
-            <Dropdown
-                arrowIcon={false}
-                inline={true}
-                label={'ETF專區'}
-              >
-              <Dropdown.Item>指數型</Dropdown.Item>
-              <Dropdown.Item>高股息</Dropdown.Item>
-              <Dropdown.Item>低波動</Dropdown.Item>
-              <Dropdown.Item>主題型</Dropdown.Item>
-            </Dropdown>
-          </div>
-          
+          <div className="flex md:order-2">
+            <button
+              className="h4 text-L1 bg-btn-primary py-3 px-6 rounded-full"
+              onClick={() => handleLogin()}
+            >
+              登入/註冊
+            </button>
 
-          
-          
-          
-          {/* <Navbar.Toggle />  */}
-
-          {/* <Navbar.Link href="/#/navbars">自組ETF</Navbar.Link> */}
-          {/* <Navbar.Link href="/#/navbars">績效比較</Navbar.Link> */}
-          
-        {/* </Navbar.Collapse> */}
-      {/* </Navbar> */} 
+            
+          </div>
+          <Navbar.Collapse>
+            <div className="text-L2 h3 flex ">
+              <Dropdown arrowIcon={false} inline={true} label={"ETF專區"}>
+                <li className="flex items-center justify-start py-2 px-4 h4 text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => navigate("/etfindex")}>
+                  指數型
+                </li>
+                <li className="flex items-center justify-start py-2 px-4 h4 text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => navigate("/etfindex")}>
+                 高股息
+                </li>
+                <li className="flex items-center justify-start py-2 px-4 h4 text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => navigate("/etfindex")}>
+                低波動
+                </li>
+                <li className="flex items-center justify-start py-2 px-4 h4 text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => navigate("/etfindex")}>
+                主題型
+                </li>
+              </Dropdown>
+            </div>
+            <div className="text-L2 h3 flex space-x-5 cursor-pointer" onClick={() => navigate("/etfindex")}>自組ETF</div>
+            <div className="text-L2 h3 flex space-x-5 cursor-pointer" onClick={() => navigate("/compare")}>績效比較</div>
+          </Navbar.Collapse>
+        </Navbar>
+      </div>
     </>
   );
-}
+};
 
 export default Header;

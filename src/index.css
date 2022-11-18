@@ -10,7 +10,7 @@
     @apply text-transparent from-[#345FF8] to-[#703EFF] bg-gradient-97 bg-clip-text;
   }
   .btn {
-    @apply text-L1 bg-btn-primary py-3 px-6 sm:py-4 sm:px-10 sm:mt-8  rounded-full;
+    @apply text-L1 bg-btn-primary py-3 px-6 sm:py-4 sm:px-10   rounded-full;
   }
   .h1 {
     @apply font-bold text-[40px] leading-[48px] 

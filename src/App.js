@@ -7,6 +7,8 @@ import ETFIndex from "./components/ETFIndex";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import ETFIItem from "./components/ETFItem";
+import Compare from "./components/Compare";
+
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
             <Route index element={<ETFBlank />}/>
             <Route path=":userId" element={<ETFIItem />} />
           </Route>
+          <Route path="compare" element={<Compare />} />
         </Route>
       </Routes>
     </div>

@@ -22,7 +22,7 @@ const ETFIndex = () => {
 
   return (
     <>
-      <div className="lg:flex mx-auto justify-between mt-4  md:h-[85vh]">
+      <div className="lg:flex mx-auto justify-between mt-4  max-w-[1280px] md:h-[85vh]">
         <div className=" md:w-1/3  lg:w-1/4">
           <ul className="flex md:block -mx-1 flex-wrap">
             {ETFData.map((item,index)=>{

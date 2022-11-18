@@ -11,7 +11,7 @@ const Home = () =>{
           <div className="sm:ml-[w-1/3]">
             <h1 className="h3 sm:h1"> 今年我想來點...</h1>
             <h3 className="h5 sm:h3">半導體、金融、航運</h3>
-            <button className="block mt-5 btn">加入您的ETF</button>
+            <button className="block mt-5 sm:mt-8 btn">加入您的ETF</button>
           </div>
         </div>
       </section>
@@ -21,7 +21,7 @@ const Home = () =>{
         <div className=" text-center text-L1 mx-auto px-3 py-12 sm:py-[120px]">
           <h2 className=" h3 sm:h1 ">你知道嗎？</h2>
           <p className="h5 sm:h3  mt-8">近年來各家證券公司推行許多ETF產品<br></br>但太陽餅裡沒有太陽，長頸鹿美語不是長頸鹿教的<br></br> 你買的 主題型ETF裡成分股真的符合 該主題嗎?</p>
-          <button className="mx-auto block mt-5 btn">立刻前往</button>
+          <button className="mx-auto block mt-5 sm:mt-8 btn">立刻前往</button>
         </div>
       </section>
       <section className="bg-[#FEFEFE] px-3 py-10 sm:flex container max-w-7xl sm:justify-center  flex-row-reverse mx-auto md:h-[480px]">
@@ -30,7 +30,7 @@ const Home = () =>{
           <div className="">
             <h3 className=" h3 sm:h2 lg:h1 ">你還在付高額經理費嗎？</h3>
             <p className=" sm:mt-7 mx-auto sm:mx-0 text-start w-2/3 sm:w-auto h5 md:h4 lg:h3 mt-2 text-d3 ">台灣ETF管理費平均為0.84%，<br></br> 主題型更高達2%以上！<br></br> 你還想被券商賺管理費嗎？<br></br> 現在就開始自己組ETF!</p>
-            <button className="mt-4 mx-auto sm:mx-0 btn">加入您的ETF</button>    
+            <button className="mt-4 mx-auto sm:mx-0 sm:mt-8 btn">加入您的ETF</button>    
           </div>
           </div>
       </section>
@@ -40,7 +40,7 @@ const Home = () =>{
           <div className="">
             <h3 className=" h3 sm:h2 lg:h1 ">少年股神就是你</h3>
             <p className=" sm:mt-7 mx-auto sm:mx-0 text-start w-2/3 sm:w-auto h5 md:h4 lg:h3 mt-2 text-d3 ">巴菲特靠著每年超過10%績效逐漸將資產擴大，<br></br> 你想知道目前績效如何？<br></br> 立即加入檢視你的績效</p>
-            <button className="mt-4 mx-auto sm:mx-0 btn">加入您的ETF</button>    
+            <button className="mt-4 mx-auto sm:mx-0 sm:mt-8 btn">加入您的ETF</button>    
           </div>
           </div>
       </section>

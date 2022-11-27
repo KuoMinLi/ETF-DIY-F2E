@@ -15,7 +15,6 @@ const ETFIndex = () => {
     (async () => {
       try {
         const result = await getETFList();
-        console.log(result);
         setETFList(result.data);
       } catch (error) {
         console.log(error);

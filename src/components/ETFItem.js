@@ -16,7 +16,6 @@ const ETFIItem = () => {
     setData(newData);
   };
 
-
   const [allData, setAllData] = useState([]);
   const [data, setData] = useState([]);
   const [ETFData, setETFData] = useState([]);
@@ -27,14 +26,13 @@ const ETFIItem = () => {
         const resultAll = result.flat();
         setAllData(resultAll);
         setData(resultAll.reverse());
-        const ETFResult = await getETFListByCode( userId );    
-        setETFData(ETFResult.data.item[0]);
+        const ETFResult = await getETFListByCode(userId);
+        setETFData(ETFResult.data[0]);
       } catch (error) {
         console.log(error);
       }
     })();
   }, [userId]);
-
 
   const chartData = useMemo(() => {
     const ans = {
@@ -49,16 +47,51 @@ const ETFIItem = () => {
     return ans;
   }, [data]);
 
+  const pieChartData = useMemo(() => {
+    const { content } = ETFData;
+    // 避免資料還沒回來就先render
+    if (!content) {
+      return content;
+    }
+
+    // 將content的資料加上產業類別
+    const contentData = content.map((item) => {
+      const industry = codeNameData.filter(
+        (i) => i.code === parseInt(item.code)
+      )[0].industry;
+      return { ...item, industry };
+    });
+
+    // 將產業類別分類
+    const contentRatio = contentData.reduce((acc, cur) => {
+      if (!acc[cur.industry]) {
+        acc[cur.industry] = cur.percentage;
+      } else {
+        acc[cur.industry] += cur.percentage;
+      }
+      return acc;
+    }, {});
+
+    // 將產業類別轉成pieChart需要的格式
+    const pieChartData = Object.keys(contentRatio).map((item) => {
+      return { name: item, value: contentRatio[item] };
+    });
+    pieChartData.sort((a, b) => b.value - a.value);
+
+    // 只取前五名
+    const top5 = pieChartData.slice(0, 5);
+    return top5;
+
+  }, [ETFData]);
 
   const ETFContentData = useMemo(() => {
-    const { content } =  ETFData;
+    const { content } = ETFData;
 
     // 避免資料還沒回來就先render
     if (!content) {
       return content;
     }
 
-    
     const top5 = content.slice(0, 5);
     const otherPercentage = content.slice(5).reduce((acc, cur) => {
       return acc + cur.percentage;
@@ -68,10 +101,9 @@ const ETFIItem = () => {
       percentage: otherPercentage.toFixed(2),
     };
 
-    const ans = [...top5, other]; 
+    const ans = [...top5, other];
     return ans;
   }, [ETFData]);
-
 
   // data = [{
   //   "date": "2017-11-27",
@@ -101,7 +133,6 @@ const ETFIItem = () => {
       }));
     }
 
-    
     return period.map((item) => {
       // 這邊要注意，因為data是倒著排的，所以要用totalDays - daysToSubtract
       const daysBeforeNow = totalDays - item.daysToSubtract;
@@ -170,7 +201,7 @@ const ETFIItem = () => {
         <div className=" md:flex mt-4">
           <div className="md:w-1/2 mb-4">
             <h1 className="font-bold h3 py-2 text-center"> 產業占比</h1>
-            <PieChart chartData={ETFContentData} />
+            <PieChart chartData={pieChartData} />
           </div>
           <table className="table-auto text-center mx-auto">
             <thead>

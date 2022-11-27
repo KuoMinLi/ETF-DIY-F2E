@@ -10,16 +10,16 @@ function PieChart({ chartData }) {
   if (chartData.length === 5) {
     chartData.push({
       name: '其他',
-      percentage: (100 - (chartData.reduce((acc, item) => acc + item.percentage, 0))).toFixed(2),
+      value: (100 - (chartData.reduce((acc, item) => acc + item.value, 0))).toFixed(2),
     });
   }
-  
+
   const data = {
     labels: chartData.map((item) => item.name),
     datasets: [
       {
         label: '# of Votes',
-        data: chartData.map((item) => item.percentage),
+        data: chartData.map((item) => item.value),
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
           'rgba(54, 162, 235, 0.2)',

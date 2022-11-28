@@ -74,7 +74,7 @@ const ETFIndex = () => {
                   <div
                     className={
                       "cursor-pointer p-2 border-2 border-gray-400  mx-auto max-w-[200px] " +
-                      (item.code === userId ? "bg-gray-500" : "bg-gray-100")
+                      (item.code === userId ? "bg-gray-500 text-" : "bg-gray-100")
                     }
                     onClick={() => handleETFcode(item.code)}
                   >

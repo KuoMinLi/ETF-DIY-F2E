@@ -1,27 +1,62 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { apiUserSignIn } from "../api/userAPI";
+import { useSelector, useDispatch } from "react-redux";
+// import Swal from 'sweetalert2'
+// import withReactContent from 'sweetalert2-react-content'
 
 function Login() {
-  let navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors }} = useForm();
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const dispatch = useDispatch();
 
-  const onSubmit =  (formData) => {
+  // const MySwal = withReactContent(Swal)
+  // const Toast = Swal.mixin({
+  //   toast: true,
+  //   position: 'top-end',
+  //   showConfirmButton: false,
+  //   timer: 3000,
+  //   timerProgressBar: true,
+  //   didOpen: (toast) => {
+  //     toast.addEventListener('mouseenter', Swal.stopTimer)
+  //     toast.addEventListener('mouseleave', Swal.resumeTimer)
+  //   }
+  // })
+
+  // Toast.fire({
+  //   icon: 'success',
+  //   title: 'Signed in successfully'
+  //   })
+
+  const loginToken = (token) => {
+    return {
+      type: "LOGIN",
+      payload: token,
+    };
+  };
+
+  const onSubmit = (formData) => {
     const body = {
       data: formData,
     };
     (async () => {
-      try{
+      try {
         const response = await apiUserSignIn(body);
-        console.log(response);
+        dispatch(loginToken(response.token));
+
+        // MySwal.fire({ 這邊要加個彈跳視窗!!!
+
+        // 成功登入後導回個人頁面
+        navigate("/userinfo");
       } catch (error) {
         console.log(error);
       }
     })();
-    // 成功登入後導回個人頁面 (todo)
-    // navigate("/login");
-  }
-
+  };
 
   return (
     <>
@@ -39,14 +74,16 @@ function Login() {
                   className="shadow appearance-none border rounded w-full py-2 px-3 h5  text-d3  sm:h4    focus:outline-none focus:shadow-outline"
                   placeholder="Email"
                   {...register("email", {
-                      required: { value: true, message: "此欄位必填寫" },
-                      pattern: {
-                        value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g,
-                        message: "不符合 Email 規則",
-                      },
-                    })}
+                    required: { value: true, message: "此欄位必填寫" },
+                    pattern: {
+                      value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g,
+                      message: "不符合 Email 規則",
+                    },
+                  })}
                 />
-                <p className="text-red-500 ml-2 mt-2 h5 italic">{errors.email?.message}</p>  
+                <p className="text-red-500 ml-2 mt-2 h5 italic">
+                  {errors.email?.message}
+                </p>
               </div>
               <div className="mb-4">
                 <label className="block text-d2  h5 sm:h3 mb-2">
@@ -57,11 +94,13 @@ function Login() {
                   className="shadow appearance-none border  rounded w-full py-2 px-3 text-d3 mb-3 focus:outline-none focus:shadow-outline"
                   placeholder="******************"
                   {...register("password", {
-                      required: { value: true, message: "此欄位必填寫" },
-                      minLength: { value: 8, message: "密碼至少為 8 碼" },
-                    })}
+                    required: { value: true, message: "此欄位必填寫" },
+                    minLength: { value: 8, message: "密碼至少為 8 碼" },
+                  })}
                 />
-                <p className="text-red-500 ml-2 mt-2 h5 italic">{errors.password?.message}</p>
+                <p className="text-red-500 ml-2 mt-2 h5 italic">
+                  {errors.password?.message}
+                </p>
               </div>
               <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
                 <button
@@ -73,10 +112,12 @@ function Login() {
               </div>
               <div className="text-sm font-medium h5 sm:h4 text-gray-500 dark:text-gray-300">
                 還沒有會員?{" "}
-                
-                <Link className="text-blue-700 hover:underline dark:text-blue-500" to="/register">點此註冊</Link>
-                  
-               
+                <Link
+                  className="text-blue-700 hover:underline dark:text-blue-500"
+                  to="/register"
+                >
+                  點此註冊
+                </Link>
               </div>
             </form>
           </div>

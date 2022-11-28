@@ -1,18 +1,21 @@
-import { Navbar, Button, Dropdown, Avatar } from "flowbite-react";
-import { useNavigate } from "react-router-dom";
+import { Navbar, Dropdown } from "flowbite-react";
+import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 
 const Header = () => {
   let navigate = useNavigate();
-  const handleLogin = () => {
-    navigate("/login");
-  };
-  const handleRegister = () => {
-    navigate("/register");
-  };
-  const handleLogout = () => {
-    navigate("/login");
-  };
+  const dispatch = useDispatch();
+  const token = useSelector(state => state.Token);
+
+  const logoutToken = () => {
+    return {
+      type: "LOGOUT",
+    }
+  }
+
+  console.log('header', token)
+
   const [show, setShow] = useState(false);
   const handleShow = () => {
     setShow(!show);
@@ -48,14 +51,24 @@ const Header = () => {
           </Navbar.Brand>
           <Navbar.Toggle />
           <div className="flex md:order-2">
-            <button
+          {
+            !token && <Link
               className="h4 text-L1 bg-btn-primary py-3 px-6 rounded-full"
-              onClick={() => handleLogin()}
+              to="/login"
             >
               登入/註冊
-            </button>
+            </Link>
+          }
+          {
+            token && <Link
+              className="h4 text-L1 bg-btn-primary py-3 px-6 rounded-full"
+              onClick={() => { dispatch(logoutToken()) }}
 
-            
+              to="/"
+            >
+              登出
+            </Link>
+          }
           </div>
           <Navbar.Collapse>
             <div className="text-L2 h3 flex ">

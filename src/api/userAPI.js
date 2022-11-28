@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiUsers = axios.create({
-  baseURL: "http://127.0.0.1:3085/users",
+  baseURL: "https://etf-diy-kml.herokuapp.com/users",
   timeout: 5000,
 });
 

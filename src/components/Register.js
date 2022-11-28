@@ -1,29 +1,45 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { apiUserSignUp } from "../api/userAPI";
+import { useSelector, useDispatch } from "react-redux";
 
 const Register = () => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const { register, handleSubmit, formState: { errors }} = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-  const onSubmit =  (formData) => {
+  const loginToken = (token) => {
+    return {
+      type: "LOGIN",
+      payload: token,
+    };
+  };
+
+  const onSubmit = (formData) => {
     const body = {
       data: formData,
     };
-    console.log(formData);
     (async () => {
-      try{
+      try {
         const response = await apiUserSignUp(body);
-        console.log(response);
+        dispatch(loginToken(response.token));
+
+         // MySwal.fire({ 這邊要加個彈跳視窗!!!
+
+        // 成功登入後導回個人頁面
+        navigate("/userinfo");
       } catch (error) {
         console.log(error);
       }
     })();
     // 成功註冊後導回登入頁面 (todo)
     // navigate("/login");
-  }
-
+  };
 
   return (
     <>
@@ -49,7 +65,9 @@ const Register = () => {
                       },
                     })}
                   />
-                  <p className="text-red-500 ml-2 mt-2 h5 italic">{errors.email?.message}</p>
+                  <p className="text-red-500 ml-2 mt-2 h5 italic">
+                    {errors.email?.message}
+                  </p>
                 </div>
               </div>
               <div className="mb-4 flex ">
@@ -65,7 +83,9 @@ const Register = () => {
                       required: { value: true, message: "此欄位必填寫" },
                     })}
                   />
-                  <p className="text-red-500 ml-2 mt-2 h5 italic">{errors.name?.message}</p>
+                  <p className="text-red-500 ml-2 mt-2 h5 italic">
+                    {errors.name?.message}
+                  </p>
                 </div>
               </div>
               <div className="mb-4 flex ">
@@ -82,7 +102,9 @@ const Register = () => {
                       minLength: { value: 8, message: "密碼至少為 8 碼" },
                     })}
                   />
-                  <p className="text-red-500 ml-2 mt-2 h5 italic">{errors.password?.message}</p>
+                  <p className="text-red-500 ml-2 mt-2 h5 italic">
+                    {errors.password?.message}
+                  </p>
                 </div>
               </div>
               <div className="mb-4 flex ">
@@ -99,7 +121,9 @@ const Register = () => {
                       minLength: { value: 8, message: "密碼至少為 8 碼" },
                     })}
                   />
-                  <p className="text-red-500 ml-2 mt-2 h5 italic">{errors.confirmPassword?.message}</p>
+                  <p className="text-red-500 ml-2 mt-2 h5 italic">
+                    {errors.confirmPassword?.message}
+                  </p>
                 </div>
               </div>
 
@@ -111,6 +135,15 @@ const Register = () => {
                 >
                   註冊
                 </button>
+              </div>
+              <div className="px-3 text-end text-sm font-medium h5 sm:h4 text-gray-500 dark:text-gray-300">
+                已經是會員?{" "}
+                <Link
+                  className="text-blue-700 hover:underline dark:text-blue-500"
+                  to="/Login"
+                >
+                  點此登入
+                </Link>
               </div>
             </form>
           </div>
@@ -125,6 +158,6 @@ const Register = () => {
       </div>
     </>
   );
-}
+};
 
 export default Register;

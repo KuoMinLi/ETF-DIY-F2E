@@ -22,8 +22,7 @@ const ETFIItem = () => {
   useEffect(() => {
     (async () => {
       try {
-        const result = await fugleAPIGetFiveYear(userId);
-        const resultAll = result.flat();
+        const resultAll = await fugleAPIGetFiveYear(userId);
         setAllData(resultAll);
         setData(resultAll.reverse());
         const ETFResult = await getETFListByCode(userId);
@@ -133,8 +132,19 @@ const ETFIItem = () => {
       }));
     }
 
+
+
     return period.map((item) => {
-      // 這邊要注意，因為data是倒著排的，所以要用totalDays - daysToSubtract
+     
+      // 若數據不足，則回傳尚未上市
+      if (totalDays - item.daysToSubtract < 0) {
+        return {
+          ...item,
+          data: '尚未上市',
+        };
+      }
+
+       // 這邊要注意，因為data是倒著排的，所以要用totalDays - daysToSubtract
       const daysBeforeNow = totalDays - item.daysToSubtract;
 
       const closePrice = data[daysBeforeNow].close;
@@ -187,9 +197,9 @@ const ETFIItem = () => {
             <tbody>
               <tr>
                 <td className="border px-4 py-2">報酬率(%)</td>
-                {calculateData(allData).map((item) => {
+                {calculateData(allData).map((item, index) => {
                   return (
-                    <td key={item.value} className="border px-4 py-2">
+                    <td key={`td_${index}`} className="border px-4 py-2">
                       {item["data"]}
                     </td>
                   );

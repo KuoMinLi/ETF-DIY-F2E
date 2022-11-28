@@ -20,6 +20,7 @@ const ETFIndex = () => {
     (async () => {
       try {
         const { data } = await getETFList();
+        console.log(data);
         const categoryData = filterCategory(data);
         const ETFListData = await ETFListAddRoR(categoryData);
         setETFList(ETFListData);

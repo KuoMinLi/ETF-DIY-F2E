@@ -60,7 +60,7 @@ const Header = () => {
           <Navbar.Collapse>
             <div className="text-L2 h3 flex ">
               <Dropdown arrowIcon={false} inline={true} label={"ETF專區"}>
-                <li className="flex items-center justify-start py-2 px-4 h4 text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => navigate("/etfindex")}>
+                <li className="flex items-center justify-start py-2 px-4 h4 text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => navigate("/etfindex/0050")}>
                   指數型
                 </li>
                 <li className="flex items-center justify-start py-2 px-4 h4 text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => navigate("/etfindex")}>

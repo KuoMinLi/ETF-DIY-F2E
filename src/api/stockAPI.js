@@ -16,6 +16,9 @@ const FormatDate = (date) => {
 // 定義一年的豪秒數
 const ONEYEAR = 364 * 24 * 60 * 60 * 1000;
 
+// 定義一個月的豪秒數
+const ONEMONTH = 30 * 24 * 60 * 60 * 1000;
+
 //取得目前時間
 const nowDate = new Date().getTime();
 
@@ -29,6 +32,21 @@ const fugleAPI = axios.create({
     apiToken: process.env.REACT_APP_API_KEY,
   },
 });
+
+
+//  取得股票資料-一個月
+export const fugleAPIGetOneMonth = (userId) => {
+  return fugleAPI({
+    params: {
+      symbolId: userId,
+      from: FormatDate(nowDate - ONEMONTH * 1),
+      to: FormatDate(nowDate),
+    },
+  })
+    .then((res) => res.data.candles)
+    .catch((error) => console.log(error));
+};
+
 
 // 取得股票資料
 // 因限制一次取得資料期間為 1年，所以要分批取得，預計取五年資料

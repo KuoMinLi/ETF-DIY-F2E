@@ -3,19 +3,23 @@ import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS} from 'chart.js/auto';
 
 function PieChart({ chartData }) {
+  if (!chartData) {
+    return <div>Loading...</div>;
+  }
+
   if (chartData.length === 5) {
     chartData.push({
       name: '其他',
-      percentage: 100 - (chartData.reduce((acc, item) => acc + item.percentage, 0)).toFixed(2),
+      value: (100 - (chartData.reduce((acc, item) => acc + item.value, 0))).toFixed(2),
     });
   }
-  
+
   const data = {
     labels: chartData.map((item) => item.name),
     datasets: [
       {
         label: '# of Votes',
-        data: chartData.map((item) => item.percentage),
+        data: chartData.map((item) => item.value),
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
           'rgba(54, 162, 235, 0.2)',
@@ -39,7 +43,7 @@ function PieChart({ chartData }) {
 
   
   return (
-    <div className="max-w-[350px] mx-auto">
+    <div className="max-w-[350px] mx-auto ">
       <Pie data={data}  />
     </div>
     

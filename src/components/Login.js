@@ -1,50 +1,135 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { apiUserSignIn } from "../api/userAPI";
+import { useSelector, useDispatch } from "react-redux";
+// import Swal from 'sweetalert2'
+// import withReactContent from 'sweetalert2-react-content'
 
 function Login() {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const dispatch = useDispatch();
+
+  // const MySwal = withReactContent(Swal)
+  // const Toast = Swal.mixin({
+  //   toast: true,
+  //   position: 'top-end',
+  //   showConfirmButton: false,
+  //   timer: 3000,
+  //   timerProgressBar: true,
+  //   didOpen: (toast) => {
+  //     toast.addEventListener('mouseenter', Swal.stopTimer)
+  //     toast.addEventListener('mouseleave', Swal.resumeTimer)
+  //   }
+  // })
+
+  // Toast.fire({
+  //   icon: 'success',
+  //   title: 'Signed in successfully'
+  //   })
+
+  const loginToken = (token) => {
+    return {
+      type: "LOGIN",
+      payload: token,
+    };
+  };
+
+  const onSubmit = (formData) => {
+    const body = {
+      data: formData,
+    };
+    (async () => {
+      try {
+        const response = await apiUserSignIn(body);
+        dispatch(loginToken(response.token));
+
+        // MySwal.fire({ 這邊要加個彈跳視窗!!!
+
+        // 成功登入後導回個人頁面
+        navigate("/userinfo");
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  };
+
   return (
     <>
-      <div className="flex justify-center items-center gap-20 h-[calc(100vh_-_138px)]">
-        <div class=" p-4 ">
-          <div class="relative w-full max-w-md h-full md:h-auto">
-            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-              <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" data-modal-toggle="authentication-modal">
-                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                <span class="sr-only">Close modal</span>
-              </button>
-              <div class="py-6 px-6 lg:px-8">
-                <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Sign in to our platform</h3>
-                <form class="space-y-6" action="#">
-                  <div>
-                    <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-                    <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="name@company.com" required />
-                  </div>
-                  <div>
-                    <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
-                    <input type="password" name="password" id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
-                  </div>
-                  <div class="flex justify-between">
-                    <div class="flex items-start">
-                      <div class="flex items-center h-5">
-                        <input id="remember" type="checkbox" value="" class="w-4 h-4 bg-gray-50 rounded border border-gray-300 focus:ring-3 focus:ring-blue-300 dark:bg-gray-600 dark:border-gray-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800" required />
-                      </div>
-                      <label for="remember" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Remember me</label>
-                    </div>
-                  </div>
-                  <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Login to your account</button>
-                  <div class="text-sm font-medium text-gray-500 dark:text-gray-300">
-                    Not registered? <a onClick={() => navigate("/register")} class="text-blue-700 hover:underline dark:text-blue-500">Create account</a>
-                  </div>
-                </form>
+      <div className=" h-[calc(100vh_-_8.6rem)] sm:p-8 flex items-center justify-center  max-w-[1200px] mx-auto">
+        <div className="md:shadow-lg flex justify-center items-center  rounded-xl px-8  py-12 gap-8">
+          <div className="outline outline-offset-2 outline-[#345FF8] p-8 rounded-lg shadow-lg md:w-1/2 md:p-12">
+            <h1 className="h3 sm:h1 text-d1 mb-4 sm:mb-8">會員登入</h1>
+            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+              <div className="mb-4">
+                <label className="block text-d2 h5  mb-2 sm:h3 ">
+                  帳號 (Email)
+                </label>
+                <input
+                  type="email"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 h5  text-d3  sm:h4    focus:outline-none focus:shadow-outline"
+                  placeholder="Email"
+                  {...register("email", {
+                    required: { value: true, message: "此欄位必填寫" },
+                    pattern: {
+                      value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g,
+                      message: "不符合 Email 規則",
+                    },
+                  })}
+                />
+                <p className="text-red-500 ml-2 mt-2 h5 italic">
+                  {errors.email?.message}
+                </p>
               </div>
-            </div>
+              <div className="mb-4">
+                <label className="block text-d2  h5 sm:h3 mb-2">
+                  密碼 (Password)
+                </label>
+                <input
+                  type="password"
+                  className="shadow appearance-none border  rounded w-full py-2 px-3 text-d3 mb-3 focus:outline-none focus:shadow-outline"
+                  placeholder="******************"
+                  {...register("password", {
+                    required: { value: true, message: "此欄位必填寫" },
+                    minLength: { value: 8, message: "密碼至少為 8 碼" },
+                  })}
+                />
+                <p className="text-red-500 ml-2 mt-2 h5 italic">
+                  {errors.password?.message}
+                </p>
+              </div>
+              <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
+                <button
+                  className="bg-btn-primary hover:opacity-80 text-L1  h5 sm:h4 btn focus:outline-none focus:shadow-outline"
+                  type="submit"
+                >
+                  登入
+                </button>
+              </div>
+              <div className="text-sm font-medium h5 sm:h4 text-gray-500 dark:text-gray-300">
+                還沒有會員?{" "}
+                <Link
+                  className="text-blue-700 hover:underline dark:text-blue-500"
+                  to="/register"
+                >
+                  點此註冊
+                </Link>
+              </div>
+            </form>
+          </div>
+          <div className="md:flex md:w-1/2 items-center hidden   rounded-xl md:h-[500px]">
+            <img
+              className="object-cover  h-full  "
+              src="https://images.unsplash.com/photo-1512428559087-560fa5ceab42?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+              alt=""
+            />
           </div>
         </div>
-        <div className="flex items-center p-8 ">
-          <img className="object-cover  w-96 hidden  " src="https://images.unsplash.com/photo-1512428559087-560fa5ceab42?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="" />
-        </div>
       </div>
-
     </>
   );
 }

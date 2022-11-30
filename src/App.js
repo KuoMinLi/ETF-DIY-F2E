@@ -8,7 +8,8 @@ import Register from "./components/Register";
 import Login from "./components/Login";
 import ETFIItem from "./components/ETFItem";
 import Compare from "./components/Compare";
-import ETFDiy from "./components/ETFDiy";
+import DiyList from "./components/DIY/DiyList";
+import AddDiyETF from "./components/DIY/AddDiyETF";
 import UserInfo from "./components/UserInfo";
 import { Provider } from "react-redux";
 import store from "./store";
@@ -30,7 +31,11 @@ function App() {
               <Route index element={<ETFBlank />}/>
               <Route path=":userId" element={<ETFIItem />} />
             </Route>
-            <Route path="etfdiy" element={<ETFDiy />} />
+            <Route path="etfdiy"  element={<ETFIndex />} >
+              <Route index element={<DiyList />}/>
+              <Route path=":userId" element={<ETFIItem />} />
+            </Route>
+            <Route path="etfadddiy" element={<AddDiyETF />} />
             <Route path="compare" element={<Compare />} />
           </Route>
         </Routes>

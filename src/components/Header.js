@@ -87,7 +87,7 @@ const Header = () => {
                 </li>
               </Dropdown>
             </div>
-            <div className="text-L2 h3 flex space-x-5 cursor-pointer" onClick={() => navigate("/etfindex")}>自組ETF</div>
+            <div className="text-L2 h3 flex space-x-5 cursor-pointer" onClick={() => navigate("/etfadddiy")}>自組ETF</div>
             <div className="text-L2 h3 flex space-x-5 cursor-pointer" onClick={() => navigate("/compare")}>績效比較</div>
           </Navbar.Collapse>
         </Navbar>

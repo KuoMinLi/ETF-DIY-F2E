@@ -3,7 +3,7 @@ import "./Slider.css";
 import React, { useState } from "react";
 
 const SliderComponents = (props) => {
-  const [customersHandler, setCustomersHandler] = useState(props.data);
+  const [customersHandler, setCustomersHandler] = useState(props.percentage);
 
   const handleCustomers = (value) => {
     setCustomersHandler(value);

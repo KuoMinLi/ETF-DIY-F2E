@@ -55,6 +55,16 @@ export const fugleAPIGetOneMonth = (userId) => {
   );
 };
 
+//  取得股票資料-一年
+export const fugleAPIGetOneYear = (userId) => {
+  return fugleAPIGet(
+    userId,
+    FormatDate(nowDate - ONEYEAR),
+    FormatDate(nowDate)
+  );
+};
+
+
 // 取得股票資料
 // 因限制一次取得資料期間為 1年，所以要分批取得，預計取五年資料
 // 同時要考量到股票上市日期，所以要確認取得的資料不會超過上市日期

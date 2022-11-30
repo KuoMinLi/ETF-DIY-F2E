@@ -1,5 +1,5 @@
 import SliderComponents from "../utilities/Slider";
-import { fugleAPIGetFiveYear } from "../../api/stockAPI";
+import { fugleAPIGetOneYear } from "../../api/stockAPI";
 import { codeNameData } from "../../data/codeNameData";
 import periodRoR from "../calculate/periodRoR";
 import { useState, useEffect, useMemo } from "react";
@@ -41,11 +41,17 @@ const AddDiyETF = () => {
   useEffect(() => {
     // targetCode = ["2330","2331"]
     // 取得股票資料
+    if (!targetCode) {
+      return;
+    }
+
     const targetCodeData = targetCode.map(async (code) => {
       let codeData = [];
       try {
-        const resultAll = await fugleAPIGetFiveYear(code);
-        codeData = resultAll;
+        const resultAll = await fugleAPIGetOneYear(code);
+
+        // 這邊要reverse，因為fugleAPIGetOneYear取得的資料是由近到遠
+        codeData = resultAll.reverse(); 
       } catch (error) {
         console.log(error);
       }
@@ -68,7 +74,9 @@ const AddDiyETF = () => {
       const { name, industry } = codeNameData.filter(
         (i) => i.code === +code
       )[0];
+      console.log(codeData);
       const codeRoR = periodRoR(codeData);
+      console.log(codeRoR);
       return {
         name,
         code,
@@ -124,12 +132,15 @@ const AddDiyETF = () => {
               </div>
               <input
                 type="search"
-                id="default-search"
+                id="code-search"
+                list="code-list"
                 className="h-[68px] sm:h-[76px] rounded-full block w-full   p-4 pl-10 h5 sm:h4 text-gray-900 border border-gray-500  bg-gray-50 focus:ring-btn-primary focus:border-btn-primary "
-                placeholder="輸入關鍵字搜尋"
+                placeholder="輸入關鍵字、股票代碼搜尋"
                 required
                 onChange={(e) => setInputCode(e.target.value)}
-              />
+               / >
+               
+             
               <button
                 type="button"
                 className="absolute right-2.5 bottom-2.5 btn "
@@ -138,9 +149,19 @@ const AddDiyETF = () => {
                 Search
               </button>
             </div>
+            <div className="">
+                <ul>
+                  <li>1</li>
+                  <li>2</li>
+                  <li>3</li>
+                  <li>4</li>
+                  <li>5</li>
+                </ul>
+               </div>
+              
           </form>
-
-          <div className="mt-5 ">
+          {(targetCode.length >0) && (
+           <div className="mt-5 ">
             <div className=" overflow-x-auto  my-8">
               <table className="table-auto text-center h4 sm:h3 w-full mx-auto shadow-sm px-8">
                 <thead>
@@ -187,9 +208,9 @@ const AddDiyETF = () => {
                         <td className="border px-4 py-2">{industry}</td>
                         <td className="border px-4 py-2">
                           <SliderComponents
-                            data={data}
+                            percentage={percentage}
                             handleData={handleData}
-                            code={code2}
+                            code={code}
                           />
                         </td>
                       </tr>
@@ -223,6 +244,7 @@ const AddDiyETF = () => {
               </table>
             </div>
           </div>
+          )}
         </div>
       </div>
     </>

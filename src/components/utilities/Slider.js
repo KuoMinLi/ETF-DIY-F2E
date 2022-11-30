@@ -7,7 +7,7 @@ const SliderComponents = (props) => {
 
   const handleCustomers = (value) => {
     setCustomersHandler(value);
-    props.handleData(value, props.code);
+    props.handleRatio(value, props.code);
   };
 
   return (

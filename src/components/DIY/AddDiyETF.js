@@ -9,39 +9,15 @@ const AddDiyETF = () => {
   const [targetCode, setTargetCode] = useState([]);
   const [allData, setAllData] = useState([]);
 
-  const [ratio, setRatio] = useState();
-  const handleData = (num, code) => {
-    const newData = {
-      ...ratio,
-      [code]: num,
-    };
-    console.log(ratio, newData);
-    setRatio(newData);
-  };
-
-
-  const handleTargetCode = (code) => {
-    if (targetCode.includes(code)) {
-      alert("已經有這個股票了");
-      return;
-    } else if (
-      codeNameData.filter((item) => item.code === +code).length === 0
-    ) {
-      alert("請輸入正確代碼");
-      return;
-    } else {
-      const newCode = [...targetCode, code];
-      setTargetCode(newCode);
-    }
-  };
-
   useEffect(() => {
-    // targetCode = ["2330","2331"]
-    // 取得股票資料
+   
+    // 判定是否有值
     if (!targetCode) {
       return;
     }
 
+    // targetCode = ["2330","2331"]
+    // 取得股票資料
     const targetCodeData = targetCode.map(async (code) => {
       let codeData = [];
       try {
@@ -64,6 +40,76 @@ const AddDiyETF = () => {
     });
   }, [targetCode]);
 
+  // 監聽inputCode的提交，並將code加入targetCode
+  const handleTargetCode = (code) => {
+    if (targetCode.includes(code)) {
+      alert("已經有這個股票了");
+      return;
+    } else if (
+      codeNameData.filter((item) => item.code === +code).length === 0
+    ) {
+      alert("請輸入正確代碼");
+      return;
+    } else {
+      const newCode = [...targetCode, code];
+      setInputCode("");
+      setTargetCode(newCode);
+       // 將比例加入 ratio
+       handleRatio(20, code);
+    }
+  };
+
+  // 監聽個股變化比例
+  const [ratio, setRatio] = useState();
+  const handleRatio = (percentage, code) => {
+    const newData = {
+      ...ratio,
+      [code]: percentage,
+    };
+    setRatio(newData);
+  };
+
+  console.log(ratio);
+
+  // 監聽個股刪除按鈕
+  const handleDelete = (code) => {
+    const newCode = targetCode.filter((item) => item !== code);
+    setTargetCode(newCode);
+  };
+
+  // 計算總比例
+  const totalRatio = useMemo(() => {
+    if (!ratio) {
+      return 0;
+    }
+    // 全部轉型成數字
+    const totalNumber = Object.values(ratio).map((item) => {
+      if (typeof item === "object") {
+        return parseInt(item.join())
+      } else {
+        return item
+      }
+    });
+    console.log('tt',totalNumber);
+
+    const total = totalNumber.reduce((a, b) => a + b);
+    return total;
+  }, [ratio]);
+
+  // 監聽總比例，若總比例大於100，則顯示錯誤訊息
+  const [totalRatioError, setTotalRatioError] = useState(false);
+  useEffect(() => {
+    if (totalRatio > 100) {
+      alert("比例超過100%");
+      setTotalRatioError(true);
+    } else {
+      setTotalRatioError(false);
+    }
+  }, [totalRatio]);
+
+
+
+
   // 將股票資料轉換成表格資料
   const tableData = useMemo(() => {
     const ans = allData.map((item) => {
@@ -71,24 +117,22 @@ const AddDiyETF = () => {
       const { name, industry } = codeNameData.filter(
         (i) => i.code === +code
       )[0];
-      console.log(codeData);
+      const percentage = ratio[code]//預設比例
       const codeRoR = periodRoR(codeData);
-      console.log(codeRoR);
       return {
         name,
         code,
         industry,
-        percentage: 20, //預設比例
-
+        percentage,
+        
         // RoR代表的是這個股票的報酬率(RoR交易日)
         RoR20: codeRoR[4].data,
         RoR120: codeRoR[3].data,
         RoR240: codeRoR[2].data,
       };
     });
-    console.log(ans);
     return ans;
-  }, [allData]);
+  }, [allData, ratio]);
 
   return (
     <>
@@ -133,8 +177,8 @@ const AddDiyETF = () => {
                 list="code-list"
                 className="h-[68px] sm:h-[76px] rounded-full block w-full   p-4 pl-10 h4 sm:h3 text-gray-900 border border-gray-500  bg-gray-50 focus:ring-btn-primary focus:border-btn-primary "
                 placeholder="輸入關鍵字、股票代碼搜尋"
-                required
                 onChange={(e) => setInputCode(e.target.value)}
+                value={inputCode}
                / >
               <datalist id="code-list">
                 {codeNameData
@@ -184,7 +228,7 @@ const AddDiyETF = () => {
                             <p>{name}</p>
                             <p>{code}</p>
                           </div>
-                          <button className="absolute top-0 right-0">
+                          <button className="absolute top-0 right-0" onClick={()=>{handleDelete(code)}}>
                             <svg
                               aria-hidden="true"
                               className="w-5 h-5"
@@ -207,7 +251,7 @@ const AddDiyETF = () => {
                         <td className="border px-4 py-2">
                           <SliderComponents
                             percentage={percentage}
-                            handleData={handleData}
+                            handleRatio={handleRatio}
                             code={code}
                           />
                         </td>
@@ -223,18 +267,18 @@ const AddDiyETF = () => {
                     <td className="border px-4 py-2"></td>
                     <td className="border px-4 py-2"></td>
                     <td className="border px-4 py-2">
-                      <div className="flex justify-center">
-                        <div className="w-3/4">
+                      <div className="flex justify-center gap-4 items-center">
+                        <div className="w-full">
                           <div className="relative pt-1">
-                            <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
+                            <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-200">
                               <div
-                                style={{ width: "100%" }}
+                                style={{ width: (totalRatio) + '%' }}
                                 className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-btn-primary"
                               ></div>
                             </div>
                           </div>
                         </div>
-                        <div className="w-1/4">100%</div>
+                        <div className="">{totalRatio}%</div>
                       </div>
                     </td>
                   </tr>

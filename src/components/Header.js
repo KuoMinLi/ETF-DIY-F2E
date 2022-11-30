@@ -14,7 +14,6 @@ const Header = () => {
     }
   }
 
-  console.log('header', token)
 
   const [show, setShow] = useState(false);
   const handleShow = () => {

@@ -3,14 +3,20 @@ import { fugleAPIGetOneYear } from "../../api/stockAPI";
 import { codeNameData } from "../../data/codeNameData";
 import periodRoR from "../calculate/periodRoR";
 import { useState, useEffect, useMemo } from "react";
+import { apiDIYPost } from "../../api/diyAPI";
+import { useSelector} from "react-redux";
 
 const AddDiyETF = () => {
+  const [inputName, setInputName] = useState("自組ETF");
   const [inputCode, setInputCode] = useState("");
   const [targetCode, setTargetCode] = useState([]);
   const [allData, setAllData] = useState([]);
 
+  const token = useSelector(state => state.Token);
+  const defaultPercentage = 20; // 20是預設比例
+
   useEffect(() => {
-   
+
     // 判定是否有值
     if (!targetCode) {
       return;
@@ -42,6 +48,15 @@ const AddDiyETF = () => {
 
   // 監聽inputCode的提交，並將code加入targetCode
   const handleTargetCode = (code) => {
+    if (code === "") {
+      return;
+    }
+
+    if (targetCode.length >= 5) {
+      alert("最多只能選擇5支股票");
+      return;
+    }
+      
     if (targetCode.includes(code)) {
       alert("已經有這個股票了");
       return;
@@ -54,8 +69,9 @@ const AddDiyETF = () => {
       const newCode = [...targetCode, code];
       setInputCode("");
       setTargetCode(newCode);
+
        // 將比例加入 ratio
-       handleRatio(20, code);
+       handleRatio( defaultPercentage, code); 
     }
   };
 
@@ -69,11 +85,11 @@ const AddDiyETF = () => {
     setRatio(newData);
   };
 
-  console.log(ratio);
 
   // 監聽個股刪除按鈕
   const handleDelete = (code) => {
     const newCode = targetCode.filter((item) => item !== code);
+    handleRatio(0, code);
     setTargetCode(newCode);
   };
 
@@ -90,32 +106,32 @@ const AddDiyETF = () => {
         return item
       }
     });
-    console.log('tt',totalNumber);
 
     const total = totalNumber.reduce((a, b) => a + b);
     return total;
   }, [ratio]);
 
-  // 監聽總比例，若總比例大於100，則顯示錯誤訊息
-  const [totalRatioError, setTotalRatioError] = useState(false);
+  // 監聽總比例，若總比例不等於100，狀態為true
+  const [totalRatioError, setTotalRatioError] = useState(true);
   useEffect(() => {
+
+    //若總比例大於100，則顯示錯誤訊息
     if (totalRatio > 100) {
       alert("比例超過100%");
+      setTotalRatioError(true);
+    } else if (totalRatio < 100) {
       setTotalRatioError(true);
     } else {
       setTotalRatioError(false);
     }
   }, [totalRatio]);
 
-
-
-
   // 將股票資料轉換成表格資料
   const tableData = useMemo(() => {
     const ans = allData.map((item) => {
       const { code, codeData } = item;
       const { name, industry } = codeNameData.filter(
-        (i) => i.code === +code
+        (i) => i.code === parseInt(code)
       )[0];
       const percentage = ratio[code]//預設比例
       const codeRoR = periodRoR(codeData);
@@ -134,11 +150,82 @@ const AddDiyETF = () => {
     return ans;
   }, [allData, ratio]);
 
+
+
+  const [ diyData, setDiyData ] = useState([]);
+  
+
+  // 監聽資料，將資料存入diyData
+  useEffect(() => {
+    const content = tableData.map((item) => {
+      const { name, code } = item;
+      let { percentage } = item;
+      
+      // 將比例從陣列轉換成數字
+      if (typeof percentage === "object") {
+        percentage = parseInt(percentage.join())
+      }
+
+      return {
+        name,
+        code,
+        percentage
+      }
+    })
+
+    const data = {
+      name: inputName,
+      content
+    }
+    console.log(data);
+    setDiyData(data);
+  }, [tableData, inputName])
+
+  // 監聽提交按鈕，送出資料
+  const handleSubmit = () => {
+    if (totalRatioError) {
+      alert("比例不等於100%");
+      return;
+    }
+    console.log(token);
+    if (!token) {
+      alert("請先登入");
+      return;
+    }
+
+    if (inputName === "") {
+      alert("請輸入名稱");
+      return;
+    }
+
+    (async () => {
+      try{
+      const result = await apiDIYPost(diyData,token);
+      console.log(result);
+      }catch(error){
+        console.log(error);
+      }
+    })();
+  };
+
+
+
+
   return (
     <>
-      <div className="max-w-[1232px] p-8 sm:px-24 mx-auto min-h-[calc(100vh_-_8.6rem)]">
-        <div className="text-start  mt-10">
+      <div className="max-w-[1232px] p-8  sm:px-24 mx-auto min-h-[calc(100vh_-_8.6rem)]">
+        <div className="text-start  mt-4">
           <h1 className="h1 mb-4">新增自組ETF</h1>
+          <form action="" className="my-4">
+            <label className="h4 sm:h3 " htmlFor="">請輸入自組ETF名稱</label>
+            <input
+              type="text"
+              className="w-full h4 sm:h3 pl-10 mt-2 rounded-full p-2 text-gray-900 border border-gray-500  bg-gray-50 focus:ring-btn-primary focus:border-btn-primary"
+              value={ inputName}
+              onChange={(e) => setInputName(e.target.value)} 
+            />
+            <p className="text-red-500 px-8 pt-1"></p>         
+          </form>
           <h2 className="h3 mb-4">熱門選擇</h2>
           <div className="space-x-8 mb-8">
             <button className="btn h4">台灣TOP5</button>
@@ -195,17 +282,17 @@ const AddDiyETF = () => {
               
               <button
                 type="button"
-                className="absolute right-2.5 bottom-2.5 btn "
+                className="absolute right-2.5 bottom-2.5 btn h4 "
                 onClick={() => handleTargetCode(inputCode)}
               >
-                Search
+                新增個股
               </button>
             </div>
           </form>
           {(targetCode.length >0) && (
-           <div className="mt-5 ">
-            <div className=" overflow-x-auto  my-8">
-              <table className="table-auto text-center h4 sm:h3 w-full mx-auto shadow-sm px-8">
+           <div className="mt-5  ">
+            <div className=" overflow-x-auto my-8">
+              <table className="min-w-[900px]  table-auto text-center h4 sm:h3 w-full mx-auto shadow-sm px-8">
                 <thead>
                   <tr>
                     <th className="px-4 py-2 sr-only">股票名稱</th>
@@ -260,8 +347,8 @@ const AddDiyETF = () => {
                   })}
                 </tbody>
                 <tfoot>
-                  <tr>
-                    <td className="border px-4 py-2">合計</td>
+                  <tr className="h-[76px]">
+                    <td className="border px-4 py-2 ">合計</td>
                     <td className="border px-4 py-2"></td>
                     <td className="border px-4 py-2"></td>
                     <td className="border px-4 py-2"></td>
@@ -270,7 +357,7 @@ const AddDiyETF = () => {
                       <div className="flex justify-center gap-4 items-center">
                         <div className="w-full">
                           <div className="relative pt-1">
-                            <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-200">
+                            <div className="overflow-hidden h-2 text-xs flex rounded-full bg-[#ab8dff]">
                               <div
                                 style={{ width: (totalRatio) + '%' }}
                                 className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-btn-primary"
@@ -284,6 +371,17 @@ const AddDiyETF = () => {
                   </tr>
                 </tfoot>
               </table>
+            </div>
+            <div className="flex justify-end gap-4">
+              <button
+                type="button"
+                className="btn h4"
+                onClick={() => {
+                  handleSubmit();
+                }}
+              >
+                儲存自組ETF
+              </button>
             </div>
           </div>
           )}

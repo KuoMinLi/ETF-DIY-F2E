@@ -2,7 +2,7 @@ import axios from "axios";
 
 const apiUsers = axios.create({
   baseURL: "https://etf-diy-kml.herokuapp.com/users",
-  timeout: 5000,
+  timeout: 15000,
 });
 
 export const apiUserSignUp = (user) => {

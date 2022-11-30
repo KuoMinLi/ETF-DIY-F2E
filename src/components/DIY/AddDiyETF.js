@@ -1,30 +1,90 @@
-import  SliderComponents  from "../utilities/Slider";
-
-import { useState } from "react";
-
+import SliderComponents from "../utilities/Slider";
+import { fugleAPIGetFiveYear } from "../../api/stockAPI";
+import { codeNameData } from "../../data/codeNameData";
+import periodRoR from "../calculate/periodRoR";
+import { useState, useEffect, useMemo } from "react";
 
 const AddDiyETF = () => {
-  
-  const [data, setData] = useState(20);
-  const [ratio, setRatio] = useState();
-  
-  const handleData = (num,code) => {
+  const [inputCode, setInputCode] = useState("");
+  const [targetCode, setTargetCode] = useState([]);
+  const [allData, setAllData] = useState([]);
 
+  const [ratio, setRatio] = useState();
+  const data = 20;
+  const handleData = (num, code) => {
     const newData = {
       ...ratio,
       [code]: num,
     };
-    
+    console.log(ratio, newData);
     setRatio(newData);
   };
-
-  console.log(ratio);
 
   const code = "2330";
   const code2 = "3333";
 
+  const handleTargetCode = (code) => {
+    if (targetCode.includes(code)) {
+      alert("已經有這個股票了");
+      return;
+    } else if (
+      codeNameData.filter((item) => item.code === +code).length === 0
+    ) {
+      alert("請輸入正確代碼");
+      return;
+    } else {
+      const newCode = [...targetCode, code];
+      setTargetCode(newCode);
+    }
+  };
 
-  
+  useEffect(() => {
+    // targetCode = ["2330","2331"]
+    // 取得股票資料
+    const targetCodeData = targetCode.map(async (code) => {
+      let codeData = [];
+      try {
+        const resultAll = await fugleAPIGetFiveYear(code);
+        codeData = resultAll;
+      } catch (error) {
+        console.log(error);
+      }
+      return {
+        code,
+        codeData,
+      };
+    });
+
+    // 將股票資料存入allData
+    Promise.all(targetCodeData).then((data) => {
+      setAllData(data);
+    });
+  }, [targetCode]);
+
+  // 將股票資料轉換成表格資料
+  const tableData = useMemo(() => {
+    const ans = allData.map((item) => {
+      const { code, codeData } = item;
+      const { name, industry } = codeNameData.filter(
+        (i) => i.code === +code
+      )[0];
+      const codeRoR = periodRoR(codeData);
+      return {
+        name,
+        code,
+        industry,
+        percentage: 20, //預設比例
+
+        // RoR代表的是這個股票的報酬率(RoR交易日)
+        RoR20: codeRoR[4].data,
+        RoR120: codeRoR[3].data,
+        RoR240: codeRoR[2].data,
+      };
+    });
+    console.log(ans);
+    return ans;
+  }, [allData]);
+
   return (
     <>
       <div className="max-w-[1232px] p-8 sm:px-24 mx-auto ">
@@ -68,28 +128,17 @@ const AddDiyETF = () => {
                 className="h-[68px] sm:h-[76px] rounded-full block w-full   p-4 pl-10 h5 sm:h4 text-gray-900 border border-gray-500  bg-gray-50 focus:ring-btn-primary focus:border-btn-primary "
                 placeholder="輸入關鍵字搜尋"
                 required
+                onChange={(e) => setInputCode(e.target.value)}
               />
               <button
                 type="button"
                 className="absolute right-2.5 bottom-2.5 btn "
+                onClick={() => handleTargetCode(inputCode)}
               >
                 Search
               </button>
             </div>
           </form>
-
-          
-
-          {ratio && 
-            <>
-              <p>{code}:{ratio[code]}</p>
-              <p>{code2}:{ratio[code2]}</p>
-            </>
-            
-          }
-
-          <SliderComponents data={data} handleData={handleData} code={code}/>
-
 
           <div className="mt-5 ">
             <div className=" overflow-x-auto  my-8">
@@ -107,36 +156,45 @@ const AddDiyETF = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td className="border px-4 py-2 relative">
-                      <div className="">
-                        <p>台積電</p>
-                        <p>2330</p>
-                      </div>
-                      <button className="absolute top-0 right-0">
-                        <svg
-                          aria-hidden="true"
-                          className="w-5 h-5"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                            clipRule="evenodd"
-                          ></path>
-                        </svg>
-                      </button>
-                    </td>
-                    <td className="border px-4 py-2">+1.2%</td>
-                    <td className="border px-4 py-2">+1.2%</td>
-                    <td className="border px-4 py-2">+1.2%</td>
-                    <td className="border px-4 py-2">電子</td>
-                    <td className="border px-4 py-2">
-                      <SliderComponents data={data} handleData={handleData} code={code2}/>
-                    </td>
-                  </tr>
+                  {tableData.map((item,index) => {
+                    const { name, code, RoR20, RoR120, RoR240, industry, percentage } = item;
+                    return (
+                      <tr key={index}>
+                        <td className="border px-4 py-2 relative">
+                          <div className="">
+                            <p>{name}</p>
+                            <p>{code}</p>
+                          </div>
+                          <button className="absolute top-0 right-0">
+                            <svg
+                              aria-hidden="true"
+                              className="w-5 h-5"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clipRule="evenodd"
+                              ></path>
+                            </svg>
+                          </button>
+                        </td>
+                        <td className="border px-4 py-2">{RoR20}%</td>
+                        <td className="border px-4 py-2">{RoR120}%</td>
+                        <td className="border px-4 py-2">{RoR240}%</td>
+                        <td className="border px-4 py-2">{industry}</td>
+                        <td className="border px-4 py-2">
+                          <SliderComponents
+                            data={data}
+                            handleData={handleData}
+                            code={code2}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
                 <tfoot>
                   <tr>

@@ -9,8 +9,6 @@ const SliderComponents = (props) => {
     setCustomersHandler(value);
     props.handleData(value, props.code);
   };
-  
-  console.log(props.code);
 
   return (
     <>

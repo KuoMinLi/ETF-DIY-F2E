@@ -10,7 +10,6 @@ const AddDiyETF = () => {
   const [allData, setAllData] = useState([]);
 
   const [ratio, setRatio] = useState();
-  const data = 20;
   const handleData = (num, code) => {
     const newData = {
       ...ratio,
@@ -20,8 +19,6 @@ const AddDiyETF = () => {
     setRatio(newData);
   };
 
-  const code = "2330";
-  const code2 = "3333";
 
   const handleTargetCode = (code) => {
     if (targetCode.includes(code)) {
@@ -95,7 +92,7 @@ const AddDiyETF = () => {
 
   return (
     <>
-      <div className="max-w-[1232px] p-8 sm:px-24 mx-auto ">
+      <div className="max-w-[1232px] p-8 sm:px-24 mx-auto min-h-[calc(100vh_-_8.6rem)]">
         <div className="text-start  mt-10">
           <h1 className="h1 mb-4">新增自組ETF</h1>
           <h2 className="h3 mb-4">熱門選擇</h2>
@@ -134,13 +131,24 @@ const AddDiyETF = () => {
                 type="search"
                 id="code-search"
                 list="code-list"
-                className="h-[68px] sm:h-[76px] rounded-full block w-full   p-4 pl-10 h5 sm:h4 text-gray-900 border border-gray-500  bg-gray-50 focus:ring-btn-primary focus:border-btn-primary "
+                className="h-[68px] sm:h-[76px] rounded-full block w-full   p-4 pl-10 h4 sm:h3 text-gray-900 border border-gray-500  bg-gray-50 focus:ring-btn-primary focus:border-btn-primary "
                 placeholder="輸入關鍵字、股票代碼搜尋"
                 required
                 onChange={(e) => setInputCode(e.target.value)}
                / >
-               
-             
+              <datalist id="code-list">
+                {codeNameData
+                  .filter((item) =>
+                    item.name.includes(inputCode) ||
+                    item.code.toString().includes(inputCode)
+                  )
+                  .map((item, index) => (
+                    <option key={index} value={item.code}>
+                      {item.name}
+                    </option>
+                  ))}
+               </datalist>
+              
               <button
                 type="button"
                 className="absolute right-2.5 bottom-2.5 btn "
@@ -149,16 +157,6 @@ const AddDiyETF = () => {
                 Search
               </button>
             </div>
-            <div className="">
-                <ul>
-                  <li>1</li>
-                  <li>2</li>
-                  <li>3</li>
-                  <li>4</li>
-                  <li>5</li>
-                </ul>
-               </div>
-              
           </form>
           {(targetCode.length >0) && (
            <div className="mt-5 ">

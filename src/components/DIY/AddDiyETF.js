@@ -7,13 +7,16 @@ import { apiDIYPost } from "../../api/diyAPI";
 import { useSelector} from "react-redux";
 
 const AddDiyETF = () => {
-  const [inputName, setInputName] = useState("自組ETF");
+
+  const defaultPercentage = 20; // 20是預設比例
+  const defaultETFName = "自組ETF1"; // 預設ETF名稱
+
+  const [inputName, setInputName] = useState(defaultETFName);
   const [inputCode, setInputCode] = useState("");
   const [targetCode, setTargetCode] = useState([]);
   const [allData, setAllData] = useState([]);
 
   const token = useSelector(state => state.Token);
-  const defaultPercentage = 20; // 20是預設比例
 
   useEffect(() => {
 
@@ -207,9 +210,6 @@ const AddDiyETF = () => {
       }
     })();
   };
-
-
-
 
   return (
     <>

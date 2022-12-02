@@ -3,7 +3,7 @@ import { fugleAPIGetOneYear } from "../../api/stockAPI";
 import { codeNameData } from "../../data/codeNameData";
 import periodRoR from "../calculate/periodRoR";
 import { useState, useEffect, useMemo } from "react";
-import { apiDIYPost } from "../../api/diyAPI";
+import { apiDIYPost, apiDIYGet } from "../../api/diyAPI";
 import { useSelector} from "react-redux";
 
 const AddDiyETF = () => {
@@ -13,10 +13,22 @@ const AddDiyETF = () => {
 
   const [inputName, setInputName] = useState(defaultETFName);
   const [inputCode, setInputCode] = useState("");
-  const [targetCode, setTargetCode] = useState([]);
+  const [targetCode, setTargetCode] = useState( JSON.parse(localStorage.getItem("targetCode")) || []);
   const [allData, setAllData] = useState([]);
 
-  const token = useSelector(state => state.Token);
+  const token = useSelector(state => state.Token) || localStorage.getItem("token");
+
+  useEffect(() => {
+    (async() => {
+      try{
+        const result = await apiDIYGet(token);
+        console.log(result);
+      } catch (err){
+        console.log(err);
+      }
+    })();
+  }, []);
+
 
   useEffect(() => {
 
@@ -72,6 +84,7 @@ const AddDiyETF = () => {
       const newCode = [...targetCode, code];
       setInputCode("");
       setTargetCode(newCode);
+      localStorage.setItem("targetCode", JSON.stringify(newCode));
 
        // 將比例加入 ratio
        handleRatio( defaultPercentage, code); 
@@ -79,21 +92,22 @@ const AddDiyETF = () => {
   };
 
   // 監聽個股變化比例
-  const [ratio, setRatio] = useState();
+  const [ratio, setRatio] = useState( JSON.parse(localStorage.getItem("ratio")) || {} );
   const handleRatio = (percentage, code) => {
     const newData = {
       ...ratio,
       [code]: percentage,
     };
     setRatio(newData);
+    localStorage.setItem("ratio", JSON.stringify(newData));
   };
-
 
   // 監聽個股刪除按鈕
   const handleDelete = (code) => {
     const newCode = targetCode.filter((item) => item !== code);
     handleRatio(0, code);
     setTargetCode(newCode);
+    localStorage.setItem("targetCode", JSON.stringify(newCode));
   };
 
   // 計算總比例
@@ -110,6 +124,9 @@ const AddDiyETF = () => {
       }
     });
 
+    if (totalNumber.length === 0) {
+      return 0;
+    }
     const total = totalNumber.reduce((a, b) => a + b);
     return total;
   }, [ratio]);
@@ -153,10 +170,7 @@ const AddDiyETF = () => {
     return ans;
   }, [allData, ratio]);
 
-
-
   const [ diyData, setDiyData ] = useState([]);
-  
 
   // 監聽資料，將資料存入diyData
   useEffect(() => {
@@ -203,17 +217,30 @@ const AddDiyETF = () => {
 
     (async () => {
       try{
-      const result = await apiDIYPost(diyData,token);
-      console.log(result);
+        const result = await apiDIYPost(diyData,token);
+          alert("新增成功");
+          resetForm();
+          console.log(result);
+        
       }catch(error){
         console.log(error);
       }
     })();
   };
 
+  const resetForm = () => {
+    setTargetCode([]);
+    setRatio({});
+    setInputName("");
+    localStorage.removeItem("targetCode");
+    localStorage.removeItem("ratio");
+  };
+
+
+
   return (
     <>
-      <div className="max-w-[1232px] p-8  sm:px-24 mx-auto min-h-[calc(100vh_-_8.6rem)]">
+      <div className="max-w-[1232px] p-8  sm:px-12 mx-auto min-h-[calc(100vh_-_8.6rem)]">
         <div className="text-start  mt-4">
           <h1 className="h1 mb-4">新增自組ETF</h1>
           <form action="" className="my-4">

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiDIY = axios.create({
-  baseURL: "https://etf-diy-kml.herokuapp.com/diy",
+  baseURL: "http://127.0.0.1:3085/diy",
   timeout: 15000,
 });
 
@@ -29,3 +29,16 @@ export const apiDIYPost = (data, token) => {
     .then((res) => res.data)
     .catch((error) => console.log(error));
 };
+
+export const apiDIYGet = (token) => {
+  return apiDIY
+    .get("/", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((res) => res.data)
+    .catch((error) => console.log(error));
+};
+
+

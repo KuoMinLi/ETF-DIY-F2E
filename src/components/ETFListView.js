@@ -1,8 +1,7 @@
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { getETFList } from "../api/etfAPI";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { fugleAPIGetOneMonth } from "../api/stockAPI";
-import { useCallback } from "react";
 
 const ETFListView = () => {
   let navigate = useNavigate();
@@ -44,8 +43,9 @@ const ETFListView = () => {
         console.log(error);
       }
     })();
-  }, [category, userId]);
+  }, [ETFList, category]);
 
+  console.log(categoryRoR)
   
   const filterCategory = (data , id) => {
     const ans = data.filter((item) => item.category === id);

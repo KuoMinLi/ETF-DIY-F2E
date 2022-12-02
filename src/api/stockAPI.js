@@ -26,98 +26,66 @@ const nowDate = new Date().getTime();
 const fugleAPI = axios.create({
   method: "get",
   baseURL: "https://api.fugle.tw/marketdata/v0.3/candles?",
-  timeout: 5000,
+  timeout: 15000,
   params: {
     fields: "open,high,low,close,volume,turnover,change",
     apiToken: process.env.REACT_APP_API_KEY,
   },
 });
 
-
-//  取得股票資料-一個月
-export const fugleAPIGetOneMonth = (userId) => {
+// 將日期及股票代碼轉換成API格式
+const fugleAPIGet = (userId, from, to) => {
   return fugleAPI({
     params: {
       symbolId: userId,
-      from: FormatDate(nowDate - ONEMONTH * 1),
-      to: FormatDate(nowDate),
+      from,
+      to,
     },
   })
     .then((res) => res.data.candles)
     .catch((error) => console.log(error));
+};
+
+//  取得股票資料-一個月
+export const fugleAPIGetOneMonth = (userId) => {
+  return fugleAPIGet(
+    userId,
+    FormatDate(nowDate - ONEMONTH),
+    FormatDate(nowDate)
+  );
+};
+
+//  取得股票資料-一年
+export const fugleAPIGetOneYear = (userId) => {
+  return fugleAPIGet(
+    userId,
+    FormatDate(nowDate - ONEYEAR),
+    FormatDate(nowDate)
+  );
 };
 
 
 // 取得股票資料
 // 因限制一次取得資料期間為 1年，所以要分批取得，預計取五年資料
 // 同時要考量到股票上市日期，所以要確認取得的資料不會超過上市日期
-export const fugleAPIGet1 = (userId) =>{
-  return fugleAPI({
-    params: {
-      symbolId: userId,
-      from: FormatDate(nowDate - ONEYEAR * 1),
-      to: FormatDate(nowDate),
-    },
-  })
-    .then((res) => res.data.candles)
-    .catch((error) => console.log(error));
-};
-
-export const fugleAPIGet2 = (userId) =>{
-  return fugleAPI({
-    params: {
-      symbolId: userId,
-      from: FormatDate(nowDate - ONEYEAR * 2),
-      to: FormatDate(nowDate - ONEYEAR * 1),
-    },
-  })
-    .then((res) => res.data.candles)
-    .catch((error) => console.log(error));
-};
-
-export const fugleAPIGet3 = (userId) =>{
-  return fugleAPI({
-    params: {
-      symbolId: userId,
-      from: FormatDate(nowDate - ONEYEAR * 3),
-      to: FormatDate(nowDate - ONEYEAR * 2),
-    },
-  })
-    .then((res) => res.data.candles)
-    .catch((error) => console.log(error));
-};
-
-export const fugleAPIGet4 = (userId) =>{
-  return fugleAPI({
-    params: {
-      symbolId: userId,
-      from: FormatDate(nowDate - ONEYEAR * 4),
-      to: FormatDate(nowDate - ONEYEAR * 3),
-    },
-  })
-    .then((res) => res.data.candles)
-    .catch((error) => console.log(error));
-};
-
-export const fugleAPIGet5 = (userId) => {
-  return fugleAPI({
-    params: {
-      symbolId: userId,
-      from: FormatDate(nowDate - ONEYEAR * 5),
-      to: FormatDate(nowDate - ONEYEAR * 4),
-    },
-  })
-    .then((res) => res.data.candles)
-    .catch((error) => console.log(error));
-}
 
 // 一次取得五年資料
-export const fugleAPIGetFiveYear = (userId) => {
-  return Promise.all([
-    fugleAPIGet1(userId),
-    fugleAPIGet2(userId),
-    fugleAPIGet3(userId),
-    fugleAPIGet4(userId),
-    fugleAPIGet5(userId),
-  ]);
+export const fugleAPIGetFiveYear = async (userId) => {
+  let ans = [];
+  for (let i = 1; i < 6; i++) {
+    const formDate = FormatDate(nowDate - i * ONEYEAR);
+    const toDate = FormatDate(nowDate - (i - 1) * ONEYEAR);
+    const data = await fugleAPIGet(
+      userId, formDate, toDate
+    );
+
+    // 確認取得的資料有滿一年，沒有則先加入後跳出迴圈
+    if (data.length > 240) {
+      ans = [...ans, ...data];
+    } else {
+      ans = [...ans, ...data];
+      break;
+    }
+  }
+  return ans;
 };

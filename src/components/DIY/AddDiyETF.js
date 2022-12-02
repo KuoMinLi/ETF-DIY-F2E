@@ -1,0 +1,394 @@
+import SliderComponents from "../utilities/Slider";
+import { fugleAPIGetOneYear } from "../../api/stockAPI";
+import { codeNameData } from "../../data/codeNameData";
+import periodRoR from "../calculate/periodRoR";
+import { useState, useEffect, useMemo } from "react";
+import { apiDIYPost } from "../../api/diyAPI";
+import { useSelector} from "react-redux";
+
+const AddDiyETF = () => {
+
+  const defaultPercentage = 20; // 20是預設比例
+  const defaultETFName = "自組ETF1"; // 預設ETF名稱
+
+  const [inputName, setInputName] = useState(defaultETFName);
+  const [inputCode, setInputCode] = useState("");
+  const [targetCode, setTargetCode] = useState([]);
+  const [allData, setAllData] = useState([]);
+
+  const token = useSelector(state => state.Token);
+
+  useEffect(() => {
+
+    // 判定是否有值
+    if (!targetCode) {
+      return;
+    }
+
+    // targetCode = ["2330","2331"]
+    // 取得股票資料
+    const targetCodeData = targetCode.map(async (code) => {
+      let codeData = [];
+      try {
+        const resultAll = await fugleAPIGetOneYear(code);
+
+        // 這邊要reverse，因為fugleAPIGetOneYear取得的資料是由近到遠
+        codeData = resultAll.reverse(); 
+      } catch (error) {
+        console.log(error);
+      }
+      return {
+        code,
+        codeData,
+      };
+    });
+
+    // 將股票資料存入allData
+    Promise.all(targetCodeData).then((data) => {
+      setAllData(data);
+    });
+  }, [targetCode]);
+
+  // 監聽inputCode的提交，並將code加入targetCode
+  const handleTargetCode = (code) => {
+    if (code === "") {
+      return;
+    }
+
+    if (targetCode.length >= 5) {
+      alert("最多只能選擇5支股票");
+      return;
+    }
+      
+    if (targetCode.includes(code)) {
+      alert("已經有這個股票了");
+      return;
+    } else if (
+      codeNameData.filter((item) => item.code === +code).length === 0
+    ) {
+      alert("請輸入正確代碼");
+      return;
+    } else {
+      const newCode = [...targetCode, code];
+      setInputCode("");
+      setTargetCode(newCode);
+
+       // 將比例加入 ratio
+       handleRatio( defaultPercentage, code); 
+    }
+  };
+
+  // 監聽個股變化比例
+  const [ratio, setRatio] = useState();
+  const handleRatio = (percentage, code) => {
+    const newData = {
+      ...ratio,
+      [code]: percentage,
+    };
+    setRatio(newData);
+  };
+
+
+  // 監聽個股刪除按鈕
+  const handleDelete = (code) => {
+    const newCode = targetCode.filter((item) => item !== code);
+    handleRatio(0, code);
+    setTargetCode(newCode);
+  };
+
+  // 計算總比例
+  const totalRatio = useMemo(() => {
+    if (!ratio) {
+      return 0;
+    }
+    // 全部轉型成數字
+    const totalNumber = Object.values(ratio).map((item) => {
+      if (typeof item === "object") {
+        return parseInt(item.join())
+      } else {
+        return item
+      }
+    });
+
+    const total = totalNumber.reduce((a, b) => a + b);
+    return total;
+  }, [ratio]);
+
+  // 監聽總比例，若總比例不等於100，狀態為true
+  const [totalRatioError, setTotalRatioError] = useState(true);
+  useEffect(() => {
+
+    //若總比例大於100，則顯示錯誤訊息
+    if (totalRatio > 100) {
+      alert("比例超過100%");
+      setTotalRatioError(true);
+    } else if (totalRatio < 100) {
+      setTotalRatioError(true);
+    } else {
+      setTotalRatioError(false);
+    }
+  }, [totalRatio]);
+
+  // 將股票資料轉換成表格資料
+  const tableData = useMemo(() => {
+    const ans = allData.map((item) => {
+      const { code, codeData } = item;
+      const { name, industry } = codeNameData.filter(
+        (i) => i.code === parseInt(code)
+      )[0];
+      const percentage = ratio[code]//預設比例
+      const codeRoR = periodRoR(codeData);
+      return {
+        name,
+        code,
+        industry,
+        percentage,
+        
+        // RoR代表的是這個股票的報酬率(RoR交易日)
+        RoR20: codeRoR[4].data,
+        RoR120: codeRoR[3].data,
+        RoR240: codeRoR[2].data,
+      };
+    });
+    return ans;
+  }, [allData, ratio]);
+
+
+
+  const [ diyData, setDiyData ] = useState([]);
+  
+
+  // 監聽資料，將資料存入diyData
+  useEffect(() => {
+    const content = tableData.map((item) => {
+      const { name, code } = item;
+      let { percentage } = item;
+      
+      // 將比例從陣列轉換成數字
+      if (typeof percentage === "object") {
+        percentage = parseInt(percentage.join())
+      }
+
+      return {
+        name,
+        code,
+        percentage
+      }
+    })
+
+    const data = {
+      name: inputName,
+      content
+    }
+    console.log(data);
+    setDiyData(data);
+  }, [tableData, inputName])
+
+  // 監聽提交按鈕，送出資料
+  const handleSubmit = () => {
+    if (totalRatioError) {
+      alert("比例不等於100%");
+      return;
+    }
+    console.log(token);
+    if (!token) {
+      alert("請先登入");
+      return;
+    }
+
+    if (inputName === "") {
+      alert("請輸入名稱");
+      return;
+    }
+
+    (async () => {
+      try{
+      const result = await apiDIYPost(diyData,token);
+      console.log(result);
+      }catch(error){
+        console.log(error);
+      }
+    })();
+  };
+
+  return (
+    <>
+      <div className="max-w-[1232px] p-8  sm:px-24 mx-auto min-h-[calc(100vh_-_8.6rem)]">
+        <div className="text-start  mt-4">
+          <h1 className="h1 mb-4">新增自組ETF</h1>
+          <form action="" className="my-4">
+            <label className="h4 sm:h3 " htmlFor="">請輸入自組ETF名稱</label>
+            <input
+              type="text"
+              className="w-full h4 sm:h3 pl-10 mt-2 rounded-full p-2 text-gray-900 border border-gray-500  bg-gray-50 focus:ring-btn-primary focus:border-btn-primary"
+              value={ inputName}
+              onChange={(e) => setInputName(e.target.value)} 
+            />
+            <p className="text-red-500 px-8 pt-1"></p>         
+          </form>
+          <h2 className="h3 mb-4">熱門選擇</h2>
+          <div className="space-x-8 mb-8">
+            <button className="btn h4">台灣TOP5</button>
+            <button className="btn h4">電子五哥</button>
+            <button className="btn h4">航海王</button>
+          </div>
+
+          <form className="my-8">
+            <label
+              htmlFor="default-search"
+              className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+            >
+              Search
+            </label>
+            <div className="relative ">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none ">
+                <svg
+                  aria-hidden="true"
+                  className="w-5 h-5 text-gray-500 dark:text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  ></path>
+                </svg>
+              </div>
+              <input
+                type="search"
+                id="code-search"
+                list="code-list"
+                className="h-[68px] sm:h-[76px] rounded-full block w-full   p-4 pl-10 h4 sm:h3 text-gray-900 border border-gray-500  bg-gray-50 focus:ring-btn-primary focus:border-btn-primary "
+                placeholder="輸入關鍵字、股票代碼搜尋"
+                onChange={(e) => setInputCode(e.target.value)}
+                value={inputCode}
+               / >
+              <datalist id="code-list">
+                {codeNameData
+                  .filter((item) =>
+                    item.name.includes(inputCode) ||
+                    item.code.toString().includes(inputCode)
+                  )
+                  .map((item, index) => (
+                    <option key={index} value={item.code}>
+                      {item.name}
+                    </option>
+                  ))}
+               </datalist>
+              
+              <button
+                type="button"
+                className="absolute right-2.5 bottom-2.5 btn h4 "
+                onClick={() => handleTargetCode(inputCode)}
+              >
+                新增個股
+              </button>
+            </div>
+          </form>
+          {(targetCode.length >0) && (
+           <div className="mt-5  ">
+            <div className=" overflow-x-auto my-8">
+              <table className="min-w-[900px]  table-auto text-center h4 sm:h3 w-full mx-auto shadow-sm px-8">
+                <thead>
+                  <tr>
+                    <th className="px-4 py-2 sr-only">股票名稱</th>
+                    <th className="px-4 py-2">近一個月</th>
+                    <th className="px-4 py-2">近半年</th>
+                    <th className="px-4 py-2">近一年</th>
+                    <th className="px-4 py-2">股票產業</th>
+                    <th width="30%" className="px-4 py-2 min-w-[250px]">
+                      股票佔比
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableData.map((item,index) => {
+                    const { name, code, RoR20, RoR120, RoR240, industry, percentage } = item;
+                    return (
+                      <tr key={index}>
+                        <td className="border px-4 py-2 relative">
+                          <div className="">
+                            <p>{name}</p>
+                            <p>{code}</p>
+                          </div>
+                          <button className="absolute top-0 right-0" onClick={()=>{handleDelete(code)}}>
+                            <svg
+                              aria-hidden="true"
+                              className="w-5 h-5"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clipRule="evenodd"
+                              ></path>
+                            </svg>
+                          </button>
+                        </td>
+                        <td className="border px-4 py-2">{RoR20}%</td>
+                        <td className="border px-4 py-2">{RoR120}%</td>
+                        <td className="border px-4 py-2">{RoR240}%</td>
+                        <td className="border px-4 py-2">{industry}</td>
+                        <td className="border px-4 py-2">
+                          <SliderComponents
+                            percentage={percentage}
+                            handleRatio={handleRatio}
+                            code={code}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+                <tfoot>
+                  <tr className="h-[76px]">
+                    <td className="border px-4 py-2 ">合計</td>
+                    <td className="border px-4 py-2"></td>
+                    <td className="border px-4 py-2"></td>
+                    <td className="border px-4 py-2"></td>
+                    <td className="border px-4 py-2"></td>
+                    <td className="border px-4 py-2">
+                      <div className="flex justify-center gap-4 items-center">
+                        <div className="w-full">
+                          <div className="relative pt-1">
+                            <div className="overflow-hidden h-2 text-xs flex rounded-full bg-[#ab8dff]">
+                              <div
+                                style={{ width: (totalRatio) + '%' }}
+                                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-btn-primary"
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="">{totalRatio}%</div>
+                      </div>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+            <div className="flex justify-end gap-4">
+              <button
+                type="button"
+                className="btn h4"
+                onClick={() => {
+                  handleSubmit();
+                }}
+              >
+                儲存自組ETF
+              </button>
+            </div>
+          </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default AddDiyETF;

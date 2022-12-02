@@ -2,35 +2,53 @@ import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { getETFList } from "../api/etfAPI";
 import { useEffect, useState, useMemo } from "react";
 import { fugleAPIGetOneMonth } from "../api/stockAPI";
-import classNames from "classnames";
 import { useCallback } from "react";
 
-const ETFIndex = () => {
+const ETFListView = () => {
   let navigate = useNavigate();
-  const { userId } = useParams();
+  const { category, userId } = useParams();
   const handleETFcode = (code) => {
-    navigate(`/etfindex/${code}`);
+    navigate(`/${category}/${code}`);
   };
-
+  
   const [ETFList, setETFList] = useState([]);
+  const [categoryRoR, setCategoryRoR] = useState([]);
+  
+  const categoryList = {
+    index: "指數型",
+    topic: "主題型",
+    dividend: "高股息",
+    lover: "我的收藏",
+  }
 
-  const category = "指數型";
-
+  // 取得ETF清單
   useEffect(() => {
     (async () => {
       try {
         const { data } = await getETFList();
-        const categoryData = filterCategory(data);
-        const ETFListData = await ETFListAddRoR(categoryData);
-        setETFList(ETFListData);
+        setETFList(data);
       } catch (error) {
         console.log(error);
       }
     })();
   }, []);
 
-  const filterCategory = (data) => {
-    const ans = data.filter((item) => item.category === category);
+  // 取得各類別的RoR
+  useEffect(() => {
+    (async () => {
+      try {       
+        const categoryData = filterCategory(ETFList, categoryList[category]);
+        const categoryRoR = await ETFListAddRoR(categoryData);
+        setCategoryRoR(categoryRoR);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, [category, userId]);
+
+  
+  const filterCategory = (data , id) => {
+    const ans = data.filter((item) => item.category === id);
     return ans;
   };
 
@@ -43,6 +61,12 @@ const ETFIndex = () => {
         // 計算漲跌幅
         const nowPrice = allPrice[0].close;
         const lastPrice = allPrice[allPrice.length - 1].close;
+
+        if (nowPrice === null || lastPrice === null) {
+          const changePercent = 0;
+          return { ...item, changePercent };
+        }
+        
         const change = nowPrice - lastPrice;
         const changePercent = +((change / lastPrice) * 100).toFixed(2);
         return { ...item, changePercent };
@@ -68,7 +92,7 @@ const ETFIndex = () => {
       <div className="lg:flex mx-auto justify-between mt-4  max-w-[1280px] ">
         <div className=" md:w-1/3  lg:w-1/4">
           <ul className="flex md:block -mx-1 flex-wrap">
-            {ETFList.map((item) => {
+            {categoryRoR.map((item) => {
               return (
                 <li className="px-1 py-2 w-1/3 md:w-auto" key={item.id}>
                   <div
@@ -101,4 +125,4 @@ const ETFIndex = () => {
   );
 };
 
-export default ETFIndex;
+export default ETFListView;

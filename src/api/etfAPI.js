@@ -1,10 +1,5 @@
 import axios from "axios";
 
-// const erfAPIUsers = axios.create({
-//   baseURL: "https://etf-diy-kml.herokuapp.com/users",
-//   timeout: 5000,
-// });
-
 const etfAPIetflist = axios.create({
   baseURL: "https://etf-diy-kml.herokuapp.com/etflist",
   timeout: 15000,

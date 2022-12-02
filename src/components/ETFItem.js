@@ -2,11 +2,10 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
 import LineChart from "./LineChart";
 import PieChart from "./PieChart";
-import { Button } from "flowbite-react";
 import { codeNameData } from "../data/codeNameData";
 import { fugleAPIGetFiveYear } from "../api/stockAPI";
 import { getETFListByCode } from "../api/etfAPI";
-// import { ETFData } from "../data/ETFdata";
+import periodRoR from "./calculate/periodRoR";
 
 const ETFIItem = () => {
   const { userId } = useParams();
@@ -22,8 +21,7 @@ const ETFIItem = () => {
   useEffect(() => {
     (async () => {
       try {
-        const result = await fugleAPIGetFiveYear(userId);
-        const resultAll = result.flat();
+        const resultAll = await fugleAPIGetFiveYear(userId);
         setAllData(resultAll);
         setData(resultAll.reverse());
         const ETFResult = await getETFListByCode(userId);
@@ -105,51 +103,6 @@ const ETFIItem = () => {
     return ans;
   }, [ETFData]);
 
-  // data = [{
-  //   "date": "2017-11-27",
-  //   "open": 85.15,
-  //   "high": 85.15,
-  //   "low": 84.1,
-  //   "close": 84.15,
-  //   "volume": 2127304,
-  //   "turnover": 179561728,
-  //   "change": -1
-  // }]
-  const calculateData = (data) => {
-    const totalDays = data.length;
-    const period = [
-      { name: "五年", daysToSubtract: 1200 },
-      { name: "三年", daysToSubtract: 960 },
-      { name: "一年", daysToSubtract: 240 },
-      { name: "半年", daysToSubtract: 120 },
-      { name: "一個月", daysToSubtract: 20 },
-    ];
-
-    // 當數據未取得時，會出現NaN，所以要先判斷
-    if (data.length === 0) {
-      return period.map((item) => ({
-        ...item,
-        data: 0,
-      }));
-    }
-
-    return period.map((item) => {
-      // 這邊要注意，因為data是倒著排的，所以要用totalDays - daysToSubtract
-      const daysBeforeNow = totalDays - item.daysToSubtract;
-
-      const closePrice = data[daysBeforeNow].close;
-      const todayClosePrice = data.slice(-1)[0].close;
-
-      const earn = todayClosePrice - closePrice;
-      const rateOfReturn = earn / closePrice;
-
-      return {
-        ...item,
-        // format ror to 2 decimal percentage
-        data: (rateOfReturn * 100).toFixed(2) || 0,
-      };
-    });
-  };
 
   return (
     <div className="   px-4 md:px-6 py-2 md:py-6 mx-auto w-full  max-w-[1000px]">
@@ -159,15 +112,15 @@ const ETFIItem = () => {
       </h1>
       <div className="">
         <div className="flex">
-          <Button className="mx-2" onClick={() => changePeriod(120)}>
+          <button className="mx-2 btn" onClick={() => changePeriod(120)}>
             近半年
-          </Button>
-          <Button className="mx-2" onClick={() => changePeriod(240)}>
+          </button>
+          <button className="mx-2 btn" onClick={() => changePeriod(240)}>
             近一年
-          </Button>
-          <Button className="mx-2" onClick={() => changePeriod(960)}>
+          </button>
+          <button className="mx-2 btn" onClick={() => changePeriod(960)}>
             近三年
-          </Button>
+          </button>
         </div>
         <LineChart className="h-full" chartData={chartData} />
       </div>
@@ -187,9 +140,9 @@ const ETFIItem = () => {
             <tbody>
               <tr>
                 <td className="border px-4 py-2">報酬率(%)</td>
-                {calculateData(allData).map((item) => {
+                {periodRoR(allData).map((item, index) => {
                   return (
-                    <td key={item.value} className="border px-4 py-2">
+                    <td key={`td_${index}`} className="border px-4 py-2">
                       {item["data"]}
                     </td>
                   );

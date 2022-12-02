@@ -18,7 +18,7 @@ const Header = () => {
   const handleMenuShow = () => {
     setMenuShow(!menushow);
   };
-  const isMenuShow = menushow ? "max-h-450px bg-L1 p-8" : "max-h-[0px]";
+  const isMenuShow = menushow ? "max-h-fit bg-L1 p-8" : "max-h-[0px]";
 
   const [etfListShow, setEtfListShow] = useState(false);
   const handleEtfListShow = () => {
@@ -37,11 +37,11 @@ const Header = () => {
           onClick={ () => {handleMenuShow()}}>
             <i className="fa-solid fa-bars"></i>
           </span>
-          <ul className={`text-L2 h3 md:flex  item-basline 
-          px-8 rounded-lg  md:space-x-5 overflow-hidden right-5 
-          md:overflow-visible top-24 w-[375px] md:w-auto md:top-0  z-20 md:z-0 absolute
-          transition-all duration-300
-          md:relative md:max-h-fit ${isMenuShow} `}>
+          <ul className={`text-L2 h3 md:flex  item-center 
+          px-8 rounded-lg  md:space-x-5 overflow-hidden md:overflow-visible right-5 md:right-0
+           top-24 md:-top-7  md:w-auto  z-20 md:z-0 absolute
+          transition-all duration-300 w-[375px] 
+          md:relative  ${isMenuShow} `}>
             <span>
               <i className="md:hidden fa-solid fa-times absolute right-5 top-5 cursor-pointer md:hidden"></i>
             </span>
@@ -50,7 +50,7 @@ const Header = () => {
             </li>
             <li className="cursor-pointer relative " >  
               <Link className="hover:text-L1 " aria-disabled onClick={()=>{ handleEtfListShow() }}>ETF專區</Link>
-              <ul className={`rounded-lg md:absolute p-5 w-36  md:z-20 md:top-10 md:left-0   md:bg-d3 ${isEtfListShow} `} > 
+              <ul className={`rounded-lg md:absolute p-5 w-36  z-30 md:top-10 md:left-0   md:bg-d3 ${isEtfListShow} `} > 
                 <li><Link to="/etfindex
                 ">指數型</Link></li>
                 <li><Link>主題型</Link></li>

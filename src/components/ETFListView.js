@@ -38,6 +38,7 @@ const ETFListView = () => {
       try {       
         const categoryData = filterCategory(ETFList, categoryList[category]);
         const categoryRoR = await ETFListAddRoR(categoryData);
+        console.log(categoryData)
         setCategoryRoR(categoryRoR);
       } catch (error) {
         console.log(error);
@@ -45,7 +46,7 @@ const ETFListView = () => {
     })();
   }, [ETFList, category]);
 
-  console.log(categoryRoR)
+  
   
   const filterCategory = (data , id) => {
     const ans = data.filter((item) => item.category === id);

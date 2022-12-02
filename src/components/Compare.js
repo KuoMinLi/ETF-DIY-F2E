@@ -4,19 +4,19 @@ import { fugleAPIGetFiveYear } from "../api/stockAPI";
 
 const Compare = () => {
   const [data, setData] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await axios.get(
-          `https://api.fugle.tw/realtime/v0/intraday/quote?symbolId=0050`
-        );
-        setData(result.data.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const result = await axios.get(
+  //         `https://api.fugle.tw/realtime/v0/intraday/quote?symbolId=0050`
+  //       );
+  //       setData(result.data.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
   return (
     <>

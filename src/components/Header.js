@@ -1,4 +1,3 @@
-import { Navbar, Dropdown } from "flowbite-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -15,41 +14,58 @@ const Header = () => {
   }
 
 
-  const [show, setShow] = useState(false);
-  const handleShow = () => {
-    setShow(!show);
+  const [menushow, setMenuShow] = useState(false);
+  const handleMenuShow = () => {
+    setMenuShow(!menushow);
   };
-  const isShow = show ? "block" : "hidden";
+  const isMenuShow = menushow ? "max-h-450px bg-L1 p-8" : "max-h-[0px]";
+
+  const [etfListShow, setEtfListShow] = useState(false);
+  const handleEtfListShow = () => {
+    setEtfListShow(!etfListShow);
+  };
+  const isEtfListShow = etfListShow ? "block" : "hidden";
 
   return (
     <>
-      {/* <div className="bg-[#191919] ">
-        <div className="max-w-[1280px] mx-auto flex items-baseline  justify-between p-10  text-[28px]">
-          <div className=" w-[136.5px] leading-10   font-black text-btn-primary cursor-pointer">
-            ETF自由配
-          </div>
-          <div className="text-L2 h3 flex space-x-5">
-            <div className="">ETF專區</div>
-            <div className="">自組ETF</div>
-            <div className="">績效比較</div>
-          </div>
-          <div className="text-white sm:hidden">
+      <nav className="bg-d1 ">
+        <div className="max-w-[1296px] mx-auto flex items-baseline  justify-between px-5 py-[25px] md:px-10 md:py-7  text-[28px]">
+          <h1 className=" w-[140px] leading-10   font-black text-btn-primary">
+            <Link to="/">ETF自由配</Link>
+          </h1>
+          <span className="text-white md:hidden order-last cursor-pointer"
+          onClick={ () => {handleMenuShow()}}>
             <i className="fa-solid fa-bars"></i>
-          </div>
-          <button className="md:order-2  h4 text-L1 bg-btn-primary py-3 px-6  rounded-full ">
-            登入/註冊
-          </button>
-        </div>
-      </div> */}
-      <div className="bg-[#191919] py-[12.5px] ">
-        <Navbar className=" bg-transparent max-w-[1232px] mx-auto flex items-baseline  justify-between  ">
-          <Navbar.Brand onClick={() => navigate("/")}>
-            <span className=" text-[28px] w-[136.5px] leading-10  font-black text-btn-primary cursor-pointer">
-              ETF自由配
+          </span>
+          <ul className={`text-L2 h3 md:flex  item-basline 
+          px-8 rounded-lg  md:space-x-5 overflow-hidden right-5 
+          md:overflow-visible top-24 w-[375px] md:w-auto md:top-0  z-20 md:z-0 absolute
+          transition-all duration-300
+          md:relative md:max-h-fit ${isMenuShow} `}>
+            <span>
+              <i className="md:hidden fa-solid fa-times absolute right-5 top-5 cursor-pointer md:hidden"></i>
             </span>
-          </Navbar.Brand>
-          <Navbar.Toggle />
-          <div className="flex md:order-2">
+            <li className=" md:hidden w-[140px] leading-10   font-black text-btn-primary">
+              <Link to="/">ETF自由配</Link>
+            </li>
+            <li className="cursor-pointer relative " >  
+              <Link className="hover:text-L1 " aria-disabled onClick={()=>{ handleEtfListShow() }}>ETF專區</Link>
+              <ul className={`rounded-lg md:absolute p-5 w-36  md:z-20 md:top-10 md:left-0   md:bg-d3 ${isEtfListShow} `} > 
+                <li><Link to="/etfindex
+                ">指數型</Link></li>
+                <li><Link>主題型</Link></li>
+                <li><Link>高股息</Link></li>
+                <li><Link>我的收藏</Link></li>
+              </ul>
+            </li>
+            <li className="hover:text-L1">
+              <Link to="/etfadddiy">自組ETF</Link>
+            </li>
+            <li className="hover:text-L1">
+            <Link to= "/compare">績效比較</Link>
+            </li>
+          </ul>
+          <div className="hidden md:block">
           {
             !token && <Link
               className="h4 text-L1 bg-btn-primary py-3 px-6 rounded-full"
@@ -69,28 +85,8 @@ const Header = () => {
             </Link>
           }
           </div>
-          <Navbar.Collapse>
-            <div className="text-L2 h3 flex ">
-              <Dropdown arrowIcon={false} inline={true} label={"ETF專區"}>
-                <li className="flex items-center justify-start py-2 px-4 h4 text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => navigate("/etfindex/0050")}>
-                  指數型
-                </li>
-                <li className="flex items-center justify-start py-2 px-4 h4 text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => navigate("/etfindex")}>
-                 高股息
-                </li>
-                <li className="flex items-center justify-start py-2 px-4 h4 text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => navigate("/etfindex")}>
-                低波動
-                </li>
-                <li className="flex items-center justify-start py-2 px-4 h4 text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white" onClick={() => navigate("/etfindex")}>
-                主題型
-                </li>
-              </Dropdown>
-            </div>
-            <div className="text-L2 h3 flex space-x-5 cursor-pointer" onClick={() => navigate("/etfadddiy")}>自組ETF</div>
-            <div className="text-L2 h3 flex space-x-5 cursor-pointer" onClick={() => navigate("/compare")}>績效比較</div>
-          </Navbar.Collapse>
-        </Navbar>
-      </div>
+        </div>
+      </nav>
     </>
   );
 };

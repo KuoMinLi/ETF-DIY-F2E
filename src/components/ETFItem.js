@@ -2,7 +2,6 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
 import LineChart from "./LineChart";
 import PieChart from "./PieChart";
-import { Button } from "flowbite-react";
 import { codeNameData } from "../data/codeNameData";
 import { fugleAPIGetFiveYear } from "../api/stockAPI";
 import { getETFListByCode } from "../api/etfAPI";
@@ -114,15 +113,15 @@ const ETFIItem = () => {
       </h1>
       <div className="">
         <div className="flex">
-          <Button className="mx-2" onClick={() => changePeriod(120)}>
+          <button className="mx-2 btn" onClick={() => changePeriod(120)}>
             近半年
-          </Button>
-          <Button className="mx-2" onClick={() => changePeriod(240)}>
+          </button>
+          <button className="mx-2 btn" onClick={() => changePeriod(240)}>
             近一年
-          </Button>
-          <Button className="mx-2" onClick={() => changePeriod(960)}>
+          </button>
+          <button className="mx-2 btn" onClick={() => changePeriod(960)}>
             近三年
-          </Button>
+          </button>
         </div>
         <LineChart className="h-full" chartData={chartData} />
       </div>

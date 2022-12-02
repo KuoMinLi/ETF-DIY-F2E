@@ -4,20 +4,22 @@ const Home = () => {
   return (
     <>
       <section
-        className="h-full w-full relative h-[265px] sm:h-[700px]"
+        className=" w-full relative h-[265px] sm:h-[700px]"
         style={{
           background:
             "linear-gradient(264.94deg, rgba(114, 79, 255, 0.4) -2.73%, rgba(0, 0, 0, 0) 32.68%), linear-gradient(98.19deg, rgba(113, 152, 255, 0.5) -6.94%, rgba(47, 47, 47, 0) 28.99%), #050B2A",
         }}
       >
         <div
-          className=" absolute opacity-75 h-full  bg-[url('https://i.imgur.com/xzlLWH8.png')]
+          className=" absolute opacity-75 h-full  
+          bg-[url('https://i.imgur.com/so1wjrK.png')]
+          sm:bg-[url('https://i.imgur.com/xzlLWH8.png')]
           bg-no-repeat bg-center bg-cover w-full "
         ></div>
         <div className="absolute top-0 left-0 w-full h-full  text-L1">
           <div className="max-w-[1220px] mx-auto h-full">
             <div className="flex flex-col h-full justify-center">
-              <div className="pl-[160px]">
+              <div className="px-8  sm:pl-[160px]">
                 <h1 className="h3 sm:h1"> 今年我想來點...</h1>
                 <h3 className="h5 sm:h3">半導體、金融、航運</h3>
                 <button className="block mt-5 sm:mt-8 btn">加入您的ETF</button>
@@ -27,7 +29,6 @@ const Home = () => {
         </div>
       </section>
       <section
-        clsssName=""
         style={{
           background:
             "linear-gradient(264.94deg, rgba(114, 79, 255, 0.4) -2.73%, rgba(0, 0, 0, 0) 32.68%), linear-gradient(98.19deg, rgba(113, 152, 255, 0.5) -6.94%, rgba(47, 47, 47, 0) 28.99%), #050B2A",

@@ -55,10 +55,10 @@ const Header = () => {
             <li className="cursor-pointer relative " >  
               <Link className="hover:text-L1 " aria-disabled onClick={()=>{ handleEtfListShow() }}>ETF專區</Link>
               <ul className={`rounded-lg md:absolute p-5 w-36  z-20 md:top-10 md:left-0   md:bg-d3 ${isEtfListShow} `} > 
-                <li><Link to="/etfindex" onClick={() => {handleReset()}}>指數型</Link></li>
-                <li><Link >主題型</Link></li>
-                <li><Link>高股息</Link></li>
-                <li><Link>我的收藏</Link></li>
+                <li><Link to="/index/0050" onClick={() => {handleReset()}}>指數型</Link></li>
+                <li><Link to="/topic/00881" onClick={() => {handleReset()}}>主題型</Link></li>
+                <li><Link to="/dividend/0056" onClick={() => {handleReset()}}>高股息</Link></li>
+                <li><Link onClick={() => {handleReset()}}>我的收藏</Link></li>
               </ul>
             </li>
             <li className="hover:text-L1">

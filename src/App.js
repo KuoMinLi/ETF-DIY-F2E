@@ -2,13 +2,11 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./components/Home";
 import NotFound from './components/NotFound';
 import Layout from './components/Layout';
-import ETFBlank from './components/ETFBlank';
-import ETFIndex from "./components/ETFIndex";
+import ETFListView from './components/ETFListView';
 import Register from "./components/Register";
 import Login from "./components/Login";
-import ETFIItem from "./components/ETFItem";
+import ETFItem from "./components/ETFItem";
 import Compare from "./components/Compare";
-import DiyList from "./components/DIY/DiyList";
 import AddDiyETF from "./components/DIY/AddDiyETF";
 import UserInfo from "./components/UserInfo";
 import { Provider } from "react-redux";
@@ -27,13 +25,12 @@ function App() {
             <Route path="register" element={<Register />} />
             <Route path="userinfo" element={<UserInfo />} />
             <Route path="*" element={<NotFound />} />
-            <Route path="etfindex" element={<ETFIndex />} >
-              <Route index element={<ETFBlank />}/>
-              <Route path=":userId" element={<ETFIItem />} />
+            <Route path=":category" element={<ETFListView />} >
+              <Route path=":userId" element={<ETFItem />} />
             </Route>
-            <Route path="etfdiy"  element={<ETFIndex />} >
-              <Route index element={<DiyList />}/>
-              <Route path=":userId" element={<ETFIItem />} />
+            <Route path=":category"  element={<ETFListView />} >
+              {/* <Route index element={<DiyList />}/> */}
+              <Route path=":userId" element={<ETFItem />} />
             </Route>
             <Route path="etfadddiy" element={<AddDiyETF />} />
             <Route path="compare" element={<Compare />} />

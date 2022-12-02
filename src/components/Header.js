@@ -13,6 +13,10 @@ const Header = () => {
     }
   }
 
+  const handleReset = () => {
+    setMenuShow(false);
+    setEtfListShow(false);
+  }
 
   const [menushow, setMenuShow] = useState(false);
   const handleMenuShow = () => {
@@ -31,7 +35,7 @@ const Header = () => {
       <nav className="bg-d1 ">
         <div className="max-w-[1296px] mx-auto flex items-baseline  justify-between px-5 py-[25px] md:px-10 md:py-7  text-[28px]">
           <h1 className=" w-[140px] leading-10   font-black text-btn-primary">
-            <Link to="/">ETF自由配</Link>
+            <Link to="/" onClick={() => {handleReset()}}>ETF自由配</Link>
           </h1>
           <span className="text-white md:hidden order-last cursor-pointer"
           onClick={ () => {handleMenuShow()}}>
@@ -39,30 +43,29 @@ const Header = () => {
           </span>
           <ul className={`text-L2 h3 md:flex  item-center 
           px-8 rounded-lg  md:space-x-5 overflow-hidden md:overflow-visible right-5 md:right-0
-           top-24 md:-top-7  md:w-auto  z-20 md:z-0 absolute
-          transition-all duration-300 w-[375px] 
+           top-24 md:-top-7  md:w-auto  z-20  absolute
+          md:transition-all md:duration-300 w-[375px] 
           md:relative  ${isMenuShow} `}>
             <span>
-              <i className="md:hidden fa-solid fa-times absolute right-5 top-5 cursor-pointer md:hidden"></i>
+              <i className="md:hidden fa-solid fa-times absolute right-5 top-5 cursor-pointer "></i>
             </span>
             <li className=" md:hidden w-[140px] leading-10   font-black text-btn-primary">
-              <Link to="/">ETF自由配</Link>
+              <Link to="/" onClick={() => {handleReset()}}>ETF自由配</Link>
             </li>
             <li className="cursor-pointer relative " >  
               <Link className="hover:text-L1 " aria-disabled onClick={()=>{ handleEtfListShow() }}>ETF專區</Link>
-              <ul className={`rounded-lg md:absolute p-5 w-36  z-30 md:top-10 md:left-0   md:bg-d3 ${isEtfListShow} `} > 
-                <li><Link to="/etfindex
-                ">指數型</Link></li>
-                <li><Link>主題型</Link></li>
+              <ul className={`rounded-lg md:absolute p-5 w-36  z-20 md:top-10 md:left-0   md:bg-d3 ${isEtfListShow} `} > 
+                <li><Link to="/etfindex" onClick={() => {handleReset()}}>指數型</Link></li>
+                <li><Link >主題型</Link></li>
                 <li><Link>高股息</Link></li>
                 <li><Link>我的收藏</Link></li>
               </ul>
             </li>
             <li className="hover:text-L1">
-              <Link to="/etfadddiy">自組ETF</Link>
+              <Link to="/etfadddiy" onClick={() => {handleReset()}}>自組ETF</Link>
             </li>
             <li className="hover:text-L1">
-            <Link to= "/compare">績效比較</Link>
+            <Link to= "/compare" onClick={() => {handleReset()}}>績效比較</Link>
             </li>
           </ul>
           <div className="hidden md:block">

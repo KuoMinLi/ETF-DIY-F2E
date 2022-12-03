@@ -11,6 +11,8 @@ import AddDiyETF from "./components/DIY/AddDiyETF";
 import UserInfo from "./components/UserInfo";
 import { Provider } from "react-redux";
 import store from "./store";
+import DiyList from "./components/DIY/DiyList";
+import DiyItem from "./components/DIY/DiyItem";
 
 
 
@@ -24,13 +26,12 @@ function App() {
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
             <Route path="userinfo" element={<UserInfo />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="error" element={<NotFound />} />
             <Route path=":category" element={<ETFListView />} >
               <Route path=":userId" element={<ETFItem />} />
             </Route>
-            <Route path=":category"  element={<ETFListView />} >
-              {/* <Route index element={<DiyList />}/> */}
-              <Route path=":userId" element={<ETFItem />} />
+            <Route path="etfdiy" element={<DiyList />} >
+              <Route index element={<DiyItem />} />
             </Route>
             <Route path="etfadddiy" element={<AddDiyETF />} />
             <Route path="compare" element={<Compare />} />

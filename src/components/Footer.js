@@ -1,6 +1,5 @@
 import call from './icon/ic_call.png'
 import mail from './icon/ic_mail.png'
-import search from './icon/ic_search.png'
 
 const Footer = () => {
   return (

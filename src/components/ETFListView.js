@@ -2,6 +2,7 @@ import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { getETFList } from "../api/etfAPI";
 import { useEffect, useState } from "react";
 import ETFListAddRoR from "./calculate/ETFListAddRoR";
+import { categoryList } from "../data/categoryList";
 
 const ETFListView = () => {
   let navigate = useNavigate();
@@ -13,12 +14,12 @@ const ETFListView = () => {
   const [ETFList, setETFList] = useState([]);
   const [categoryRoR, setCategoryRoR] = useState([]);
   
-  const categoryList = {
-    index: "指數型",
-    topic: "主題型",
-    dividend: "高股息",
-    lover: "我的收藏",
-  }
+  // const categoryList = {
+  //   index: "指數型",
+  //   topic: "主題型",
+  //   dividend: "高股息",
+  //   lover: "我的收藏",
+  // }
 
   // 若不屬於上述四種類別，則導回首頁
   if (categoryList[category] === undefined) {

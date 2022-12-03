@@ -1,6 +1,41 @@
-import star from './icon/ic_star.png' 
+import star from './icon/ic_star.png' ;
+import { getETFList } from '../api/etfAPI';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from "react-router-dom";
+import { categoryList } from '../data/categoryList';
+
 
 const Home = () => {
+  const navigate = useNavigate();
+  const [etfList, setEtfList] = useState([]);
+  const [inputCode, setInputCode] = useState('');
+  
+  useEffect(() => {
+    (async() => {
+      try {
+        const result = await getETFList();
+        setEtfList(result.data);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, [])
+  console.log(etfList);
+
+  const handleClick = () => {
+    console.log(inputCode);
+    const { category } = etfList.filter((item) => {
+      return item.code === inputCode
+    })[0];
+    Object.keys(categoryList).forEach((key) => {
+      if (categoryList[key] === category) {
+        navigate(`/${key}/${inputCode}`);
+      }
+    });
+  }
+
+  
+
   return (
     <>
       <section
@@ -22,7 +57,7 @@ const Home = () => {
               <div className="px-8  sm:pl-[160px]">
                 <h1 className="h3 sm:h1"> 今年我想來點...</h1>
                 <h3 className="sm:mt-3 h5 sm:h3 text-L2">半導體、金融、航運</h3>
-                <button className="block mt-5 sm:mt-8 btn sm:h2 h4">加入您的ETF</button>
+                <Link to="/register"><button className="block mt-5 sm:mt-8 btn sm:h2 h4">加入您的ETF</button></Link>
               </div>
             </div>
           </div>
@@ -74,10 +109,25 @@ const Home = () => {
                 className="h-[48px] sm:h-[78px] rounded-full block w-full pl-10  py-3 sm:py-7 sm:pl-[76px] h5 sm:h4 text-gray-900 border border-gray-500  bg-[#F5F5F5] focus:ring-btn-primary focus:border-btn-primary  placeholder:text-d3
                 placeholder:h5 sm:placeholder:h4"
                 placeholder="輸入ETF代碼"
+                value={inputCode}
+                onChange={(e) => setInputCode(e.target.value)}
               />
+              <datalist id="code-list">
+                {etfList
+                  .filter((item) =>
+                    item.name.includes(inputCode) ||
+                    item.code.toString().includes(inputCode)
+                  )
+                .map((etf) => (
+                  <option key={etf.id} value={etf.code}>
+                    {etf.name}
+                  </option>
+                ))}
+              </datalist>
               <button
                 type="button"
                 className="absolute  bottom-1 right-1 sm:bottom-1 h5 sm:h3 btn px-3 py-2.5 sm:px-8 sm:py-[17px] "
+                onClick={handleClick}
               >
                 立即查詢
               </button>
@@ -95,9 +145,9 @@ const Home = () => {
                 台灣ETF管理費平均為0.84%，<br></br> 主題型更高達2%以上！<br></br>{" "}
                 你還想被券商賺管理費嗎？<br></br> 現在就開始自己組ETF!
               </p>
-              <button className="mt-4 mx-auto sm:mx-0 sm:mt-7 btn sm:h2 h4">
+              <Link to="/register"><button className="mt-4 mx-auto sm:mx-0 sm:mt-7 btn sm:h2 h4">
                 加入您的ETF
-              </button>
+              </button></Link>
             </div>
           </div>
         </div>

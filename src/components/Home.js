@@ -145,7 +145,7 @@ const Home = () => {
         <div className="max-w-[1296px] mx-auto py-10 sm:pt-[80px] sm:pb-[120px]">
           <h3 className='h3 sm:h1 text-center text-d1 font-bold'>財經KOL，唯一推薦</h3>
           <ul className='mt-10 sm:mt-16 flex gap-8 flex-wrap sm:flex-nowrap'>
-            <li className='flex flex-col items-center px-9'>
+            <li className='flex flex-col items-center  px-7 sm:px-9'>
               <img className='w-32 h-32 rounded-full object-cover outline outline-offset-4 outline-3 outline-[#345FF8]'
               src="https://images.unsplash.com/photo-1611403119860-57c4937ef987?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="" />
               <h4 className='mt-[14px] sm:mt-4  h4 text-d2'>骨癌</h4>
@@ -158,7 +158,7 @@ const Home = () => {
               </div>
               <p className='mt-[14px] sm:mt-4  h5 sm:h4 text-d3'>平常都是別人給我五星好評，今天換我給人五星好評，是股市新手小白小萌新菜雞都應該用一下，了解各個ETF到底包什麼，也順便回測自己的持股</p>
             </li>
-            <li className='flex flex-col items-center px-9'>
+            <li className='flex flex-col items-center px-7 sm:px-9'>
               <img className='w-32 h-32 rounded-full object-cover outline outline-offset-4 outline-3 outline-[#345FF8]'
               src="https://images.unsplash.com/photo-1507591064344-4c6ce005b128?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="" />
               <h4 className='mt-[14px] sm:mt-4  h4 text-d2'>dian3403</h4>
@@ -171,7 +171,7 @@ const Home = () => {
               </div>
               <p className='mt-[14px] sm:mt-4  h5 sm:h4 text-d3'>平常都是別人給我五星好評，今天換我給人五星好評，是股市新手小白小萌新菜雞都應該用一下，了解各個ETF到底包什麼，也順便回測自己的持股</p>
             </li>
-            <li className='flex flex-col items-center px-9'>
+            <li className='flex flex-col items-center px-7 sm:px-9'>
               <img className='w-32 h-32 rounded-full object-cover outline outline-offset-4 outline-3 outline-[#345FF8]'
               src="https://images.unsplash.com/photo-1475823678248-624fc6f85785?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="" />
               <h4 className='mt-[14px] sm:mt-4  h4 text-d2'>kiki</h4>

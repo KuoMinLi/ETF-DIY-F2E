@@ -1,8 +1,8 @@
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { getETFList } from "../api/etfAPI";
-import { useEffect, useState, useMemo } from "react";
-import { fugleAPIGetOneMonth } from "../api/stockAPI";
-import { useCallback } from "react";
+import { useEffect, useState } from "react";
+import ETFListAddRoR from "./calculate/ETFListAddRoR";
+import { categoryList } from "../data/categoryList";
 
 const ETFListView = () => {
   let navigate = useNavigate();
@@ -14,11 +14,16 @@ const ETFListView = () => {
   const [ETFList, setETFList] = useState([]);
   const [categoryRoR, setCategoryRoR] = useState([]);
   
-  const categoryList = {
-    index: "指數型",
-    topic: "主題型",
-    dividend: "高股息",
-    lover: "我的收藏",
+  // const categoryList = {
+  //   index: "指數型",
+  //   topic: "主題型",
+  //   dividend: "高股息",
+  //   lover: "我的收藏",
+  // }
+
+  // 若不屬於上述四種類別，則導回首頁
+  if (categoryList[category] === undefined) {
+    navigate("/error");
   }
 
   // 取得ETF清單
@@ -39,42 +44,23 @@ const ETFListView = () => {
       try {       
         const categoryData = filterCategory(ETFList, categoryList[category]);
         const categoryRoR = await ETFListAddRoR(categoryData);
+        console.log(categoryData)
         setCategoryRoR(categoryRoR);
       } catch (error) {
         console.log(error);
       }
     })();
-  }, [category, userId]);
+  }, [ETFList, category]);
 
   
+  // 依類別取出ETF資料
   const filterCategory = (data , id) => {
     const ans = data.filter((item) => item.category === id);
     return ans;
   };
 
-  const ETFListAddRoR = async (data) => {
-    const ans = await Promise.all(
-      data.map(async (item) => {
-        const { code } = item;
-        const allPrice = await fugleAPIGetOneMonth(code);
-
-        // 計算漲跌幅
-        const nowPrice = allPrice[0].close;
-        const lastPrice = allPrice[allPrice.length - 1].close;
-
-        if (nowPrice === null || lastPrice === null) {
-          const changePercent = 0;
-          return { ...item, changePercent };
-        }
-        
-        const change = nowPrice - lastPrice;
-        const changePercent = +((change / lastPrice) * 100).toFixed(2);
-        return { ...item, changePercent };
-      })
-    );
-    return ans;
-  };
-
+  
+  // 依照數值返回對應icon
   const icon = (data) => {
     let icon = "";
     if (data > 0) {

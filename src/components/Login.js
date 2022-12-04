@@ -47,6 +47,7 @@ function Login() {
       try {
         const response = await apiUserSignIn(body);
         dispatch(loginToken(response.token));
+        localStorage.setItem('token', response.token);
 
         // MySwal.fire({ 這邊要加個彈跳視窗!!!
 

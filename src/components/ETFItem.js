@@ -9,15 +9,19 @@ import periodRoR from "./calculate/periodRoR";
 
 const ETFIItem = () => {
   const { userId } = useParams();
+  const [allData, setAllData] = useState([]); //取回的五年資料 
+  const [data, setData] = useState([]); // 線圖資料
+  const [ETFData, setETFData] = useState([]); // ETF content 資料
+
   const ETFName = codeNameData.filter((item) => item.code === userId)[0].name;
+  
+  // 監聽期間變化
   const changePeriod = (num) => {
-    const newData = allData.reverse().slice(0, num).reverse();
+    const newData = [...allData].reverse().slice(0, num).reverse();
     setData(newData);
   };
 
-  const [allData, setAllData] = useState([]);
-  const [data, setData] = useState([]);
-  const [ETFData, setETFData] = useState([]);
+  // 取得ETF資料
   useEffect(() => {
     (async () => {
       try {
@@ -82,7 +86,7 @@ const ETFIItem = () => {
 
   }, [ETFData]);
 
-  const ETFContentData = useMemo(() => {
+  const ETFRatioData = useMemo(() => {
     const { content } = ETFData;
 
     // 避免資料還沒回來就先render
@@ -164,7 +168,7 @@ const ETFIItem = () => {
               </tr>
             </thead>
             <tbody>
-              {ETFContentData?.map((item) => {
+              {ETFRatioData?.map((item) => {
                 return (
                   <tr key={item.name}>
                     <td className="border px-4 py-2">{item.name}</td>

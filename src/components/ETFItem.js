@@ -17,7 +17,7 @@ const ETFIItem = () => {
   
   // 監聽期間變化
   const changePeriod = (num) => {
-    const newData = allData.reverse().slice(0, num).reverse();
+    const newData = [...allData].reverse().slice(0, num).reverse();
     setData(newData);
   };
 

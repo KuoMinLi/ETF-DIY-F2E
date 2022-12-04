@@ -62,7 +62,7 @@ const Header = () => {
           <ul className={`text-d1 md:text-L2 h3 md:flex  item-center 
           px-10 rounded-lg  md:space-x-5 overflow-hidden md:overflow-visible right-5 md:right-0
            top-24 md:-top-7  md:w-auto  z-20  absolute 
-          md:transition-all md:duration-300 w-[375px] 
+          md:transition-all md:duration-300 w-[335px] 
           md:relative  ${isMenuShow} `} ref={ref}>
             <span>
               <i className="md:hidden fa-solid fa-times absolute right-10 top-10 cursor-pointer" onClick={ () => {handleMenuShow()}}></i>

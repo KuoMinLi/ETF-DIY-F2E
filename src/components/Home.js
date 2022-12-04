@@ -20,10 +20,8 @@ const Home = () => {
       }
     })();
   }, [])
-  console.log(etfList);
 
   const handleClick = () => {
-    console.log(inputCode);
     const { category } = etfList.filter((item) => {
       return item.code === inputCode
     })[0];
@@ -33,8 +31,6 @@ const Home = () => {
       }
     });
   }
-
-  
 
   return (
     <>

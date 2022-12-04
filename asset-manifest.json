@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/ETF-DIY-F2E/static/css/main.27ae2f57.css",
-    "main.js": "/ETF-DIY-F2E/static/js/main.b1c06737.js",
+    "main.css": "/ETF-DIY-F2E/static/css/main.7372eb74.css",
+    "main.js": "/ETF-DIY-F2E/static/js/main.fea09ac7.js",
     "static/js/787.28cb0dcd.chunk.js": "/ETF-DIY-F2E/static/js/787.28cb0dcd.chunk.js",
     "index.html": "/ETF-DIY-F2E/index.html",
-    "main.27ae2f57.css.map": "/ETF-DIY-F2E/static/css/main.27ae2f57.css.map",
-    "main.b1c06737.js.map": "/ETF-DIY-F2E/static/js/main.b1c06737.js.map",
+    "main.7372eb74.css.map": "/ETF-DIY-F2E/static/css/main.7372eb74.css.map",
+    "main.fea09ac7.js.map": "/ETF-DIY-F2E/static/js/main.fea09ac7.js.map",
     "787.28cb0dcd.chunk.js.map": "/ETF-DIY-F2E/static/js/787.28cb0dcd.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.27ae2f57.css",
-    "static/js/main.b1c06737.js"
+    "static/css/main.7372eb74.css",
+    "static/js/main.fea09ac7.js"
   ]
 }

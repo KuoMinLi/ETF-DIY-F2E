@@ -17,7 +17,6 @@ const ETFListView = () => {
   const [ETFList, setETFList] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [categoryRoR, setCategoryRoR] = useState([]);
-  const [ETFLike, setETFLike] = useState([]);
   
   const token = useSelector(state => state.Token) || localStorage.getItem("token");
 
@@ -95,7 +94,6 @@ const ETFListView = () => {
     (async () => {
       try {
         const categoryRoR = await ETFListAddRoR(categoryData);
-        console.log(1,categoryData)
         setCategoryRoR(categoryRoR);
       } catch (error) {
         console.log(error);
@@ -127,8 +125,8 @@ const ETFListView = () => {
                 <li className="px-1 py-2 w-1/3 md:w-auto" key={item.id}>
                   <div
                     className={
-                      "cursor-pointer p-2 border-2 border-gray-400  mx-auto max-w-[200px] " +
-                      (item.code === userId ? "bg-gray-500 text-" : "bg-gray-100")
+                      `cursor-pointer p-2 border-2  rounded-lg  mx-auto max-w-[200px] 
+                      ${item.code === userId ? "bg-btn-primary text-L1 " : ""}`
                     }
                     onClick={() => handleETFcode(item.code)}
                   >

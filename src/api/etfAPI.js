@@ -49,3 +49,16 @@ export const addETFLike = (token, id) => {
     .then((res) => res.data)
     .catch((error) => console.log(error));
 }
+
+export const deleteETFLike = (token, id) => {
+  return etfAPIetflike.delete(`/`, {
+    data: {
+      ETFid : id
+    }
+    ,headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((res) => res.data)
+    .catch((error) => console.log(error));
+}

@@ -7,7 +7,7 @@ import { fugleAPIGetFiveYear } from "../api/stockAPI";
 import { getETFListByCode } from "../api/etfAPI";
 import periodRoR from "./calculate/periodRoR";
 import { useSelector} from "react-redux";
-import { getETFLike, addETFLike } from "../api/etfAPI";
+import { getETFLike, addETFLike, deleteETFLike } from "../api/etfAPI";
 
 
 
@@ -16,6 +16,7 @@ const ETFIItem = () => {
   const [allData, setAllData] = useState([]); //取回的五年資料 
   const [data, setData] = useState([]); // 線圖資料
   const [ETFData, setETFData] = useState([]); // ETF content 資料
+  const [isETFLike , setIsETFLike] = useState(false); // 是否已收藏
 
   const token = useSelector(state => state.Token) || localStorage.getItem("token");
 
@@ -34,14 +35,24 @@ const ETFIItem = () => {
         const resultAll = await fugleAPIGetFiveYear(userId);
         setAllData(resultAll);
         setData(resultAll.reverse());
+
         const ETFResult = await getETFListByCode(userId);
+        const ETFResultData = ETFResult.data[0];
+        setETFData(ETFResultData);
         
-        setETFData(ETFResult.data[0]);
+        const ETFLike = await getETFLike(token);
+        if (ETFLike.data.map((item) => item.ETFid).includes(ETFResultData._id)) {
+          setIsETFLike(true);
+        } else {
+          setIsETFLike(false);
+        }
       } catch (error) {
         console.log(error);
       }
     })();
   }, [userId]);
+
+  console.log(isETFLike)
 
   const chartData = useMemo(() => {
     const ans = {
@@ -115,38 +126,45 @@ const ETFIItem = () => {
   }, [ETFData]);
 
   const handleAddLike = () => {
-    (async () => {
-      try {
-        const userId = ETFData['_id'];
-        const result = await addETFLike(token, userId);
-        console.log(result);
-      } catch (error) {
-        console.log(error);
-      }
-    })();
+    const userId = ETFData['_id'];
+    if (isETFLike) {
+      (async () => {
+        try {
+          await deleteETFLike(token, ETFData._id);
+          setIsETFLike(false);
+        } catch (error) {
+          console.log(error);
+        }
+      })();
+    } else {
+      (async () => {
+        try {
+          await addETFLike(token, ETFData._id);
+          setIsETFLike(true);
+        } catch (error) {
+          console.log(error);
+        }
+      })();
+    }
   };
-  
-
 
   return (
     <div className="   px-4 md:px-6 py-2 md:py-6 mx-auto w-full  max-w-[1000px]">
       <h1 className="mb-4 mx-auto">
         <span className="mx-4 font-bold text-xl">{userId}</span>
         <span className="mx-4 font-bold text-xl">{ETFName}</span>
+        <span><i className={` cursor-pointer text-btn-primary fa-heart ${ isETFLike ? 'fa-solid' : 'fa-regular' }`} onClick={ () => {handleAddLike()}}></i></span>
       </h1>
       <div className="">
-        <div className="flex">
-          <button className="mx-2 btn" onClick={() => changePeriod(120)}>
+        <div className="flex max-w-[700px] ">
+          <button className="mx-2 btn px-4 py-2 rounded-xl" onClick={() => changePeriod(120)}>
             近半年
           </button>
-          <button className="mx-2 btn" onClick={() => changePeriod(240)}>
+          <button className="mx-2 btn px-4 py-2 rounded-xl" onClick={() => changePeriod(240)}>
             近一年
           </button>
-          <button className="mx-2 btn" onClick={() => changePeriod(960)}>
+          <button className="mx-2 btn px-4 py-2 rounded-xl" onClick={() => changePeriod(960)}>
             近三年
-          </button>
-          <button className="mx-2 btn" onClick={() => handleAddLike()}>
-            收藏
           </button>
         </div>
         <LineChart className="h-full" chartData={chartData} />

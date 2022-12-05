@@ -1,26 +1,33 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
 import LineChart from "./LineChart";
 import PieChart from "./PieChart";
 import { codeNameData } from "../data/codeNameData";
 import { fugleAPIGetFiveYear } from "../api/stockAPI";
 import { getETFListByCode } from "../api/etfAPI";
+import { apiDIYPost, apiDIYGet } from "../api/diyAPI";
 import periodRoR from "./calculate/periodRoR";
 import { useSelector} from "react-redux";
 import { getETFLike, addETFLike, deleteETFLike } from "../api/etfAPI";
+import DiyItem from "./DIY/DiyItem";
 
 
 
 const ETFIItem = () => {
+  const navigate = useNavigate();
   const { userId } = useParams();
   const [allData, setAllData] = useState([]); //取回的五年資料 
   const [data, setData] = useState([]); // 線圖資料
   const [ETFData, setETFData] = useState([]); // ETF content 資料
   const [isETFLike , setIsETFLike] = useState(false); // 是否已收藏
+  const [isDIY, setIsDIY] = useState(false); // 是否為DIY
+
 
   const token = useSelector(state => state.Token) || localStorage.getItem("token");
 
-  const ETFName = codeNameData.filter((item) => item.code === userId)[0].name;
+  const ETFName = codeNameData.filter((item) => item.code === userId)[0]?.name;
+
+  
   
   // 監聽期間變化
   const changePeriod = (num) => {
@@ -32,6 +39,26 @@ const ETFIItem = () => {
   useEffect(() => {
     (async () => {
       try {
+
+        const diyETF = await apiDIYGet(token);
+        const isDiy = diyETF.data.map(item=>item._id).includes(userId);
+        console.log(isDiy);
+        setIsDIY(isDiy);
+        
+        if (isDiy) {
+          
+          
+          console.log(1,1);
+          const res = DiyItem(userId, token);
+          console.log(res);
+          return;
+        } else {
+
+        if (ETFName === undefined) {
+          navigate("/error");
+          return;
+        }
+        
         const resultAll = await fugleAPIGetFiveYear(userId);
         setAllData(resultAll);
         setData(resultAll.reverse());
@@ -46,13 +73,13 @@ const ETFIItem = () => {
         } else {
           setIsETFLike(false);
         }
+      }
       } catch (error) {
         console.log(error);
       }
+      
     })();
   }, [userId]);
-
-  console.log(isETFLike)
 
   const chartData = useMemo(() => {
     const ans = {
@@ -126,7 +153,12 @@ const ETFIItem = () => {
   }, [ETFData]);
 
   const handleAddLike = () => {
-    const userId = ETFData['_id'];
+    if (token === null) {
+      alert("請先登入");
+      navigate("/login");
+      return;
+    }
+
     if (isETFLike) {
       (async () => {
         try {
@@ -156,7 +188,7 @@ const ETFIItem = () => {
         <span><i className={` cursor-pointer text-btn-primary fa-heart ${ isETFLike ? 'fa-solid' : 'fa-regular' }`} onClick={ () => {handleAddLike()}}></i></span>
       </h1>
       <div className="">
-        <div className="flex max-w-[700px] ">
+        <div className="flex max-w-[700px] mb-4 ">
           <button className="mx-2 btn px-4 py-2 rounded-xl" onClick={() => changePeriod(120)}>
             近半年
           </button>

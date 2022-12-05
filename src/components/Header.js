@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -10,15 +10,24 @@ const useDocumentEventListener = (eventName, handler, options) => {
 }
 
 const Header = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const token = useSelector(state => state.Token) || localStorage.getItem('token');
 
   const logoutToken = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('targetCode');
+    localStorage.removeItem('ratio');
     return {
       type: "LOGOUT",
     }
   }
+
+  useEffect(() => {
+    if (token === null) {
+      navigate("/");
+    }
+  }, [token]);
 
   const handleReset = () => {
     setMenuShow(false);
@@ -41,7 +50,6 @@ const Header = () => {
 
   useDocumentEventListener('click', (e) => {
     if (ref.current && ref.current.contains(e.target)) {
-
       if (e.target.nodeName === "A") {
         handleReset();
       }
@@ -53,7 +61,11 @@ const Header = () => {
       <nav className="bg-d1 " >
         <div className="max-w-[1296px] mx-auto flex items-baseline  justify-between px-5 py-[25px] md:px-10 md:py-7  text-[28px]">
           <h1 className=" w-[140px] leading-10   font-black text-btn-primary">
-            <Link to="/" >ETF自由配</Link>
+            <Link to="/" >
+            <span style={{
+              textShadow: "-2px 3px 0px #703eff",
+              color: "#fff"
+            }}>ETF自由配</span></Link>
           </h1>
           <span className="text-L1 md:hidden order-last cursor-pointer"
           onClick={ () => {handleMenuShow()}}>
@@ -80,10 +92,13 @@ const Header = () => {
               </ul>
             </li>
             <li className="hover:font-bold md:hover:text-L1">
-              <Link to="/etfadddiy">自組ETF</Link>
+              <Link to="/etfdiy">自組ETF</Link>
             </li>
             <li className="hover:font-bold md:hover:text-L1">
             <Link to= "/compare">績效比較</Link>
+            </li>
+            <li className="hover:font-bold md:hover:text-L1 md:hidden">
+              {token ? <Link to="/userinfo">會員專區</Link> : <Link to="/login">會員專區</Link>}
             </li>
           </ul>
           <div className="hidden md:block">

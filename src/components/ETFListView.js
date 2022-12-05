@@ -8,7 +8,7 @@ import { getETFLike } from "../api/etfAPI";
 
 
 const ETFListView = () => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const { category, userId } = useParams();
   const handleETFcode = (code) => {
     navigate(`/${category}/${code}`);
@@ -51,7 +51,7 @@ const ETFListView = () => {
       navigate("/login");
       return
     }
-    
+
     (async () => {
       if (category === "liker" && token !== null) {
         try{

@@ -2,10 +2,19 @@ import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { apiUserSignUp } from "../api/userAPI";
 import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
 
 const Register = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.Token) || localStorage.getItem("token");
+ 
+  useEffect(() => {
+    if (token !== null) {
+      navigate("/etfdiy");
+    }
+  }, [token, navigate]);
+
 
   const {
     register,

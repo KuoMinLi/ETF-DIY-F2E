@@ -5,7 +5,6 @@ import periodRoR from "../calculate/periodRoR";
 import { useState, useEffect, useMemo } from "react";
 import { apiDIYPost, apiDIYGet } from "../../api/diyAPI";
 import { useSelector} from "react-redux";
-import { getETFLove } from "../../api/etfAPI";
 
 const AddDiyETF = () => {
 

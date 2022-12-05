@@ -2,10 +2,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { apiUserSignIn } from "../api/userAPI";
 import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
 // import Swal from 'sweetalert2'
 // import withReactContent from 'sweetalert2-react-content'
 
-function Login() {
+const Login = () => {
   const navigate = useNavigate();
   const {
     register,
@@ -13,6 +14,14 @@ function Login() {
     formState: { errors },
   } = useForm();
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.Token) || localStorage.getItem("token");
+
+  useEffect(() => {
+    if (token !== null) {
+      navigate("/etfdiy");
+    }
+  }, [token, navigate]);
+
 
   // const MySwal = withReactContent(Swal)
   // const Toast = Swal.mixin({

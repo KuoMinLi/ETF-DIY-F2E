@@ -1,7 +1,11 @@
 import axios from "axios";
 
+// const url =  'https://etf-diy-kml.herokuapp.com' //dev
+const url =  'http://127.0.0.1:3085' // local
+
+
 const apiDIY = axios.create({
-  baseURL: "https://etf-diy-kml.herokuapp.com/diy",
+  baseURL: `${url}/diy`,
   timeout: 15000,
 });
 

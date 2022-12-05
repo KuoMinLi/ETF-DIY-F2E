@@ -6,12 +6,18 @@ import { codeNameData } from "../data/codeNameData";
 import { fugleAPIGetFiveYear } from "../api/stockAPI";
 import { getETFListByCode } from "../api/etfAPI";
 import periodRoR from "./calculate/periodRoR";
+import { useSelector} from "react-redux";
+import { getETFLike, addETFLike } from "../api/etfAPI";
+
+
 
 const ETFIItem = () => {
   const { userId } = useParams();
   const [allData, setAllData] = useState([]); //取回的五年資料 
   const [data, setData] = useState([]); // 線圖資料
   const [ETFData, setETFData] = useState([]); // ETF content 資料
+
+  const token = useSelector(state => state.Token) || localStorage.getItem("token");
 
   const ETFName = codeNameData.filter((item) => item.code === userId)[0].name;
   
@@ -29,6 +35,7 @@ const ETFIItem = () => {
         setAllData(resultAll);
         setData(resultAll.reverse());
         const ETFResult = await getETFListByCode(userId);
+        
         setETFData(ETFResult.data[0]);
       } catch (error) {
         console.log(error);
@@ -107,6 +114,19 @@ const ETFIItem = () => {
     return ans;
   }, [ETFData]);
 
+  const handleAddLike = () => {
+    (async () => {
+      try {
+        const userId = ETFData['_id'];
+        const result = await addETFLike(token, userId);
+        console.log(result);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  };
+  
+
 
   return (
     <div className="   px-4 md:px-6 py-2 md:py-6 mx-auto w-full  max-w-[1000px]">
@@ -124,6 +144,9 @@ const ETFIItem = () => {
           </button>
           <button className="mx-2 btn" onClick={() => changePeriod(960)}>
             近三年
+          </button>
+          <button className="mx-2 btn" onClick={() => handleAddLike()}>
+            收藏
           </button>
         </div>
         <LineChart className="h-full" chartData={chartData} />

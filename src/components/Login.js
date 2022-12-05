@@ -52,7 +52,7 @@ function Login() {
         // MySwal.fire({ 這邊要加個彈跳視窗!!!
 
         // 成功登入後導回個人頁面
-        navigate("/userinfo");
+        navigate("/etfadddiy");
       } catch (error) {
         console.log(error);
       }

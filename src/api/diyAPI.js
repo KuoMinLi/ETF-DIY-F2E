@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiDIY = axios.create({
-  baseURL: "http://127.0.0.1:3085/diy",
+  baseURL: "https://etf-diy-kml.herokuapp.com/diy",
   timeout: 15000,
 });
 

@@ -13,8 +13,14 @@ import { fugleAPIGetOneMonth } from "../../api/stockAPI";
 // }
 
 const ETFListAddRoR = async (data) => {
+
+  if (!data) {
+    return;
+  }
+
   const ans = await Promise.all(
     data.map(async (item) => {
+      
       const { code } = item;
       const allPrice = await fugleAPIGetOneMonth(code);
 

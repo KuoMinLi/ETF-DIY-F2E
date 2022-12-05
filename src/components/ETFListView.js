@@ -3,6 +3,9 @@ import { getETFList } from "../api/etfAPI";
 import { useEffect, useState } from "react";
 import ETFListAddRoR from "./calculate/ETFListAddRoR";
 import { categoryList } from "../data/categoryList";
+import { useSelector} from "react-redux";
+import { getETFLike } from "../api/etfAPI";
+
 
 const ETFListView = () => {
   let navigate = useNavigate();
@@ -12,13 +15,17 @@ const ETFListView = () => {
   };
   
   const [ETFList, setETFList] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
   const [categoryRoR, setCategoryRoR] = useState([]);
+  const [ETFLike, setETFLike] = useState([]);
   
+  const token = useSelector(state => state.Token) || localStorage.getItem("token");
+
   // const categoryList = {
   //   index: "指數型",
   //   topic: "主題型",
   //   dividend: "高股息",
-  //   lover: "我的收藏",
+  //   liker: "我的收藏",
   // }
 
   // 若不屬於上述四種類別，則導回首頁
@@ -40,14 +47,38 @@ const ETFListView = () => {
 
   // 取得各類別的RoR
   useEffect(() => {
+
+    if( category === "liker" && token === null) {
+      navigate("/login");
+      return
+    }
+    
     (async () => {
-      try {       
+      if (category === "liker" && token !== null) {
+        try{
+          const likeList = await getETFLike(token);
+          const likeCodeList = likeList.data.map((item) => {
+            const ietmId = ETFList.filter((ETF) => ETF.id === item.ETFid )[0];
+            return ietmId;
+          });
+
+          if (likeCodeList.length === 0 || likeCodeList.includes(undefined) === true) {
+            return 
+          }
+          setCategoryData(likeCodeList);
+          navigate(`/${category}/${likeCodeList[0].code}`);
+          
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
         const categoryData = filterCategory(ETFList, categoryList[category]);
-        const categoryRoR = await ETFListAddRoR(categoryData);
-        console.log(categoryData)
-        setCategoryRoR(categoryRoR);
-      } catch (error) {
-        console.log(error);
+        setCategoryData(categoryData);
+        
+        if (categoryData.length === 0) {
+          return 
+        }
+        navigate(`/${category}/${categoryData[0].code}`);
       }
     })();
   }, [ETFList, category]);
@@ -58,6 +89,19 @@ const ETFListView = () => {
     const ans = data.filter((item) => item.category === id);
     return ans;
   };
+
+  // 依資料計算出ROR
+  useEffect(() => {
+    (async () => {
+      try {
+        const categoryRoR = await ETFListAddRoR(categoryData);
+        console.log(1,categoryData)
+        setCategoryRoR(categoryRoR);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, [categoryData]);
 
   
   // 依照數值返回對應icon

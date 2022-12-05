@@ -13,25 +13,25 @@
     @apply text-L1 bg-btn-primary py-3 px-6 sm:py-4 sm:px-10   rounded-full;
   }
   .h1 {
-    @apply font-bold text-[40px] leading-[48px] 
+    @apply font-bold text-[40px] leading-[48px];
   }
   .h2 {
-    @apply font-medium text-[32px] leading-[38.4px] 
+    @apply font-medium text-[32px] leading-[38.4px];
   }
   .h3 {
-    @apply font-normal text-[24px] leading-[35.8px] 
+    @apply font-normal text-[24px] leading-[35.8px];
   }
   .h4 {
-    @apply font-normal text-[20px] leading-[24px] 
+    @apply font-normal text-[20px] leading-[24px];
   }
   .h5 {
-    @apply font-normal text-[16px] leading-[19.2px] 
+    @apply font-normal text-[16px] leading-[19.2px];
   }
 }
 
 @layer base {
   html {
-    font-family: 'Noto Sans TC', 'sans-serif';
-    background-color: #FFFBF4;
+    font-family: "Noto Sans TC", "sans-serif";
+    background-color: #efefef;
   }
 }

@@ -5,6 +5,7 @@ import periodRoR from "../calculate/periodRoR";
 import { useState, useEffect, useMemo } from "react";
 import { apiDIYPost, apiDIYGet } from "../../api/diyAPI";
 import { useSelector} from "react-redux";
+import { getETFLove } from "../../api/etfAPI";
 
 const AddDiyETF = () => {
 
@@ -28,6 +29,34 @@ const AddDiyETF = () => {
       }
     })();
   }, []);
+
+
+  const taiwanStock = {
+    name: "台灣TOP5",
+    code: ["2330", "2317", "2454", "2308", "2303"],
+    ratio: {2330:20 , 2317:20 , 2454:20 , 2308:20 , 2303:20},
+  }
+
+  const EETOP5 = {
+    name: "電子五哥",
+    code: ["2382", "3231", "4938", "2324", "2356"],
+    ratio: {2382:20 , 3231:20 , 4938:20 , 2324:20 , 2356:20},
+  }
+
+
+  const handleClicktaiwan = () => {
+    setInputName(taiwanStock.name);
+    setTargetCode(taiwanStock.code);
+    setRatio(taiwanStock.ratio);
+  }
+
+  const handleClickEETOP5 = () => {
+    setInputName(EETOP5.name);
+    setTargetCode(EETOP5.code);
+    setRatio(EETOP5.ratio);
+  }
+
+   
 
 
   useEffect(() => {
@@ -218,6 +247,7 @@ const AddDiyETF = () => {
     (async () => {
       try{
         const result = await apiDIYPost(diyData,token);
+        console.log(diyData);
           alert("新增成功");
           resetForm();
           console.log(result);
@@ -255,8 +285,8 @@ const AddDiyETF = () => {
           </form>
           <h2 className="h3 mb-4">熱門選擇</h2>
           <div className="space-x-8 mb-8">
-            <button className="btn h4">台灣TOP5</button>
-            <button className="btn h4">電子五哥</button>
+            <button className="btn h4" onClick={() => {handleClicktaiwan()}}>台灣TOP5</button>
+            <button className="btn h4" onClick={() => {handleClickEETOP5()}}>電子五哥</button>
             <button className="btn h4">航海王</button>
           </div>
 
@@ -382,9 +412,9 @@ const AddDiyETF = () => {
                     <td className="border px-4 py-2"></td>
                     <td className="border px-4 py-2">
                       <div className="flex justify-center gap-4 items-center">
-                        <div className="w-full">
+                        <div className="w-full max-w-[200px]">
                           <div className="relative pt-1">
-                            <div className="overflow-hidden h-2 text-xs flex rounded-full bg-[#ab8dff]">
+                            <div className=" overflow-hidden h-2 text-xs flex rounded-full bg-[#ab8dff]">
                               <div
                                 style={{ width: (totalRatio) + '%' }}
                                 className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-btn-primary"

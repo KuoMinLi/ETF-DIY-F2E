@@ -28,12 +28,13 @@ function App() {
             <Route path="userinfo" element={<UserInfo />} />
             <Route path="error" element={<NotFound />} />
             <Route path=":category" element={<ETFListView />} >
-              <Route path=":userId" element={<ETFItem />} />
+              <Route path=":etfId" element={<ETFItem />} />
             </Route>
             <Route path="etfdiy" element={<DiyList />} >
-              <Route path=":userId" element={<ETFItem />} />
+              <Route path=":etfId" element={<ETFItem />} />
+              <Route path="etfadddiy" element={<AddDiyETF />} />
             </Route>
-            <Route path="etfadddiy" element={<AddDiyETF />} />
+            
             <Route path="compare" element={<Compare />} />
           </Route>
         </Routes>

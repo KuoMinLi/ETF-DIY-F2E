@@ -1,9 +1,9 @@
 import { apiDIYGet } from "../../api/diyAPI";
 import { fugleAPIGetFiveYear } from "../../api/stockAPI";
 
-const DiyItem = async (userId, token) => {
+const DiyItem = async (etfId, token) => {
   const diyAllData = await apiDIYGet(token);
-  const diyData = diyAllData.data.filter((item) => item._id === userId)[0];
+  const diyData = diyAllData.data.filter((item) => item._id === etfId)[0];
 
   const ETFTotalPrice = await Promise.all(
     diyData.content.map(async (item) => {

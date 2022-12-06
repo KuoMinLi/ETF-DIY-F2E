@@ -13,9 +13,9 @@ import DiyItem from "./DIY/DiyItem";
 import MySwalToast from "./utilities/MySwalToast";
 
 
-const ETFIItem = ({ handleLike }) => {
+const ETFIItem = (props) => {
   const navigate = useNavigate();
-  const { userId } = useParams();
+  const { etfId } = useParams();
   const [allData, setAllData] = useState([]); //取回的五年資料
   const [data, setData] = useState([]); // 線圖資料
   const [ETFData, setETFData] = useState([]); // ETF content 資料
@@ -25,10 +25,12 @@ const ETFIItem = ({ handleLike }) => {
   const token =
     useSelector((state) => state.Token) || localStorage.getItem("token");
 
-  let ETFName = codeNameData.filter((item) => item.code === userId)[0]?.name ||
+  let ETFName = codeNameData.filter((item) => item.code === etfId)[0]?.name ||
     "ETF";
   
+    console.log(1,props);
 
+      
 
 
   // 監聽期間變化
@@ -42,12 +44,12 @@ const ETFIItem = ({ handleLike }) => {
     (async () => {
       try {
         const diyETF = await apiDIYGet(token);
-        const isDiy = diyETF.data.map((item) => item._id).includes(userId);
+        const isDiy = diyETF.data.map((item) => item._id).includes(etfId);
         console.log(isDiy);
         setIsDIY(isDiy);
 
         if (isDiy) {
-          const res = await DiyItem(userId, token);
+          const res = await DiyItem(etfId, token);
           console.log(res);
           
           ETFName = res.diyData.name;
@@ -62,11 +64,11 @@ const ETFIItem = ({ handleLike }) => {
             return;
           }
 
-          const resultAll = await fugleAPIGetFiveYear(userId);
+          const resultAll = await fugleAPIGetFiveYear(etfId);
           setAllData(resultAll);
           setData(resultAll.reverse());
 
-          const ETFResult = await getETFListByCode(userId);
+          const ETFResult = await getETFListByCode(etfId);
           const ETFResultData = ETFResult.data[0];
           console.log(ETFResultData);
           setETFData(ETFResultData);
@@ -84,7 +86,7 @@ const ETFIItem = ({ handleLike }) => {
         console.log(error);
       }
     })();
-  }, [userId]);
+  }, [etfId]);
 
   const chartData = useMemo(() => {
     const ans = {
@@ -186,10 +188,16 @@ const ETFIItem = ({ handleLike }) => {
     }
   };
 
+  const test = () => {
+    console.log(11,"test");
+    // handleDIY('test')
+  }
+
+
   return (
     <div className="   px-4 md:px-6 py-2 md:py-6 mx-auto w-full  max-w-[1000px]">
       <h1 className="mb-4 mx-auto">
-        <span className="mx-4 font-bold text-xl">{userId}</span>
+        <span className="mx-4 font-bold text-xl">{etfId}</span>
         <span className="mx-4 font-bold text-xl">{ETFName}</span>
         <span>
           <i
@@ -221,6 +229,12 @@ const ETFIItem = ({ handleLike }) => {
             onClick={() => changePeriod(960)}
           >
             近三年
+          </button>
+          <button
+            className="mx-2 btn px-4 py-2 rounded-xl" 
+            onClick={() => { test()}}
+          >
+            test
           </button>
         </div>
         <LineChart className="h-full" chartData={chartData} />

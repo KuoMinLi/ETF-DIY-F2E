@@ -9,7 +9,7 @@ import { getETFLike } from "../api/etfAPI";
 
 const ETFListView = () => {
   const navigate = useNavigate();
-  const { category, userId } = useParams();
+  const { category, etfId } = useParams();
   const handleETFcode = (code) => {
     navigate(`/${category}/${code}`);
   };
@@ -126,7 +126,7 @@ const ETFListView = () => {
                   <div
                     className={
                       `cursor-pointer p-2 border-2  rounded-lg  mx-auto max-w-[200px] 
-                      ${item.code === userId ? "bg-btn-primary text-L1 " : ""}`
+                      ${item.code === etfId ? "bg-btn-primary text-L1 " : ""}`
                     }
                     onClick={() => handleETFcode(item.code)}
                   >

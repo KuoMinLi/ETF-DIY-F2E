@@ -7,28 +7,30 @@ import { fugleAPIGetFiveYear } from "../api/stockAPI";
 import { getETFListByCode } from "../api/etfAPI";
 import { apiDIYPost, apiDIYGet } from "../api/diyAPI";
 import periodRoR from "./calculate/periodRoR";
-import { useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 import { getETFLike, addETFLike, deleteETFLike } from "../api/etfAPI";
 import DiyItem from "./DIY/DiyItem";
+import MySwalToast from "./utilities/MySwalToast";
 
 
-
-const ETFIItem = () => {
+const ETFIItem = ({ handleLike }) => {
   const navigate = useNavigate();
   const { userId } = useParams();
-  const [allData, setAllData] = useState([]); //取回的五年資料 
+  const [allData, setAllData] = useState([]); //取回的五年資料
   const [data, setData] = useState([]); // 線圖資料
   const [ETFData, setETFData] = useState([]); // ETF content 資料
-  const [isETFLike , setIsETFLike] = useState(false); // 是否已收藏
+  const [isETFLike, setIsETFLike] = useState(false); // 是否已收藏
   const [isDIY, setIsDIY] = useState(false); // 是否為DIY
 
+  const token =
+    useSelector((state) => state.Token) || localStorage.getItem("token");
 
-  const token = useSelector(state => state.Token) || localStorage.getItem("token");
-
-  const ETFName = codeNameData.filter((item) => item.code === userId)[0]?.name;
-
+  let ETFName = codeNameData.filter((item) => item.code === userId)[0]?.name ||
+    "ETF";
   
-  
+
+
+
   // 監聽期間變化
   const changePeriod = (num) => {
     const newData = [...allData].reverse().slice(0, num).reverse();
@@ -39,45 +41,48 @@ const ETFIItem = () => {
   useEffect(() => {
     (async () => {
       try {
-
         const diyETF = await apiDIYGet(token);
-        const isDiy = diyETF.data.map(item=>item._id).includes(userId);
+        const isDiy = diyETF.data.map((item) => item._id).includes(userId);
         console.log(isDiy);
         setIsDIY(isDiy);
-        
+
         if (isDiy) {
-          
-          
-          console.log(1,1);
-          const res = DiyItem(userId, token);
+          const res = await DiyItem(userId, token);
           console.log(res);
+          
+          ETFName = res.diyData.name;
+          setAllData(res.ETFAvgPriceArr);
+          setData(res.ETFAvgPriceArr.reverse());
+          setETFData(res.diyData);
+
           return;
         } else {
+          if (ETFName === undefined) {
+            navigate("/error");
+            return;
+          }
 
-        if (ETFName === undefined) {
-          navigate("/error");
-          return;
-        }
-        
-        const resultAll = await fugleAPIGetFiveYear(userId);
-        setAllData(resultAll);
-        setData(resultAll.reverse());
+          const resultAll = await fugleAPIGetFiveYear(userId);
+          setAllData(resultAll);
+          setData(resultAll.reverse());
 
-        const ETFResult = await getETFListByCode(userId);
-        const ETFResultData = ETFResult.data[0];
-        setETFData(ETFResultData);
-        
-        const ETFLike = await getETFLike(token);
-        if (ETFLike.data.map((item) => item.ETFid).includes(ETFResultData._id)) {
-          setIsETFLike(true);
-        } else {
-          setIsETFLike(false);
+          const ETFResult = await getETFListByCode(userId);
+          const ETFResultData = ETFResult.data[0];
+          console.log(ETFResultData);
+          setETFData(ETFResultData);
+
+          const ETFLike = await getETFLike(token);
+          if (
+            ETFLike.data.map((item) => item.ETFid).includes(ETFResultData._id)
+          ) {
+            setIsETFLike(true);
+          } else {
+            setIsETFLike(false);
+          }
         }
-      }
       } catch (error) {
         console.log(error);
       }
-      
     })();
   }, [userId]);
 
@@ -128,7 +133,6 @@ const ETFIItem = () => {
     // 只取前五名
     const top5 = pieChartData.slice(0, 5);
     return top5;
-
   }, [ETFData]);
 
   const ETFRatioData = useMemo(() => {
@@ -162,7 +166,8 @@ const ETFIItem = () => {
     if (isETFLike) {
       (async () => {
         try {
-          await deleteETFLike(token, ETFData._id);
+          const res = await deleteETFLike(token, ETFData._id);
+          MySwalToast(res.message, true);
           setIsETFLike(false);
         } catch (error) {
           console.log(error);
@@ -171,7 +176,8 @@ const ETFIItem = () => {
     } else {
       (async () => {
         try {
-          await addETFLike(token, ETFData._id);
+          const res = await addETFLike(token, ETFData._id);
+          MySwalToast(res.message, true);
           setIsETFLike(true);
         } catch (error) {
           console.log(error);
@@ -185,17 +191,35 @@ const ETFIItem = () => {
       <h1 className="mb-4 mx-auto">
         <span className="mx-4 font-bold text-xl">{userId}</span>
         <span className="mx-4 font-bold text-xl">{ETFName}</span>
-        <span><i className={` cursor-pointer text-btn-primary fa-heart ${ isETFLike ? 'fa-solid' : 'fa-regular' }`} onClick={ () => {handleAddLike()}}></i></span>
+        <span>
+          <i
+            className={` cursor-pointer text-btn-primary fa-heart ${
+              isETFLike ? "fa-solid" : "fa-regular"
+            }`}
+            onClick={() => {
+              handleAddLike();
+            }}
+          ></i>
+        </span>
       </h1>
       <div className="">
         <div className="flex max-w-[700px] mb-4 ">
-          <button className="mx-2 btn px-4 py-2 rounded-xl" onClick={() => changePeriod(120)}>
+          <button
+            className="mx-2 btn px-4 py-2 rounded-xl"
+            onClick={() => changePeriod(120)}
+          >
             近半年
           </button>
-          <button className="mx-2 btn px-4 py-2 rounded-xl" onClick={() => changePeriod(240)}>
+          <button
+            className="mx-2 btn px-4 py-2 rounded-xl"
+            onClick={() => changePeriod(240)}
+          >
             近一年
           </button>
-          <button className="mx-2 btn px-4 py-2 rounded-xl" onClick={() => changePeriod(960)}>
+          <button
+            className="mx-2 btn px-4 py-2 rounded-xl"
+            onClick={() => changePeriod(960)}
+          >
             近三年
           </button>
         </div>

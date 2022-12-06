@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { apiUserSignUp } from "../api/userAPI";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
+import MySwalToast from "./utilities/MySwalToast";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -38,17 +39,13 @@ const Register = () => {
         const response = await apiUserSignUp(body);
         dispatch(loginToken(response.token));
         localStorage.setItem('token', response.token);
-
-         // MySwal.fire({ 這邊要加個彈跳視窗!!!
-
-        // 成功登入後導回個人頁面
+        MySwalToast("註冊成功", true);
         navigate("/userinfo");
       } catch (error) {
-        console.log(error);
+        MySwalToast(error.response.data.message, false);
       }
     })();
-    // 成功註冊後導回登入頁面 (todo)
-    // navigate("/login");
+    navigate("/login");
   };
 
   return (

@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import MySwalToast from "./utilities/MySwalToast";
 
 const useDocumentEventListener = (eventName, handler, options) => {
   useEffect(() => {
@@ -18,6 +19,7 @@ const Header = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('targetCode');
     localStorage.removeItem('ratio');
+    MySwalToast("登出成功", true);
     return {
       type: "LOGOUT",
     }

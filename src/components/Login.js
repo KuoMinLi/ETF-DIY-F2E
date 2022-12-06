@@ -3,8 +3,7 @@ import { useForm } from "react-hook-form";
 import { apiUserSignIn } from "../api/userAPI";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
-// import Swal from 'sweetalert2'
-// import withReactContent from 'sweetalert2-react-content'
+import MySwalToast from "./utilities/MySwalToast";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -23,24 +22,6 @@ const Login = () => {
   }, [token, navigate]);
 
 
-  // const MySwal = withReactContent(Swal)
-  // const Toast = Swal.mixin({
-  //   toast: true,
-  //   position: 'top-end',
-  //   showConfirmButton: false,
-  //   timer: 3000,
-  //   timerProgressBar: true,
-  //   didOpen: (toast) => {
-  //     toast.addEventListener('mouseenter', Swal.stopTimer)
-  //     toast.addEventListener('mouseleave', Swal.resumeTimer)
-  //   }
-  // })
-
-  // Toast.fire({
-  //   icon: 'success',
-  //   title: 'Signed in successfully'
-  //   })
-
   const loginToken = (token) => {
     return {
       type: "LOGIN",
@@ -57,13 +38,10 @@ const Login = () => {
         const response = await apiUserSignIn(body);
         dispatch(loginToken(response.token));
         localStorage.setItem('token', response.token);
-
-        // MySwal.fire({ 這邊要加個彈跳視窗!!!
-
-        // 成功登入後導回個人頁面
+        MySwalToast("登入成功", true);
         navigate("/etfadddiy");
       } catch (error) {
-        console.log(error);
+        MySwalToast("登入失敗", false);
       }
     })();
   };

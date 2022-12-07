@@ -1,12 +1,9 @@
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { useNavigate } from "react-router-dom";
 
-const MySwalToast =(str) => {
-  const MySwal = withReactContent(Swal);
-  const navigate = useNavigate();
+const MySwal = withReactContent(Swal);
 
-
+const MySwalToast = (str, navigate) => {
   MySwal.fire({
     title: <p>{str}</p>,
     // showDenyButton: true,
@@ -18,7 +15,6 @@ const MySwalToast =(str) => {
       navigate("/login");
     }
   });
-
 }
 
 export default MySwalToast;

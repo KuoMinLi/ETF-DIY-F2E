@@ -1,4 +1,4 @@
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, Link, useNavigate, useParams } from "react-router-dom";
 import { apiDIYPost, apiDIYGet } from "../../api/diyAPI";
 import { useSelector } from "react-redux";
 import { useState, useEffect, useMemo } from "react";
@@ -6,13 +6,16 @@ import MySwalChangePage from "../utilities/MySwalChangePage";
 
 const DiyList = () => {
   const navigate = useNavigate();
+  const { etfId } = useParams();
   const [diyList, setDiyList] = useState([]);
   const token =
     useSelector((state) => state.Token) || localStorage.getItem("token");
 
-  if (token === null) {
-    MySwalChangePage("請先登入會員");
-  }
+  useEffect(() => {
+    if (token === null) {
+      MySwalChangePage("請先登入會員", navigate);
+    }
+  }, [token, navigate]);
 
   useEffect(() => {
     (async () => {
@@ -40,11 +43,11 @@ const DiyList = () => {
                 <li key={item._id} className="px-1 py-2 w-1/3 lg:w-auto">
                   <Link
                     to={`${item._id}`}
-                    className="block bg-white rounded-lg shadow-lg hover:shadow-xl transition duration-300 mx-auto max-w-[200px]"
+                    className={`block bg-L1 rounded-lg shadow-lg hover:shadow-xl transition duration-300 mx-auto max-w-[200px]
+                    ${item._id === etfId ? "bg-btn-primary text-L1 " : ""}`}
                   >
                     <div className="p-4 flex items-center gap-4 ">
-                      <h3 className="text-gray-700 uppercase">{item.name}</h3>
-                      <span className="text-gray-500 "></span>
+                      <h3 className=" uppercase">{item.name}</h3>
                     </div>
                   </Link>
                 </li>

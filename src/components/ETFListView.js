@@ -3,10 +3,9 @@ import { getETFList } from "../api/etfAPI";
 import { useEffect, useState } from "react";
 import ETFListAddRoR from "./calculate/ETFListAddRoR";
 import { categoryList } from "../data/categoryList";
-import { useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 import { getETFLike } from "../api/etfAPI";
 import MySwalChangePage from "./utilities/MySwalChangePage";
-
 
 const ETFListView = () => {
   const navigate = useNavigate();
@@ -14,12 +13,13 @@ const ETFListView = () => {
   const handleETFcode = (code) => {
     navigate(`/${category}/${code}`);
   };
-  
+
   const [ETFList, setETFList] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [categoryRoR, setCategoryRoR] = useState([]);
-  
-  const token = useSelector(state => state.Token) || localStorage.getItem("token");
+
+  const token =
+    useSelector((state) => state.Token) || localStorage.getItem("token");
 
   // const categoryList = {
   //   index: "指數型",
@@ -49,43 +49,42 @@ const ETFListView = () => {
     MySwalChangePage("請先登入會員");
   }
 
-
   // 取得各類別的RoR
   useEffect(() => {
-
     (async () => {
       if (category === "liker" && token !== null) {
-        try{
+        try {
           const likeList = await getETFLike(token);
           const likeCodeList = likeList.data.map((item) => {
-            const ietmId = ETFList.filter((ETF) => ETF.id === item.ETFid )[0];
+            const ietmId = ETFList.filter((ETF) => ETF.id === item.ETFid)[0];
             return ietmId;
           });
 
-          if (likeCodeList.length === 0 || likeCodeList.includes(undefined) === true) {
-            return 
+          if (
+            likeCodeList.length === 0 ||
+            likeCodeList.includes(undefined) === true
+          ) {
+            return;
           }
           setCategoryData(likeCodeList);
           navigate(`/${category}/${likeCodeList[0].code}`);
-          
         } catch (error) {
           console.log(error);
         }
       } else {
         const categoryData = filterCategory(ETFList, categoryList[category]);
         setCategoryData(categoryData);
-        
+
         if (categoryData.length === 0) {
-          return 
+          return;
         }
         navigate(`/${category}/${categoryData[0].code}`);
       }
     })();
   }, [ETFList, category]);
 
-  
   // 依類別取出ETF資料
-  const filterCategory = (data , id) => {
+  const filterCategory = (data, id) => {
     const ans = data.filter((item) => item.category === id);
     return ans;
   };
@@ -102,7 +101,6 @@ const ETFListView = () => {
     })();
   }, [categoryData]);
 
-  
   // 依照數值返回對應icon
   const icon = (data) => {
     let icon = "";
@@ -125,10 +123,8 @@ const ETFListView = () => {
               return (
                 <li className="px-1 py-2 w-1/3 md:w-auto" key={item.id}>
                   <div
-                    className={
-                      `cursor-pointer p-2 border-2  rounded-lg  mx-auto max-w-[200px] 
-                      ${item.code === etfId ? "bg-btn-primary text-L1 " : ""}`
-                    }
+                    className={`cursor-pointer p-2 border-2  shadow-lg hover:shadow-xl transition duration-300 rounded-lg  mx-auto max-w-[200px] 
+                      ${item.code === etfId ? "bg-btn-primary text-L1 " : ""}`}
                     onClick={() => handleETFcode(item.code)}
                   >
                     <div className="flex justify-between items-center mb-2">
@@ -137,8 +133,16 @@ const ETFListView = () => {
                     </div>
                     <div className="flex justify-between items-center">
                       <span>近一個月</span>
-                      <span className={"font-bold text-xl"
-                      + (item.changePercent > 0 ? " text-red-500" : " text-green-500")}>
+                      <span
+                        className={
+                          "font-bold text-xl" +
+                          (item.changePercent > 0 && item.code === etfId
+                            ? " text-red-300"
+                            : item.changePercent > 0
+                            ? " text-red-500" 
+                            : " text-green-500")
+                        }
+                      >
                         {item.changePercent}% {icon(item.changePercent)}
                       </span>
                     </div>

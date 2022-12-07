@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { getETFLike, addETFLike, deleteETFLike } from "../api/etfAPI";
 import DiyItem from "./DIY/DiyItem";
 import MySwalToast from "./utilities/MySwalToast";
-
+import { apiDIYDelete } from "../api/diyAPI";
 
 const ETFIItem = (props) => {
   const navigate = useNavigate();
@@ -25,15 +25,6 @@ const ETFIItem = (props) => {
 
   const token =
     useSelector((state) => state.Token) || localStorage.getItem("token");
-
-  
-
-  
-  
-
-
-      
-
 
   // 監聽期間變化
   const changePeriod = (num) => {
@@ -65,7 +56,8 @@ const ETFIItem = (props) => {
           }
 
           const resultAll = await fugleAPIGetFiveYear(etfId);
-          const itemName =  codeNameData.filter((item) => item.code === etfId)[0]?.name;
+          const itemName = codeNameData.filter((item) => item.code === etfId)[0]
+            ?.name;
           setETFName(itemName);
           setAllData(resultAll);
           setData(resultAll.reverse());
@@ -162,7 +154,7 @@ const ETFIItem = (props) => {
 
   const handleAddLike = () => {
     if (token === null) {
-      alert("請先登入");
+      MySwalToast('請先登入', false);
       navigate("/login");
       return;
     }
@@ -190,9 +182,26 @@ const ETFIItem = (props) => {
     }
   };
 
+  const handleEdit = () => {
+    navigate(`/etfdiy/${etfId}/edit`);
+  };
+
+  const handleDelete = () => {
+    (async () => {
+      try {
+        const res = await apiDIYDelete(etfId, token);
+        MySwalToast(res.message, true);
+        navigate("/etfdiy");
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  };
+
+
   return (
     <div className=" pt-8  px-4 md:px-6 md:py-2  mx-auto w-full  max-w-[1000px]">
-      { !isDIY &&
+      {!isDIY && (
         <h1 className="h4 sm:h2 mb-4 mx-auto">
           <span className="mx-4 font-bold ">{etfId}</span>
           <span className="mx-4 font-bold ">{ETFName}</span>
@@ -207,34 +216,39 @@ const ETFIItem = (props) => {
             ></i>
           </span>
         </h1>
-      }
-      { isDIY &&
+      )}
+      {isDIY && (
         <h1 className="h4 sm:h2 mb-4 mx-auto flex justify-between items-center">
           <span className=" mx-4 font-bold "> {ETFName}</span>
-          <button className=" btn-sm h5  ">
-            <i
-              className="fa-solid fa-pen mr-2"
+          <div className="">
+            <button
+              className=" btn-sm h5 mx-2 "
               onClick={() => {
-                handleAddLike();
+                handleEdit();
               }}
             >
-            </i>
-            <span>編輯自組</span>
+              <i className="fa-solid fa-pen mr-2"></i>
+              <span>編輯自組</span>
+            </button>
+            <button
+            className=" btn-sm h5  mx-2"
+            onClick={() => {
+              handleDelete();
+            }}
+          >
+            <i className="fa-solid fa-trash mr-2"></i>
+            <span>刪除自組</span>
           </button>
+          </div>
+          
         </h1>
-      }
+      )}
       <div className="">
         <div className="flex max-w-[700px] mb-4 ">
-          <button
-            className="mx-2 btn-sm"
-            onClick={() => changePeriod(120)}
-          >
+          <button className="mx-2 btn-sm" onClick={() => changePeriod(120)}>
             近半年
           </button>
-          <button
-            className="mx-2 btn-sm"
-            onClick={() => changePeriod(240)}
-          >
+          <button className="mx-2 btn-sm" onClick={() => changePeriod(240)}>
             近一年
           </button>
           <button

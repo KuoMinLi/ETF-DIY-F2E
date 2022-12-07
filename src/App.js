@@ -33,6 +33,7 @@ function App() {
             <Route path="etfdiy" element={<DiyList />} >
               <Route path=":etfId" element={<ETFItem />} />
               <Route path="etfadddiy" element={<AddDiyETF />} />
+              <Route path=":etfId/edit" element={<AddDiyETF />} />
             </Route>
             
             <Route path="compare" element={<Compare />} />

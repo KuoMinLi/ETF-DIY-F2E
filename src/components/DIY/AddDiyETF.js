@@ -32,21 +32,6 @@ const AddDiyETF = () => {
     })();
   }, []);
 
-
-  const taiwanStock = {
-    name: "台灣TOP5",
-    code: ["2330", "2317", "2454", "2308", "2303"],
-    ratio: {2330:20 , 2317:20 , 2454:20 , 2308:20 , 2303:20},
-  }
-
-  const EETOP5 = {
-    name: "電子五哥",
-    code: ["2382", "3231", "4938", "2324", "2356"],
-    ratio: {2382:20 , 3231:20 , 4938:20 , 2324:20 , 2356:20},
-  }
-
-  console.log(publicETF)
-
   const handleClickPublicETF = (_id) => {
     const target = publicETF.find((item) => item._id === _id);
     setInputName(target.name);
@@ -56,20 +41,7 @@ const AddDiyETF = () => {
       return acc;
     }, {}));
   }
-  //   setInputName(taiwanStock.name);
-  //   setTargetCode(taiwanStock.code);
-  //   setRatio(taiwanStock.ratio);
-  // }
-
-  const handleClickEETOP5 = () => {
-    setInputName(EETOP5.name);
-    setTargetCode(EETOP5.code);
-    setRatio(EETOP5.ratio);
-  }
-
    
-
-
   useEffect(() => {
 
     // 判定是否有值

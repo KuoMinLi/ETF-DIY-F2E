@@ -16,6 +16,7 @@ import MySwalToast from "./utilities/MySwalToast";
 const ETFIItem = (props) => {
   const navigate = useNavigate();
   const { etfId } = useParams();
+  const [ETFName, setETFName] = useState(""); // ETF名稱
   const [allData, setAllData] = useState([]); //取回的五年資料
   const [data, setData] = useState([]); // 線圖資料
   const [ETFData, setETFData] = useState([]); // ETF content 資料
@@ -25,8 +26,10 @@ const ETFIItem = (props) => {
   const token =
     useSelector((state) => state.Token) || localStorage.getItem("token");
 
-  let ETFName = codeNameData.filter((item) => item.code === etfId)[0]?.name ||
-    "ETF";
+  
+
+  
+  
 
 
       
@@ -49,8 +52,7 @@ const ETFIItem = (props) => {
         if (isDiy) {
           const res = await DiyItem(etfId, token);
           console.log(res);
-          
-          ETFName = res.diyData.name;
+          setETFName(res.diyData.name);
           setAllData(res.ETFAvgPriceArr);
           setData(res.ETFAvgPriceArr.reverse());
           setETFData(res.diyData);
@@ -63,6 +65,8 @@ const ETFIItem = (props) => {
           }
 
           const resultAll = await fugleAPIGetFiveYear(etfId);
+          const itemName =  codeNameData.filter((item) => item.code === etfId)[0]?.name;
+          setETFName(itemName);
           setAllData(resultAll);
           setData(resultAll.reverse());
 
@@ -186,38 +190,49 @@ const ETFIItem = (props) => {
     }
   };
 
-  const test = () => {
-    console.log(11,"test");
-    // handleDIY('test')
-  }
-
-
   return (
-    <div className="   px-4 md:px-6 py-2  mx-auto w-full  max-w-[1000px]">
-      <h1 className="mb-4 mx-auto">
-        <span className="mx-4 font-bold text-xl">{etfId}</span>
-        <span className="mx-4 font-bold text-xl">{ETFName}</span>
-        <span>
-          <i
-            className={` cursor-pointer text-btn-primary fa-heart ${
-              isETFLike ? "fa-solid" : "fa-regular"
-            }`}
-            onClick={() => {
-              handleAddLike();
-            }}
-          ></i>
-        </span>
-      </h1>
+    <div className=" pt-8  px-4 md:px-6 md:py-2  mx-auto w-full  max-w-[1000px]">
+      { !isDIY &&
+        <h1 className="h4 sm:h2 mb-4 mx-auto">
+          <span className="mx-4 font-bold ">{etfId}</span>
+          <span className="mx-4 font-bold ">{ETFName}</span>
+          <span>
+            <i
+              className={` cursor-pointer text-btn-primary fa-heart text-2xl ${
+                isETFLike ? "fa-solid" : "fa-regular"
+              }`}
+              onClick={() => {
+                handleAddLike();
+              }}
+            ></i>
+          </span>
+        </h1>
+      }
+      { isDIY &&
+        <h1 className="h4 sm:h2 mb-4 mx-auto flex justify-between items-center">
+          <span className=" mx-4 font-bold "> {ETFName}</span>
+          <button className=" btn-sm h5  ">
+            <i
+              className="fa-solid fa-pen mr-2"
+              onClick={() => {
+                handleAddLike();
+              }}
+            >
+            </i>
+            <span>編輯自組</span>
+          </button>
+        </h1>
+      }
       <div className="">
         <div className="flex max-w-[700px] mb-4 ">
           <button
-            className="mx-2 btn px-4 py-2 rounded-xl"
+            className="mx-2 btn-sm"
             onClick={() => changePeriod(120)}
           >
             近半年
           </button>
           <button
-            className="mx-2 btn px-4 py-2 rounded-xl"
+            className="mx-2 btn-sm"
             onClick={() => changePeriod(240)}
           >
             近一年
@@ -227,12 +242,6 @@ const ETFIItem = (props) => {
             onClick={() => changePeriod(960)}
           >
             近三年
-          </button>
-          <button
-            className="mx-2 btn px-4 py-2 rounded-xl" 
-            onClick={() => { test()}}
-          >
-            test
           </button>
         </div>
         <LineChart className="h-full" chartData={chartData} />

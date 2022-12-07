@@ -78,9 +78,8 @@ export const fugleAPIGetFiveYear = async (userId) => {
     const data = await fugleAPIGet(
       userId, formDate, toDate
     );
-
     // 確認取得的資料有滿一年，沒有則先加入後跳出迴圈
-    if (data.length > 230) {
+    if (data.length > 240) {
       ans = [...ans, ...data];
     } else {
       ans = [...ans, ...data];

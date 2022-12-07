@@ -5,6 +5,7 @@ import ETFListAddRoR from "./calculate/ETFListAddRoR";
 import { categoryList } from "../data/categoryList";
 import { useSelector} from "react-redux";
 import { getETFLike } from "../api/etfAPI";
+import MySwalChangePage from "./utilities/MySwalChangePage";
 
 
 const ETFListView = () => {
@@ -44,13 +45,13 @@ const ETFListView = () => {
     })();
   }, []);
 
+  if (category === "liker" && token === null) {
+    MySwalChangePage("請先登入會員");
+  }
+
+
   // 取得各類別的RoR
   useEffect(() => {
-
-    if( category === "liker" && token === null) {
-      navigate("/login");
-      return
-    }
 
     (async () => {
       if (category === "liker" && token !== null) {

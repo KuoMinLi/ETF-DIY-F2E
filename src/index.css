@@ -12,6 +12,10 @@
   .btn {
     @apply text-L1 bg-btn-primary py-3 px-6 sm:py-4 sm:px-10   rounded-full;
   }
+
+  .btn-sm {
+    @apply text-L1 bg-btn-primary px-4 py-2 rounded-xl;
+  }
   .h1 {
     @apply font-bold text-[40px] leading-[48px];
   }

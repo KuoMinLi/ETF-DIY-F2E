@@ -85,21 +85,21 @@ const Header = () => {
               <Link to="/" >ETF自由配</Link>
             </li>
             <li className="cursor-pointer relative " >  
-              <span className="hover:font-bold md:hover:text-L1 cursor-pointer "  onClick={()=>{ handleEtfListShow() }}>ETF專區</span>
+              <span className="  md:hover:text-L1 cursor-pointer "  onClick={()=>{ handleEtfListShow() }}>ETF專區</span>
               <ul className={`rounded-lg md:absolute p-5 w-36  z-20 md:top-10 md:left-0   md:bg-L2 text-d1   ${isEtfListShow} `} > 
-                <li className="hover:font-bold md:hover:text-L1"><Link to="/index" >指數型</Link></li>
-                <li className="hover:font-bold md:hover:text-L1"><Link to="/topic" >主題型</Link></li>
-                <li className="hover:font-bold md:hover:text-L1"><Link to="/dividend" >高股息</Link></li>
-                <li className="hover:font-bold md:hover:text-L1"><Link to="liker" >我的收藏</Link></li>
+                <li className=" md:hover:text-L1"><Link to="/index" >指數型</Link></li>
+                <li className=" md:hover:text-L1"><Link to="/topic" >主題型</Link></li>
+                <li className=" md:hover:text-L1"><Link to="/dividend" >高股息</Link></li>
+                <li className=" md:hover:text-L1"><Link to="liker" >我的收藏</Link></li>
               </ul>
             </li>
-            <li className="hover:font-bold md:hover:text-L1">
+            <li className=" md:hover:text-L1">
               <Link to="/etfdiy">自組ETF</Link>
             </li>
-            <li className="hover:font-bold md:hover:text-L1">
+            <li className=" md:hover:text-L1">
             <Link to= "/compare">績效比較</Link>
             </li>
-            <li className="hover:font-bold md:hover:text-L1 md:hidden">
+            <li className=" md:hover:text-L1 md:hidden">
               {token ? <Link to="/userinfo">會員專區</Link> : <Link to="/login">會員專區</Link>}
             </li>
           </ul>

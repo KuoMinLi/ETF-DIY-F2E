@@ -27,8 +27,7 @@ const ETFIItem = (props) => {
 
   let ETFName = codeNameData.filter((item) => item.code === etfId)[0]?.name ||
     "ETF";
-  
-    console.log(1,props);
+
 
       
 
@@ -45,7 +44,6 @@ const ETFIItem = (props) => {
       try {
         const diyETF = await apiDIYGet(token);
         const isDiy = diyETF.data.map((item) => item._id).includes(etfId);
-        console.log(isDiy);
         setIsDIY(isDiy);
 
         if (isDiy) {
@@ -195,7 +193,7 @@ const ETFIItem = (props) => {
 
 
   return (
-    <div className="   px-4 md:px-6 py-2 md:py-6 mx-auto w-full  max-w-[1000px]">
+    <div className="   px-4 md:px-6 py-2  mx-auto w-full  max-w-[1000px]">
       <h1 className="mb-4 mx-auto">
         <span className="mx-4 font-bold text-xl">{etfId}</span>
         <span className="mx-4 font-bold text-xl">{ETFName}</span>

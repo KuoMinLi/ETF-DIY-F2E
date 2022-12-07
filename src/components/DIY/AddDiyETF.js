@@ -3,7 +3,7 @@ import { fugleAPIGetOneYear } from "../../api/stockAPI";
 import { codeNameData } from "../../data/codeNameData";
 import periodRoR from "../calculate/periodRoR";
 import { useState, useEffect, useMemo } from "react";
-import { apiDIYPost, apiDIYGet } from "../../api/diyAPI";
+import { apiDIYPost, apiDIYGet, apiDIYGetPublic } from "../../api/diyAPI";
 import { useSelector} from "react-redux";
 
 const AddDiyETF = () => {
@@ -15,6 +15,7 @@ const AddDiyETF = () => {
   const [inputCode, setInputCode] = useState("");
   const [targetCode, setTargetCode] = useState( JSON.parse(localStorage.getItem("targetCode")) || []);
   const [allData, setAllData] = useState([]);
+  const [publicETF, setPublicETF] = useState([]);
 
   const token = useSelector(state => state.Token) || localStorage.getItem("token");
 
@@ -23,6 +24,8 @@ const AddDiyETF = () => {
       try{
         const result = await apiDIYGet(token);
         console.log(result);
+        const resPublic = await apiDIYGetPublic();
+        setPublicETF(resPublic.data);
       } catch (err){
         console.log(err);
       }
@@ -42,12 +45,21 @@ const AddDiyETF = () => {
     ratio: {2382:20 , 3231:20 , 4938:20 , 2324:20 , 2356:20},
   }
 
+  console.log(publicETF)
 
-  const handleClicktaiwan = () => {
-    setInputName(taiwanStock.name);
-    setTargetCode(taiwanStock.code);
-    setRatio(taiwanStock.ratio);
+  const handleClickPublicETF = (_id) => {
+    const target = publicETF.find((item) => item._id === _id);
+    setInputName(target.name);
+    setTargetCode(target.content.map((item) => item.code));
+    setRatio(target.content.reduce((acc, cur) => {
+      acc[cur.code] = cur.percentage;
+      return acc;
+    }, {}));
   }
+  //   setInputName(taiwanStock.name);
+  //   setTargetCode(taiwanStock.code);
+  //   setRatio(taiwanStock.ratio);
+  // }
 
   const handleClickEETOP5 = () => {
     setInputName(EETOP5.name);
@@ -269,8 +281,8 @@ const AddDiyETF = () => {
 
   return (
     <>
-      <div className="max-w-[1232px] p-8  sm:px-12 mx-auto min-h-[calc(100vh_-_8.6rem)]">
-        <div className="text-start  mt-4">
+      <div className="max-w-[1232px] p-8  sm:px-[50px] mx-auto min-h-[calc(100vh_-_8.6rem)]">
+        <div className="text-start  min-w-[900px] mx-auto mt-4">
           <h1 className="h1 mb-4">新增自組ETF</h1>
           <form action="" className="my-4">
             <label className="h4 sm:h3 " htmlFor="">請輸入自組ETF名稱</label>
@@ -283,11 +295,24 @@ const AddDiyETF = () => {
             <p className="text-red-500 px-8 pt-1"></p>         
           </form>
           <h2 className="h3 mb-4">熱門選擇</h2>
-          <div className="space-x-8 mb-8">
-            <button className="btn h4" onClick={() => {handleClicktaiwan()}}>台灣TOP5</button>
-            <button className="btn h4" onClick={() => {handleClickEETOP5()}}>電子五哥</button>
-            <button className="btn h4">航海王</button>
-          </div>
+          <ul  className="space-x-4 mb-8 flex" >
+            {publicETF.map((item) => {
+              const { name, _id } = item;
+              return (
+                <li key={_id}>
+                  <button
+                    className="btn h4"
+                    onClick={() => {
+                      handleClickPublicETF(_id);
+                    }}
+                  >
+                    {name}
+                  </button>
+                </li>
+              );
+            }
+            )}
+          </ul>
 
           <form className="my-8">
             <label

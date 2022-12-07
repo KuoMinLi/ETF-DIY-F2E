@@ -20,6 +20,14 @@ const apiDIY = axios.create({
 //   }
 // ]
 
+export const apiDIYGetPublic = () => {
+  return apiDIY
+    .get("/public")
+    .then((res) => res.data)
+    .catch((error) => console.log(error));
+};
+
+
 export const apiDIYPost = (data, token) => {
   return apiDIY
     .post(

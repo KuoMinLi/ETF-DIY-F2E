@@ -43,11 +43,14 @@ const ETFListView = () => {
         console.log(error);
       }
     })();
-  }, []);
+    
+    // 若為我的收藏，但尚未登入，則導回登入頁面
+    if (category === "liker" && token === null) {
+      MySwalChangePage("請先登入會員", navigate);
+    }
 
-  if (category === "liker" && token === null) {
-    MySwalChangePage("請先登入會員");
-  }
+  }, [token]);
+
 
   // 取得各類別的RoR
   useEffect(() => {
@@ -123,8 +126,8 @@ const ETFListView = () => {
               return (
                 <li className="px-1 py-2 w-1/3 md:w-auto" key={item.id}>
                   <div
-                    className={`cursor-pointer p-2 border-2  shadow-lg hover:shadow-xl transition duration-300 rounded-lg  mx-auto max-w-[200px] 
-                      ${item.code === etfId ? "bg-btn-primary text-L1 " : ""}`}
+                    className={`cursor-pointer p-2 border-2  shadow-lg hover:shadow-xl text-d2 bg-gray-100 transition duration-300 rounded-lg  mx-auto max-w-[200px] 
+                      ${item.code === etfId ? "border-[#345FF8] font-bold text-d1 " : ""}`}
                     onClick={() => handleETFcode(item.code)}
                   >
                     <div className="flex justify-between items-center mb-2">
@@ -136,9 +139,7 @@ const ETFListView = () => {
                       <span
                         className={
                           "font-bold text-xl" +
-                          (item.changePercent > 0 && item.code === etfId
-                            ? " text-red-300"
-                            : item.changePercent > 0
+                          (item.changePercent > 0 
                             ? " text-red-500" 
                             : " text-green-500")
                         }

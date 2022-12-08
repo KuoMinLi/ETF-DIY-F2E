@@ -5,13 +5,12 @@ import PieChart from "./PieChart";
 import { codeNameData } from "../data/codeNameData";
 import { fugleAPIGetFiveYear } from "../api/stockAPI";
 import { getETFListByCode } from "../api/etfAPI";
-import { apiDIYPost, apiDIYGet } from "../api/diyAPI";
+import { apiDIYGet, apiDIYDelete } from "../api/diyAPI";
 import periodRoR from "./calculate/periodRoR";
 import { useSelector } from "react-redux";
 import { getETFLike, addETFLike, deleteETFLike } from "../api/etfAPI";
 import DiyItem from "./DIY/DiyItem";
 import MySwalToast from "./utilities/MySwalToast";
-import { apiDIYDelete } from "../api/diyAPI";
 
 const ETFIItem = (props) => {
   const navigate = useNavigate();
@@ -34,53 +33,57 @@ const ETFIItem = (props) => {
 
   // 取得ETF資料
   useEffect(() => {
+    if (etfId.split("").length > 6) {
+      return;
+    }
     (async () => {
       try {
+        const resultAll = await fugleAPIGetFiveYear(etfId);
+        const itemName = codeNameData.filter((item) => item.code === etfId)[0]
+          ?.name;
+        setETFName(itemName);
+        setAllData(resultAll);
+        setData(resultAll.reverse());
+
+        const ETFResult = await getETFListByCode(etfId);
+        const ETFResultData = ETFResult.data[0];
+        setETFData(ETFResultData);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, [etfId]);
+
+  // 將Token變化時，重新取得DIY資料
+  useEffect(() => {
+    if (token) {
+      (async () => {
         const diyETF = await apiDIYGet(token);
         const isDiy = diyETF.data.map((item) => item._id).includes(etfId);
         setIsDIY(isDiy);
 
         if (isDiy) {
           const res = await DiyItem(etfId, token);
-          console.log(res);
           setETFName(res.diyData.name);
           setAllData(res.ETFAvgPriceArr);
           setData(res.ETFAvgPriceArr.reverse());
           setETFData(res.diyData);
-
           return;
         } else {
           if (ETFName === undefined) {
             navigate("/error");
             return;
           }
-
-          const resultAll = await fugleAPIGetFiveYear(etfId);
-          const itemName = codeNameData.filter((item) => item.code === etfId)[0]
-            ?.name;
-          setETFName(itemName);
-          setAllData(resultAll);
-          setData(resultAll.reverse());
-
-          const ETFResult = await getETFListByCode(etfId);
-          const ETFResultData = ETFResult.data[0];
-          console.log(ETFResultData);
-          setETFData(ETFResultData);
-
-          const ETFLike = await getETFLike(token);
-          if (
-            ETFLike.data.map((item) => item.ETFid).includes(ETFResultData._id)
-          ) {
-            setIsETFLike(true);
-          } else {
-            setIsETFLike(false);
-          }
         }
-      } catch (error) {
-        console.log(error);
-      }
-    })();
-  }, [etfId]);
+        const ETFLike = await getETFLike(token);
+        if (ETFLike.data.map((item) => item.ETFid).includes(ETFData._id)) {
+          setIsETFLike(true);
+        } else {
+          setIsETFLike(false);
+        }
+      })();
+    }
+  }, [token, etfId, navigate]);
 
   const chartData = useMemo(() => {
     const ans = {
@@ -154,7 +157,7 @@ const ETFIItem = (props) => {
 
   const handleAddLike = () => {
     if (token === null) {
-      MySwalToast('請先登入', false);
+      MySwalToast("請先登入", false);
       navigate("/login");
       return;
     }
@@ -198,7 +201,6 @@ const ETFIItem = (props) => {
     })();
   };
 
-
   return (
     <div className=" pt-8  px-4 md:px-6 md:py-2  mx-auto w-full  max-w-[1000px]">
       {!isDIY && (
@@ -231,16 +233,15 @@ const ETFIItem = (props) => {
               <span>編輯自組</span>
             </button>
             <button
-            className=" btn-sm h5  mx-2"
-            onClick={() => {
-              handleDelete();
-            }}
-          >
-            <i className="fa-solid fa-trash mr-2"></i>
-            <span>刪除自組</span>
-          </button>
+              className=" btn-sm h5  mx-2"
+              onClick={() => {
+                handleDelete();
+              }}
+            >
+              <i className="fa-solid fa-trash mr-2"></i>
+              <span>刪除自組</span>
+            </button>
           </div>
-          
         </h1>
       )}
       <div className="">

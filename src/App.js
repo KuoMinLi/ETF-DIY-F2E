@@ -12,9 +12,6 @@ import UserInfo from "./components/UserInfo";
 import { Provider } from "react-redux";
 import store from "./store";
 import DiyList from "./components/DIY/DiyList";
-import DiyItem from "./components/DIY/DiyItem";
-
-
 
 function App() {
   return (

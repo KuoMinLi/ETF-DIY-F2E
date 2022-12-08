@@ -50,7 +50,7 @@ const Register = () => {
 
   return (
     <>
-      <div className=" h-[calc(100vh_-_8.6rem)] sm:p-8 flex items-center justify-center  max-w-[1200px] mx-auto">
+      <div className=" min-h-[calc(100vh_-_23.5rem)] sm:p-8 flex items-center justify-center  max-w-[1200px] mx-auto">
         <div className="md:shadow-lg flex justify-center items-center  rounded-xl px-4 sm:px-8  py-12 gap-8">
           <div className="outline outline-offset-2 outline-[#345FF8] p-8  rounded-lg shadow-lg md:w-1/2  md:p-12">
             <h1 className="h3 sm:h1 text-d1 mb-4 sm:mb-8">會員註冊</h1>

@@ -35,7 +35,7 @@ const DiyList = () => {
 
   return (
     <>
-      <div className="lg:flex mx-auto justify-between mt-4 px-3  max-w-[1296px] ">
+      <div className="lg:flex mx-auto justify-between mt-4 px-3  max-w-[1296px] min-h-[calc(100vh_-_23.5rem)]">
         <div className="  lg:w-1/4">
           <ul className="flex lg:block -mx-1 flex-wrap">
             {diyList.map((item) => {

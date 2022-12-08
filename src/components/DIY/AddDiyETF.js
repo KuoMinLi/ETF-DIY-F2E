@@ -276,7 +276,7 @@ const AddDiyETF = () => {
     <>
       <div className="max-w-[1232px] px-8 pb-8 sm:px-[50px] mx-auto min-h-[calc(100vh_-_8.6rem)]">
         <div className="text-start  min-w-[900px] mx-auto mt-4">
-          <h1 className="h1 mb-4">{etfId ? "修改自組ETF" : "新增自組ETF"}</h1>
+          <h1 className="h2 font-bold mb-4">{etfId ? "修改自組ETF" : "新增自組ETF"}</h1>
           <form action="" className="my-4">
             <label className="h4 sm:h3 " htmlFor="">
               請輸入自組ETF名稱

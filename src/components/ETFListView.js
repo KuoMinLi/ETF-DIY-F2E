@@ -119,7 +119,7 @@ const ETFListView = () => {
 
   return (
     <>
-      <div className="lg:flex mx-auto justify-between mt-4   px-3  max-w-[1296px]">
+      <div className="lg:flex mx-auto justify-between mt-4   px-3  max-w-[1296px] ">
         <div className=" md:w-1/3  lg:w-1/4">
           <ul className="flex md:block -mx-1 flex-wrap">
             {categoryRoR.map((item) => {

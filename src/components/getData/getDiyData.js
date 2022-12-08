@@ -1,7 +1,7 @@
 import { apiDIYGet } from "../../api/diyAPI";
 import { fugleAPIGetFiveYear } from "../../api/stockAPI";
 
-const DiyItem = async (etfId, token) => {
+const getDiyData = async (etfId, token) => {
   const diyAllData = await apiDIYGet(token);
   const diyData = diyAllData.data.filter((item) => item._id === etfId)[0];
 
@@ -80,4 +80,4 @@ const DiyItem = async (etfId, token) => {
   };
 };
 
-export default DiyItem;
+export default getDiyData;

@@ -3,14 +3,15 @@ import { useState, useEffect, useMemo } from "react";
 import LineChart from "./LineChart";
 import PieChart from "./PieChart";
 import { codeNameData } from "../data/codeNameData";
-import { fugleAPIGetFiveYear } from "../api/stockAPI";
-import { getETFListByCode } from "../api/etfAPI";
 import { apiDIYGet, apiDIYDelete } from "../api/diyAPI";
 import periodRoR from "./calculate/periodRoR";
 import { useSelector } from "react-redux";
 import { getETFLike, addETFLike, deleteETFLike } from "../api/etfAPI";
-import DiyItem from "./DIY/DiyItem";
+import getDiyData from "./getData/getDiyData";
 import MySwalToast from "./utilities/MySwalToast";
+import LineChartDataFormat from "./chart/LineChartDataFormat";
+import PieChartDataFormat from "./chart/PieChartDataFormat";
+import getETFData from "./getData/getETFData";
 
 const ETFIItem = (props) => {
   const navigate = useNavigate();
@@ -38,16 +39,11 @@ const ETFIItem = (props) => {
     }
     (async () => {
       try {
-        const resultAll = await fugleAPIGetFiveYear(etfId);
-        const itemName = codeNameData.filter((item) => item.code === etfId)[0]
-          ?.name;
-        setETFName(itemName);
-        setAllData(resultAll);
-        setData(resultAll.reverse());
-
-        const ETFResult = await getETFListByCode(etfId);
-        const ETFResultData = ETFResult.data[0];
-        setETFData(ETFResultData);
+        const res = await getETFData(etfId);
+        setETFName(res.itemName);
+        setAllData(res.resultAll);
+        setData(res.resultAll.reverse());
+        setETFData(res.ETFResultData);
       } catch (error) {
         console.log(error);
       }
@@ -63,7 +59,7 @@ const ETFIItem = (props) => {
         setIsDIY(isDiy);
 
         if (isDiy) {
-          const res = await DiyItem(etfId, token);
+          const res = await getDiyData(etfId, token);
           setETFName(res.diyData.name);
           setAllData(res.ETFAvgPriceArr);
           setData(res.ETFAvgPriceArr.reverse());
@@ -84,55 +80,6 @@ const ETFIItem = (props) => {
       })();
     }
   }, [token, etfId, navigate]);
-
-  const chartData = useMemo(() => {
-    const ans = {
-      labels: data.map((item) => item.date),
-      datasets: [
-        {
-          label: "Price",
-          data: data.map((item) => item.close),
-        },
-      ],
-    };
-    return ans;
-  }, [data]);
-
-  const pieChartData = useMemo(() => {
-    const { content } = ETFData;
-    // 避免資料還沒回來就先render
-    if (!content) {
-      return content;
-    }
-
-    // 將content的資料加上產業類別
-    const contentData = content.map((item) => {
-      const industry = codeNameData.filter(
-        (i) => i.code === parseInt(item.code)
-      )[0].industry;
-      return { ...item, industry };
-    });
-
-    // 將產業類別分類
-    const contentRatio = contentData.reduce((acc, cur) => {
-      if (!acc[cur.industry]) {
-        acc[cur.industry] = cur.percentage;
-      } else {
-        acc[cur.industry] += cur.percentage;
-      }
-      return acc;
-    }, {});
-
-    // 將產業類別轉成pieChart需要的格式
-    const pieChartData = Object.keys(contentRatio).map((item) => {
-      return { name: item, value: contentRatio[item] };
-    });
-    pieChartData.sort((a, b) => b.value - a.value);
-
-    // 只取前五名
-    const top5 = pieChartData.slice(0, 5);
-    return top5;
-  }, [ETFData]);
 
   const ETFRatioData = useMemo(() => {
     const { content } = ETFData;
@@ -202,7 +149,7 @@ const ETFIItem = (props) => {
   };
 
   return (
-    <div className=" pt-8  px-4 md:px-6 md:py-2  mx-auto w-full  max-w-[1000px]">
+    <div className=" pt-8  px-4 md:px-6 md:py-2  mx-auto w-full  max-w-[1000px] min-h-[calc(100vh_-_23.5rem)]">
       {!isDIY && (
         <h1 className="h4 sm:h2 mb-4 mx-auto">
           <span className="mx-4 font-bold ">{etfId}</span>
@@ -259,7 +206,7 @@ const ETFIItem = (props) => {
             近三年
           </button>
         </div>
-        <LineChart className="h-full" chartData={chartData} />
+        <LineChart className="h-full" chartData={LineChartDataFormat(data)} />
       </div>
       <div className="mt-5 ">
         <div className=" moverflow-x-scroll  my-8">
@@ -291,7 +238,7 @@ const ETFIItem = (props) => {
         <div className=" md:flex mt-4">
           <div className="md:w-1/2 mb-4">
             <h1 className="font-bold h3 py-2 text-center"> 產業占比</h1>
-            <PieChart chartData={pieChartData} />
+            <PieChart chartData={PieChartDataFormat(ETFData, codeNameData)} />
           </div>
           <table className="table-auto text-center mx-auto">
             <thead>

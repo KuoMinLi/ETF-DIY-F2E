@@ -13,7 +13,7 @@ import LineChartDataFormat from "./chart/LineChartDataFormat";
 import PieChartDataFormat from "./chart/PieChartDataFormat";
 import getETFData from "./getData/getETFData";
 
-const ETFIItem = (props) => {
+const ETFIItem = () => {
   const navigate = useNavigate();
   const { etfId } = useParams();
   const [ETFName, setETFName] = useState(""); // ETF名稱

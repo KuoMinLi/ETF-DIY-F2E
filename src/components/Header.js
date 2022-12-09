@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import MySwalToast from "./utilities/MySwalToast";
+import logo_icon from "./icon/logo_icon.png";
 
 const useDocumentEventListener = (eventName, handler, options) => {
   useEffect(() => {
@@ -62,8 +63,9 @@ const Header = () => {
     <>
       <nav className="bg-d1 " >
         <div className="max-w-[1296px] mx-auto flex items-baseline  justify-between px-5 py-[25px] md:px-10 md:py-7  text-[28px]">
-          <h1 className=" w-[140px] leading-10   font-black text-btn-primary">
-            <Link to="/" >
+          <h1 className=" w-[188px] leading-10   font-black text-btn-primary">
+            <Link className="flex gap-2 items-center h-[40px]" to="/" >
+            <img className="h-full p-1" src={logo_icon} alt="" />
             <span style={{
               textShadow: "-2px 3px 0px #703eff",
               color: "#fff"

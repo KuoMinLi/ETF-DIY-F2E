@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// const url =  'https://etf-diy-kml.herokuapp.com' //dev
-const url =  'http://127.0.0.1:3085' // local
+const url =  'https://etf-diy-kml.herokuapp.com' //dev
+// const url =  'http://127.0.0.1:3085' // local
 
 const apiUsers = axios.create({
   baseURL: `${url}/users`,

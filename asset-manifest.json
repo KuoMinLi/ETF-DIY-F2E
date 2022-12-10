@@ -1,15 +1,16 @@
 {
   "files": {
-    "main.css": "/ETF-DIY-F2E/static/css/main.7372eb74.css",
-    "main.js": "/ETF-DIY-F2E/static/js/main.fea09ac7.js",
+    "main.css": "/ETF-DIY-F2E/static/css/main.98be8b4a.css",
+    "main.js": "/ETF-DIY-F2E/static/js/main.1b06dcab.js",
     "static/js/787.28cb0dcd.chunk.js": "/ETF-DIY-F2E/static/js/787.28cb0dcd.chunk.js",
+    "static/media/logo_icon.png": "/ETF-DIY-F2E/static/media/logo_icon.45bbda4d95972509224c.png",
     "index.html": "/ETF-DIY-F2E/index.html",
-    "main.7372eb74.css.map": "/ETF-DIY-F2E/static/css/main.7372eb74.css.map",
-    "main.fea09ac7.js.map": "/ETF-DIY-F2E/static/js/main.fea09ac7.js.map",
+    "main.98be8b4a.css.map": "/ETF-DIY-F2E/static/css/main.98be8b4a.css.map",
+    "main.1b06dcab.js.map": "/ETF-DIY-F2E/static/js/main.1b06dcab.js.map",
     "787.28cb0dcd.chunk.js.map": "/ETF-DIY-F2E/static/js/787.28cb0dcd.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.7372eb74.css",
-    "static/js/main.fea09ac7.js"
+    "static/css/main.98be8b4a.css",
+    "static/js/main.1b06dcab.js"
   ]
 }

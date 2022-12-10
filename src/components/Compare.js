@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useState, useEffect } from "react";
 import periodRoR from "./calculate/periodRoR";
 import LineChartDataFormat from "./chart/LineChartDataFormat";
@@ -5,23 +6,61 @@ import getETFData from "./getData/getETFData";
 import LineChart from "./LineChart";
 
 const Compare = () => {
-  const [allData, setAllData] = useState([]); //取回的五年資料
-  const [data, setData] = useState([]); // 線圖資料
+  const [inputCode, setInputCode] = useState(""); // 輸入的ETF code
+  const [ETFCodes, setETFCodes] = useState([]); // ETF code 資料
+  const [ETFName, setETFName] = useState(""); // ETF名稱
+  const [contentData, setContentData] = useState([]); // ETF content 資料
+  const [fiveYearData, setFiveYearData] = useState([]); //取回的五年資料
+  const [lineData, setLineData] = useState([]); // 線圖資料
+  const [allData, setAllData] = useState([]); // 選取個股資料
 
   useEffect(() => {
-    (async () => {
+    setAllData([]);
+    ETFCodes.map(async (code) => {
       try {
-        const res = await getETFData("0050");
-        setAllData(res.resultAll);
-        setData(res.resultAll.reverse());
+        const res = await getETFData(code);
+        const ETFName = res.itemName;
+        const FiveYearData = res.resultAll.reverse();   
+        const RoRData = periodRoR(FiveYearData);
+        const LineData = res.resultAll;
+        const ContentData = res.ETFResultData;
+        setAllData((prev) => [
+          ...prev,
+          { ETFName, code, RoRData, LineData, ContentData },
+        ]);
       } catch (error) {
         console.log(error);
       }
-    })();
-  }, []);
+    });
+  }, [ETFCodes]);
 
-  console.log( periodRoR(allData))
+  // console.log(LineChartDataFormat(allData));
 
+  const totalRoRData = useMemo (() => {
+    const allRoRData = [...allData].map((item) => item.RoRData);
+    const RoRTitle = [...allRoRData].map((item) => item.map((item) => item.name))[0];
+    const RoRData = [...allRoRData].map((item) => item.map((item) => item.data));
+
+    const totalRoR = RoRTitle?.map((item, index) => {
+      const itemRoR = RoRData.map((i) => {
+        return i[index];
+      });
+      return [item, ...itemRoR];
+    });
+
+    return totalRoR;
+
+  }, [allData]);
+
+ 
+
+
+
+
+
+  const handleAddCode = () => {
+    setETFCodes([...ETFCodes, inputCode]);
+  };
 
   return (
     <>
@@ -66,11 +105,16 @@ const Compare = () => {
                 list="code-list"
                 className="h-[68px] sm:h-[76px] rounded-full block w-full   p-4 pl-10 h4 sm:h3 text-gray-900 border border-gray-500  bg-gray-50 focus:ring-btn-primary focus:border-btn-primary "
                 placeholder="輸入關鍵字、股票代碼搜尋"
+                value={inputCode}
+                onChange={(e) => setInputCode(e.target.value)}
               />
 
               <button
                 type="button"
                 className="absolute right-2.5 bottom-2.5 btn h4 "
+                onClick={() => {
+                  handleAddCode();
+                }}
               >
                 新增個股
               </button>
@@ -82,8 +126,29 @@ const Compare = () => {
               <thead className="h4 sm:h3 text-gray-700 uppercase dark:text-gray-400">
                 <tr>
                   <th
+                    className="sr-only py-3 px-6 bg-L1  dark:bg-gray-800"
                     scope="col"
-                    colSpan="4"
+                  >
+                    績效數據
+                  </th>
+                  {allData.map((item) => {
+                    return (
+                      <td key={item.code} className="">
+                        <div className="ml-4 flex items-center space-x-2">
+                          <i className="fa-solid fa-chart-simple"></i>
+                          <div className="flex flex-wrap items-end gap-1">
+                            <span>{item.ETFName}</span>
+                            <span className="h5">[{item.code}]</span>
+                          </div>
+                        </div>
+                      </td>
+                    );
+                  })}
+                </tr>
+                <tr>
+                  <th
+                    scope="col"
+                    colSpan="5"
                     className="py-3 px-6 bg-L2  dark:bg-gray-800"
                   >
                     績效數據
@@ -91,40 +156,35 @@ const Compare = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th
-                    scope="row"
-                    className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
-                  >
-                    一個月
-                  </th>
-                  <td className="py-4 px-6">14.66%</td>
-                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">20.66%</td>
-                </tr>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th
-                    scope="row"
-                    className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
-                  >
-                    三個月
-                  </th>
-                  <td className="py-4 px-6">14.66%</td>
-                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">20.66%</td>
-                </tr>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th
-                    scope="row"
-                    className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
-                  >
-                    六個月
-                  </th>
-                  <td className="py-4 px-6">14.66%</td>
-                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">20.66% </td>
-                </tr>
+                {totalRoRData?.map((item) => {
+                  return (
+                    <tr
+                      key={item}
+                      className="border-b border-gray-200 dark:border-gray-700 text-d1"
+                    >
+                      {item.map((i, index) => {
+                        return (
+                          <td key= {i}
+                          className= {`
+                          py-4 px-6 min-w-[180px]
+                          ${index === 0 && "text-d1 font-bold "}
+                          ${item.length < 4 ? "text-left" : "text-center"}
+                          `}
+                          >
+                            {index === 0 ? i : i+'%'}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
               </tbody>
-              
             </table>
-            <LineChart className="h-full" chartData={LineChartDataFormat(data)} />
+            {/* { allData !== [] && <LineChart
+              className="h-full"
+              chartData={LineChartDataFormat(allData.LineData)}
+            />} */}
+
             <table className="w-full h5 text-left text-gray-500 dark:text-gray-400">
               <thead className="h4 sm:h3 text-gray-700 uppercase dark:text-gray-400">
                 <tr>
@@ -146,7 +206,9 @@ const Compare = () => {
                     一個月
                   </th>
                   <td className="py-4 px-6">14.66%</td>
-                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">20.66%</td>
+                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">
+                    20.66%
+                  </td>
                 </tr>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th
@@ -156,7 +218,9 @@ const Compare = () => {
                     三個月
                   </th>
                   <td className="py-4 px-6">14.66%</td>
-                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">20.66%</td>
+                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">
+                    20.66%
+                  </td>
                 </tr>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th
@@ -166,10 +230,11 @@ const Compare = () => {
                     六個月
                   </th>
                   <td className="py-4 px-6">14.66%</td>
-                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">20.66% </td>
+                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">
+                    20.66%{" "}
+                  </td>
                 </tr>
               </tbody>
-              
             </table>
             <table className="w-full h5 text-left text-gray-500 dark:text-gray-400">
               <thead className="h4 sm:h3 text-gray-700 uppercase dark:text-gray-400">
@@ -192,7 +257,9 @@ const Compare = () => {
                     一個月
                   </th>
                   <td className="py-4 px-6">14.66%</td>
-                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">20.66%</td>
+                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">
+                    20.66%
+                  </td>
                 </tr>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th
@@ -202,7 +269,9 @@ const Compare = () => {
                     三個月
                   </th>
                   <td className="py-4 px-6">14.66%</td>
-                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">20.66%</td>
+                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">
+                    20.66%
+                  </td>
                 </tr>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th
@@ -212,10 +281,11 @@ const Compare = () => {
                     六個月
                   </th>
                   <td className="py-4 px-6">14.66%</td>
-                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">20.66% </td>
+                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">
+                    20.66%{" "}
+                  </td>
                 </tr>
               </tbody>
-              
             </table>
           </div>
         </div>

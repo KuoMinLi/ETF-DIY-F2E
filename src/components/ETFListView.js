@@ -3,7 +3,7 @@ import { getETFList } from "../api/etfAPI";
 import { useEffect, useState } from "react";
 import ETFListAddRoR from "./calculate/ETFListAddRoR";
 import { categoryList } from "../data/categoryList";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getETFLike } from "../api/etfAPI";
 import MySwalChangePage from "./utilities/MySwalChangePage";
 
@@ -21,6 +21,23 @@ const ETFListView = () => {
   const token =
     useSelector((state) => state.Token) || localStorage.getItem("token");
 
+  const isListRenderstate = useSelector((state) => state.ListRender);
+  const [isListRender, setIsListRender] = useState(isListRenderstate);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isListRender) {
+      const isListRenderfun = (value) => {
+        return {
+          type: "isLISTRENDER",
+          payload: value,
+        };
+      };
+      dispatch(isListRenderfun(false));
+    }
+  }, [isListRender, dispatch]);
+
   // const categoryList = {
   //   index: "指數型",
   //   topic: "主題型",
@@ -37,20 +54,19 @@ const ETFListView = () => {
   useEffect(() => {
     (async () => {
       try {
+        
         const { data } = await getETFList();
         setETFList(data);
       } catch (error) {
         console.log(error);
       }
     })();
-    
+
     // 若為我的收藏，但尚未登入，則導回登入頁面
     if (category === "liker" && token === null) {
       MySwalChangePage("請先登入會員", navigate);
     }
-
   }, [token]);
-
 
   // 取得各類別的RoR
   useEffect(() => {
@@ -70,6 +86,7 @@ const ETFListView = () => {
             return;
           }
           setCategoryData(likeCodeList);
+          setIsListRender(isListRenderstate);
           navigate(`/${category}/${likeCodeList[0].code}`);
         } catch (error) {
           console.log(error);
@@ -84,7 +101,7 @@ const ETFListView = () => {
         navigate(`/${category}/${categoryData[0].code}`);
       }
     })();
-  }, [ETFList, category]);
+  }, [ETFList, category, isListRenderstate ]);
 
   // 依類別取出ETF資料
   const filterCategory = (data, id) => {
@@ -119,7 +136,7 @@ const ETFListView = () => {
 
   return (
     <>
-      <div className="lg:flex mx-auto justify-between mt-4   px-3  max-w-[1296px] ">
+      <div className="lg:flex mx-auto justify-between mt-4   px-3  max-w-[1296px] min-h-[calc(100vh_-_23.5rem)]">
         <div className=" md:w-1/3  lg:w-1/4">
           <ul className="flex md:block -mx-1 flex-wrap">
             {categoryRoR.map((item) => {
@@ -127,7 +144,11 @@ const ETFListView = () => {
                 <li className="px-1 py-2 w-1/3 md:w-auto" key={item.id}>
                   <div
                     className={`cursor-pointer p-2 border-2  shadow-lg hover:shadow-xl text-d2 bg-gray-100 transition duration-300 rounded-lg  mx-auto max-w-[200px] 
-                      ${item.code === etfId ? "border-[#345FF8] font-bold text-d1 " : ""}`}
+                      ${
+                        item.code === etfId
+                          ? "border-[#345FF8] font-bold text-d1 "
+                          : ""
+                      }`}
                     onClick={() => handleETFcode(item.code)}
                   >
                     <div className="flex justify-between items-center mb-2">
@@ -137,12 +158,12 @@ const ETFListView = () => {
                     <div className="flex justify-between items-center">
                       <span>近一個月</span>
                       <span
-                        className={
-                          "font-bold text-xl" +
-                          (item.changePercent > 0 
-                            ? " text-red-500" 
-                            : " text-green-500")
-                        }
+                        className={`
+                          font-bold text-xl 
+                          ${item.changePercent > 0
+                            ? " text-red-500"
+                            : " text-green-500"}
+                        `}
                       >
                         {item.changePercent}% {icon(item.changePercent)}
                       </span>

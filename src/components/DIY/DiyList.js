@@ -1,7 +1,7 @@
 import { Outlet, Link, useNavigate, useParams } from "react-router-dom";
-import { apiDIYPost, apiDIYGet } from "../../api/diyAPI";
-import { useSelector } from "react-redux";
-import { useState, useEffect, useMemo } from "react";
+import { apiDIYGet } from "../../api/diyAPI";
+import { useSelector, useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
 import MySwalChangePage from "../utilities/MySwalChangePage";
 
 const DiyList = () => {
@@ -10,6 +10,24 @@ const DiyList = () => {
   const [diyList, setDiyList] = useState([]);
   const token =
     useSelector((state) => state.Token) || localStorage.getItem("token");
+
+  const isListRenderstate = useSelector((state) => state.ListRender);
+  const [isListRender, setIsListRender] = useState(isListRenderstate);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isListRender) {
+      const isListRenderfun = (value) => {
+        return {
+          type: "isLISTRENDER",
+          payload: value,
+        };
+      };
+      dispatch(isListRenderfun(false));
+    }
+  }, [isListRender, dispatch]);
+
 
   useEffect(() => {
     if (token === null) {
@@ -22,16 +40,25 @@ const DiyList = () => {
       try {
         const result = await apiDIYGet(token);
         setDiyList(result.data);
-        if (result.data.length > 0) {
-          navigate(`/etfdiy/${result.data[0]._id}`);
-        } else {
-          navigate(`/etfdiy/etfadddiy`);
-        }
+        setIsListRender(isListRenderstate);
+
       } catch (err) {
         console.log(err);
       }
     })();
-  }, []);
+  }, [isListRenderstate]);
+
+useEffect(() => {
+  if (etfId === undefined) {
+    if (diyList.length > 0) {
+      navigate(`/etfdiy/${diyList[0]._id}`);
+    } else {
+      navigate(`/etfdiy/etfadddiy`);
+    }
+  }
+}, [token, diyList]);
+
+
 
   return (
     <>
@@ -44,8 +71,11 @@ const DiyList = () => {
                   <Link
                     to={`${item._id}`}
                     className={`block cursor-pointer  border-2  shadow-lg hover:shadow-xl text-d2 bg-gray-100 transition duration-300 rounded-lg  mx-auto max-w-[200px] 
-                      ${item._id === etfId ? "border-[#345FF8] font-bold text-d1 " : ""}`}
-                    
+                      ${
+                        item._id === etfId
+                          ? "border-[#345FF8] font-bold text-d1 "
+                          : ""
+                      }`}
                   >
                     <div className="p-4 flex items-center gap-4 ">
                       <h3 className=" uppercase">{item.name}</h3>
@@ -54,7 +84,7 @@ const DiyList = () => {
                 </li>
               );
             })}
-            <li  className="px-1 py-2 w-1/3 lg:w-auto">
+            <li className="px-1 py-2 w-1/3 lg:w-auto">
               <Link
                 to="etfadddiy"
                 className="block  bg-gray-100 rounded-lg shadow-lg hover:shadow-xl transition duration-300 mx-auto max-w-[200px]"

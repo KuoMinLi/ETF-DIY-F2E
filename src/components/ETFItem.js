@@ -1,20 +1,22 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import LineChart from "./LineChart";
 import PieChart from "./PieChart";
 import { codeNameData } from "../data/codeNameData";
 import { apiDIYGet, apiDIYDelete } from "../api/diyAPI";
 import periodRoR from "./calculate/periodRoR";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getETFLike, addETFLike, deleteETFLike } from "../api/etfAPI";
 import getDiyData from "./getData/getDiyData";
 import MySwalToast from "./utilities/MySwalToast";
 import LineChartDataFormat from "./chart/LineChartDataFormat";
 import PieChartDataFormat from "./chart/PieChartDataFormat";
 import getETFData from "./getData/getETFData";
+import ETFRatio from "./calculate/ETFRatio";
 
 const ETFIItem = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { etfId } = useParams();
   const [ETFName, setETFName] = useState(""); // ETF名稱
   const [allData, setAllData] = useState([]); //取回的五年資料
@@ -25,6 +27,14 @@ const ETFIItem = () => {
 
   const token =
     useSelector((state) => state.Token) || localStorage.getItem("token");
+
+    const isListRender = (value) => {
+      return {
+        type: "isLISTRENDER",
+        payload: value,
+      };
+    };
+
 
   // 監聽期間變化
   const changePeriod = (num) => {
@@ -79,28 +89,7 @@ const ETFIItem = () => {
         }
       })();
     }
-  }, [token, etfId, navigate]);
-
-  const ETFRatioData = useMemo(() => {
-    const { content } = ETFData;
-
-    // 避免資料還沒回來就先render
-    if (!content) {
-      return content;
-    }
-
-    const top5 = content.slice(0, 5);
-    const otherPercentage = content.slice(5).reduce((acc, cur) => {
-      return acc + cur.percentage;
-    }, 0);
-    const other = {
-      name: "其他",
-      percentage: otherPercentage.toFixed(2),
-    };
-
-    const ans = [...top5, other];
-    return ans;
-  }, [ETFData]);
+  }, [token, etfId, ETFData._id, ETFName, navigate]);
 
   const handleAddLike = () => {
     if (token === null) {
@@ -115,6 +104,7 @@ const ETFIItem = () => {
           const res = await deleteETFLike(token, ETFData._id);
           MySwalToast(res.message, true);
           setIsETFLike(false);
+          dispatch(isListRender(true));
         } catch (error) {
           console.log(error);
         }
@@ -125,6 +115,7 @@ const ETFIItem = () => {
           const res = await addETFLike(token, ETFData._id);
           MySwalToast(res.message, true);
           setIsETFLike(true);
+          dispatch(isListRender(true));
         } catch (error) {
           console.log(error);
         }
@@ -141,6 +132,7 @@ const ETFIItem = () => {
       try {
         const res = await apiDIYDelete(etfId, token);
         MySwalToast(res.message, true);
+        dispatch(isListRender(true));
         navigate("/etfdiy");
       } catch (error) {
         console.log(error);
@@ -242,16 +234,16 @@ const ETFIItem = () => {
           </div>
           <table className="table-auto text-center mx-auto">
             <thead>
-              <tr>
-                <th className="px-4 py-2">ETF</th>
+              <tr className="h5 sm:h4 ">
+                <th className="px-4 py-2">股票名稱</th>
                 <th className="px-4 py-2">持股比例(%)</th>
               </tr>
             </thead>
-            <tbody>
-              {ETFRatioData?.map((item) => {
+            <tbody className="shadow-md ">
+              {ETFRatio(ETFData)?.map((item) => {
                 return (
-                  <tr key={item.name}>
-                    <td className="border px-4 py-2">{item.name}</td>
+                  <tr key={item.name} >
+                    <td className="border px-4 py-2 font-medium">{item.name}</td>
                     <td className="border px-4 py-2">{item.percentage}</td>
                   </tr>
                 );

@@ -9,12 +9,13 @@ import {
   apiDIYGetPublic,
   apiDIYPatch,
 } from "../../api/diyAPI";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import MySwalToast from "../utilities/MySwalToast";
 
 const AddDiyETF = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { etfId } = useParams();
   const defaultPercentage = 20; // 20是預設比例
   const defaultETFName = "自組ETF1"; // 預設ETF名稱
@@ -31,6 +32,16 @@ const AddDiyETF = () => {
   const token =
     useSelector((state) => state.Token) || localStorage.getItem("token");
 
+
+    const isListRender = (value) => {
+      return {
+        type: "isLISTRENDER",
+        payload: value,
+      };
+    };
+
+
+
   useEffect(() => {
     (async () => {
       try {
@@ -42,7 +53,7 @@ const AddDiyETF = () => {
         console.log(err);
       }
     })();
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     if (etfId && myDIYETF.length > 0) {
@@ -257,6 +268,7 @@ const AddDiyETF = () => {
 
         MySwalToast("新增成功", true);
         resetForm();
+        dispatch(isListRender(true));
         navigate(`/etfdiy/${result.data._id}`);
       } catch (error) {
         MySwalToast(error.response.data.message, false);

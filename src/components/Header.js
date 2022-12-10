@@ -15,6 +15,9 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const token = useSelector(state => state.Token) || localStorage.getItem('token');
+  const isListRender = useSelector(state => state.ListRender);
+
+  // console.log(token, isListRender)
 
   const logoutToken = () => {
     localStorage.removeItem('token');

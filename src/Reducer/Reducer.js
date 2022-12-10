@@ -1,20 +1,27 @@
 const initState = {
   Token: null,
+  ListRender: false,
 };
 
-const authReducer = (state = initState, action) => {
+export const Reducer = (state = initState, action) => {
   switch (action.type) {
     case "LOGIN":
       return {
+        ...state,
         Token: action.payload,
       };
     case "LOGOUT":
       return {
+        ...state,
         Token: null,
       };
+    case "isLISTRENDER":
+      return {
+        ...state,
+        ListRender: action.payload,
+      };
+    
     default:
       return state;
   }
 };
-
-export default authReducer;

@@ -21,6 +21,13 @@ const Login = () => {
     }
   }, [token, navigate]);
 
+  // const isListRender = (value) => {
+  //   return {
+  //     type: "onLISTRENDER",
+  //     payload: value,
+  //   };
+  // };
+  
 
   const loginToken = (token) => {
     return {
@@ -37,6 +44,7 @@ const Login = () => {
       try {
         const response = await apiUserSignIn(body);
         dispatch(loginToken(response.token));
+        // dispatch(isListRender(true));
         localStorage.setItem('token', response.token);
         MySwalToast("登入成功", true);
         navigate("/etfadddiy");

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 const LineChartDataFormat = (data) => {
-
+  // console.log(data)
   const chartData = useMemo(() => {
     const firstPrice = data[0]?.close;
 

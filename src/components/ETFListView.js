@@ -1,4 +1,4 @@
-import { Outlet, useNavigate, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams, Link } from "react-router-dom";
 import { getETFList } from "../api/etfAPI";
 import { useEffect, useState } from "react";
 import ETFListAddRoR from "./calculate/ETFListAddRoR";
@@ -54,7 +54,6 @@ const ETFListView = () => {
   useEffect(() => {
     (async () => {
       try {
-        
         const { data } = await getETFList();
         setETFList(data);
       } catch (error) {
@@ -101,7 +100,7 @@ const ETFListView = () => {
         navigate(`/${category}/${categoryData[0].code}`);
       }
     })();
-  }, [ETFList, category, isListRenderstate ]);
+  }, [ETFList, category, isListRenderstate]);
 
   // 依類別取出ETF資料
   const filterCategory = (data, id) => {
@@ -134,11 +133,53 @@ const ETFListView = () => {
     return icon;
   };
 
+  const iconCategory = [
+    {
+      category: "index",
+      name: "指數型",
+      icon: "fa-chart-simple",
+    },
+    {
+      category: "topic",
+      name: "主題型",
+      icon: "fa-microchip",
+    },
+    {
+      category: "dividend",
+      name: "高股息",
+      icon: "fa-sack-dollar",
+    }
+  ] 
+
   return (
     <>
       <div className="lg:flex mx-auto justify-between mt-4   px-3  max-w-[1296px] min-h-[calc(100vh_-_23.5rem)]">
         <div className=" md:w-1/3  lg:w-1/4">
           <ul className="flex md:block -mx-1 flex-wrap">
+            <li className="px-1 py-2 w-1/3 md:w-auto">
+              <div className="p-2   mx-auto max-w-[200px]">
+                <div className="flex justify-between items-center mb-2">
+                  {iconCategory.map((item) => {
+                    return (
+                      <Link
+                        to={`/${item.category}`}
+                        className={`${
+                          category === item.category
+                            ? "text-d1 font-black"
+                            : "text-d2"
+                        }`}
+                      >
+                      <div className="flex flex-col items-center">
+                        <i className={`fa-solid ${item.icon}`}></i>
+                        <p className="">{item.name}</p>
+                      </div>
+                      </Link>
+                    );
+                  }
+                  )}
+                </div>
+              </div>
+            </li>
             {categoryRoR.map((item) => {
               return (
                 <li className="px-1 py-2 w-1/3 md:w-auto" key={item.id}>
@@ -160,9 +201,11 @@ const ETFListView = () => {
                       <span
                         className={`
                           font-bold text-xl 
-                          ${item.changePercent > 0
-                            ? " text-red-500"
-                            : " text-green-500"}
+                          ${
+                            item.changePercent > 0
+                              ? " text-red-500"
+                              : " text-green-500"
+                          }
                         `}
                       >
                         {item.changePercent}% {icon(item.changePercent)}

@@ -4,6 +4,7 @@ import periodRoR from "./calculate/periodRoR";
 import LineChartDataFormat from "./chart/LineChartDataFormat";
 import getETFData from "./getData/getETFData";
 import LineChart from "./LineChart";
+import filterDate from "./calculate/FilterDate";
 
 const Compare = () => {
   const [inputCode, setInputCode] = useState(""); // 輸入的ETF code
@@ -22,7 +23,7 @@ const Compare = () => {
         const ETFName = res.itemName;
         const FiveYearData = res.resultAll.reverse();   
         const RoRData = periodRoR(FiveYearData);
-        const LineData = res.resultAll;
+        const LineData = res.resultAll.reverse();
         const ContentData = res.ETFResultData;
         setAllData((prev) => [
           ...prev,
@@ -34,7 +35,30 @@ const Compare = () => {
     });
   }, [ETFCodes]);
 
-  // console.log(LineChartDataFormat(allData));
+
+  const linedd = useMemo(() => {
+    const allLineData = [...allData].map((item) => item.LineData);
+    const dd = allLineData.map((item) => LineChartDataFormat(item));
+    dd.map((item,index) => {
+      item.datasets[0].label = allData[index].ETFName;
+    });
+
+    const totalLabel =  dd.map(itme=>itme.labels);
+
+    filterDate(totalLabel)
+    
+    const ans = {
+      labels: totalLabel[0],
+      datasets: dd.map(item=>item.datasets)
+    }
+    
+    return ans;
+
+  }, [allData]);
+
+  console.log(linedd)
+
+
 
   const totalRoRData = useMemo (() => {
     const allRoRData = [...allData].map((item) => item.RoRData);
@@ -69,7 +93,7 @@ const Compare = () => {
           <h1 className="h2 font-bold mb-4">ETF 績效比較</h1>
           <h2 className="h3 mb-4">熱門選擇</h2>
           <div className="space-x-4 mb-8">
-            <button className="btn h4">指數VS高股息</button>
+            <button className="btn h4" onClick={() => {setETFCodes(['0050','0056'])}}>指數VS高股息</button>
             <button className="btn h4">電子VS金融</button>
             <button className="btn h4">台灣前百大公司</button>
           </div>
@@ -180,10 +204,10 @@ const Compare = () => {
                 })}
               </tbody>
             </table>
-            {/* { allData !== [] && <LineChart
+             <LineChart
               className="h-full"
-              chartData={LineChartDataFormat(allData.LineData)}
-            />} */}
+              chartData={linedd}
+            />
 
             <table className="w-full h5 text-left text-gray-500 dark:text-gray-400">
               <thead className="h4 sm:h3 text-gray-700 uppercase dark:text-gray-400">

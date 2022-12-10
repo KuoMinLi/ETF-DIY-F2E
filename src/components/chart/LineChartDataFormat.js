@@ -1,14 +1,11 @@
-import { useMemo } from "react";
-
 const LineChartDataFormat = (data) => {
-  // console.log(data)
-  const chartData = useMemo(() => {
+ 
     const firstPrice = data[0]?.close;
 
     // 篩選數值是否有null，有則刪除
     const filterData = data.filter((item) => item.close !== null);
 
-    const ans = {
+    const chartData = {
       labels: filterData.map((item) => item.date),
       datasets: [
         {
@@ -20,9 +17,8 @@ const LineChartDataFormat = (data) => {
         },
       ],
     };
-    return ans;
-  }, [data]);
 
+  console.log(chartData)
   return chartData;
 }
 

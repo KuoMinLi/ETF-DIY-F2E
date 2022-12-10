@@ -1,5 +1,6 @@
 import { apiDIYGet } from "../../api/diyAPI";
 import { fugleAPIGetFiveYear } from "../../api/stockAPI";
+import filterDate from "../calculate/FilterDate";
 
 const getDiyData = async (etfId, token) => {
   const diyAllData = await apiDIYGet(token);
@@ -20,20 +21,7 @@ const getDiyData = async (etfId, token) => {
     })
   );
 
-  // 將陣列長度最短的排在前面
-  ETFTotalPrice.sort((a, b) => a.length - b.length);
-
-  // 找出多出的日期並去除
-  const shortETF = ETFTotalPrice[0];
-  for (let i = 1; i < ETFTotalPrice.length; i++) {
-    const longETF = ETFTotalPrice[i];
-    const shortETFDate = [...shortETF].map((item) => item.date);
-    const longETFDate = [...longETF].map((item) => item.date);
-    const diffDate = longETFDate.filter((item) => !shortETFDate.includes(item));
-    diffDate.forEach((item) => {
-      longETF.splice(longETF.findIndex((index) => index.date === item), 1);
-    });
-  }
+  filterDate(ETFTotalPrice);
   
   // 將陣列中依日期的股價累加
   const ETFAvgPrice = ETFTotalPrice.reduce((acc, cur) => {

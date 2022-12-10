@@ -156,12 +156,13 @@ const ETFListView = () => {
       <div className="lg:flex mx-auto justify-between mt-4   px-3  max-w-[1296px] min-h-[calc(100vh_-_23.5rem)]">
         <div className=" md:w-1/3  lg:w-1/4">
           <ul className="flex md:block -mx-1 flex-wrap">
-            <li className="px-1 py-2 w-1/3 md:w-auto">
+            <li className="px-1 pt-2 w-1/3 md:w-auto">
               <div className="p-2   mx-auto max-w-[200px]">
-                <div className="flex justify-between items-center mb-2">
+                <div className="flex justify-between items-center">
                   {iconCategory.map((item) => {
                     return (
                       <Link
+                        key={item.category}
                         to={`/${item.category}`}
                         className={`${
                           category === item.category
@@ -169,10 +170,10 @@ const ETFListView = () => {
                             : "text-d2"
                         }`}
                       >
-                      <div className="flex flex-col items-center">
-                        <i className={`fa-solid ${item.icon}`}></i>
-                        <p className="">{item.name}</p>
-                      </div>
+                        <div className="flex flex-col items-center">
+                          <i className={`fa-solid ${item.icon}`}></i>
+                          <p className="">{item.name}</p>
+                        </div>
                       </Link>
                     );
                   }

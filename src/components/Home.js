@@ -53,7 +53,7 @@ const Home = () => {
               <div className="px-8  sm:pl-[160px]">
                 <h1 className="h3 sm:h1"> 今年我想來點...</h1>
                 <h3 className="sm:mt-3 h5 sm:h3 text-L2">半導體、金融、航運</h3>
-                <Link to="/register"><button className="block mt-5 sm:mt-8 btn sm:h2 h4">加入您的ETF</button></Link>
+                <Link to="/etfdiy"><button className="block mt-5 sm:mt-8 btn sm:h2 h4">加入您的ETF</button></Link>
               </div>
             </div>
           </div>
@@ -141,7 +141,7 @@ const Home = () => {
                 台灣ETF管理費平均為0.84%，<br></br> 主題型更高達2%以上！<br></br>{" "}
                 你還想被券商賺管理費嗎？<br></br> 現在就開始自己組ETF!
               </p>
-              <Link to="/register"><button className="mt-4 mx-auto sm:mx-0 sm:mt-7 btn sm:h2 h4">
+              <Link to="/etfdiy"><button className="mt-4 mx-auto sm:mx-0 sm:mt-7 btn sm:h2 h4">
                 加入您的ETF
               </button></Link>
             </div>
@@ -158,9 +158,9 @@ const Home = () => {
                 巴菲特靠著每年超過10%績效逐漸將資產擴大，<br></br>{" "}
                 你想知道目前績效如何？<br></br> 立即加入檢視你的績效
               </p>
-              <button className="mt-4 mx-auto sm:mx-0 sm:mt-7 btn sm:h2 h4">
+              <Link to="/register"><button className="mt-4 mx-auto sm:mx-0 sm:mt-7 btn sm:h2 h4">
                 立即加入
-              </button>
+              </button></Link>
             </div>
           </div>
         </div>
@@ -239,7 +239,7 @@ const Home = () => {
         <div className="absolute top-0 w-full">
             <div className="max-w-[1296px] mx-auto  mt-[82px] sm:mt-[220px] flex flex-col items-center ">
               <h3 className='h3 sm:h1 text-L1 text-center max-w-[280px] sm:max-w-[1296px]'>你就是王牌基金管理人，立刻管理配置</h3>
-              <button className='mt-10 btn sm:h2 h4 '>立即加入</button>
+              <Link to="/register"><button className='mt-10 btn sm:h2 h4 '>立即加入</button></Link>
             </div>     
         </div>
       </section>

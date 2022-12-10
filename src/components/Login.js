@@ -2,10 +2,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { apiUserSignIn } from "../api/userAPI";
 import { useSelector, useDispatch } from "react-redux";
-// import Swal from 'sweetalert2'
-// import withReactContent from 'sweetalert2-react-content'
+import { useEffect } from "react";
+import MySwalToast from "./utilities/MySwalToast";
 
-function Login() {
+const Login = () => {
   const navigate = useNavigate();
   const {
     register,
@@ -13,24 +13,21 @@ function Login() {
     formState: { errors },
   } = useForm();
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.Token) || localStorage.getItem("token");
 
-  // const MySwal = withReactContent(Swal)
-  // const Toast = Swal.mixin({
-  //   toast: true,
-  //   position: 'top-end',
-  //   showConfirmButton: false,
-  //   timer: 3000,
-  //   timerProgressBar: true,
-  //   didOpen: (toast) => {
-  //     toast.addEventListener('mouseenter', Swal.stopTimer)
-  //     toast.addEventListener('mouseleave', Swal.resumeTimer)
-  //   }
-  // })
+  useEffect(() => {
+    if (token !== null) {
+      navigate("/etfdiy");
+    }
+  }, [token, navigate]);
 
-  // Toast.fire({
-  //   icon: 'success',
-  //   title: 'Signed in successfully'
-  //   })
+  // const isListRender = (value) => {
+  //   return {
+  //     type: "onLISTRENDER",
+  //     payload: value,
+  //   };
+  // };
+  
 
   const loginToken = (token) => {
     return {
@@ -47,21 +44,19 @@ function Login() {
       try {
         const response = await apiUserSignIn(body);
         dispatch(loginToken(response.token));
+        // dispatch(isListRender(true));
         localStorage.setItem('token', response.token);
-
-        // MySwal.fire({ 這邊要加個彈跳視窗!!!
-
-        // 成功登入後導回個人頁面
+        MySwalToast("登入成功", true);
         navigate("/etfadddiy");
       } catch (error) {
-        console.log(error);
+        MySwalToast("登入失敗", false);
       }
     })();
   };
 
   return (
     <>
-      <div className=" h-[calc(100vh_-_8.6rem)] sm:p-8 flex items-center justify-center  max-w-[1200px] mx-auto">
+      <div className=" min-h-[calc(100vh_-_23.5rem)] sm:p-8 flex items-center justify-center  max-w-[1200px] mx-auto">
         <div className="md:shadow-lg flex justify-center items-center  rounded-xl px-8  py-12 gap-8">
           <div className="outline outline-offset-2 outline-[#345FF8] p-8 rounded-lg shadow-lg md:w-1/2 md:p-12">
             <h1 className="h3 sm:h1 text-d1 mb-4 sm:mb-8">會員登入</h1>

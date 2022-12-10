@@ -12,9 +12,6 @@ import UserInfo from "./components/UserInfo";
 import { Provider } from "react-redux";
 import store from "./store";
 import DiyList from "./components/DIY/DiyList";
-import DiyItem from "./components/DIY/DiyItem";
-
-
 
 function App() {
   return (
@@ -28,12 +25,14 @@ function App() {
             <Route path="userinfo" element={<UserInfo />} />
             <Route path="error" element={<NotFound />} />
             <Route path=":category" element={<ETFListView />} >
-              <Route path=":userId" element={<ETFItem />} />
+              <Route path=":etfId" element={<ETFItem />} />
             </Route>
             <Route path="etfdiy" element={<DiyList />} >
-              <Route index element={<DiyItem />} />
+              <Route path=":etfId" element={<ETFItem />} />
+              <Route path="etfadddiy" element={<AddDiyETF />} />
+              <Route path=":etfId/edit" element={<AddDiyETF />} />
             </Route>
-            <Route path="etfadddiy" element={<AddDiyETF />} />
+            
             <Route path="compare" element={<Compare />} />
           </Route>
         </Routes>

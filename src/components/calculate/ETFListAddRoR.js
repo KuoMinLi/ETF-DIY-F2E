@@ -26,7 +26,7 @@ const ETFListAddRoR = async (data) => {
 
       // 計算漲跌幅
       const nowPrice = allPrice[0].close;
-      const lastPrice = allPrice[allPrice.length - 1].close;
+      const lastPrice = allPrice[19].close;
 
       if (nowPrice === null || lastPrice === null) {
         const changePercent = 0;

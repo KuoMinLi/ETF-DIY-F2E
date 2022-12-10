@@ -1,7 +1,11 @@
 import axios from "axios";
 
+const url =  'https://etf-diy-kml.herokuapp.com' //dev
+// const url =  'http://127.0.0.1:3085' // local
+
+
 const apiDIY = axios.create({
-  baseURL: "https://etf-diy-kml.herokuapp.com/diy",
+  baseURL: `${url}/diy`,
   timeout: 15000,
 });
 
@@ -16,6 +20,14 @@ const apiDIY = axios.create({
 //   }
 // ]
 
+export const apiDIYGetPublic = () => {
+  return apiDIY
+    .get("/public")
+    .then((res) => res.data)
+    .catch((error) => console.log(error));
+};
+
+
 export const apiDIYPost = (data, token) => {
   return apiDIY
     .post(
@@ -27,12 +39,37 @@ export const apiDIYPost = (data, token) => {
       }
     )
     .then((res) => res.data)
-    .catch((error) => console.log(error));
 };
+
+export const apiDIYPatch = (id, data, token) => {
+  return apiDIY
+    .patch(
+      `/${id}`, { data }, 
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    .then((res) => res.data)
+};
+
+
 
 export const apiDIYGet = (token) => {
   return apiDIY
     .get("/", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((res) => res.data)
+    .catch((error) => console.log(error));
+};
+
+export const apiDIYDelete = (id, token) => {
+  return apiDIY
+    .delete(`/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -1,6 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import MySwalToast from "./utilities/MySwalToast";
+import logo_icon from "./icon/logo_icon.png";
 
 const useDocumentEventListener = (eventName, handler, options) => {
   useEffect(() => {
@@ -10,15 +12,28 @@ const useDocumentEventListener = (eventName, handler, options) => {
 }
 
 const Header = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const token = useSelector(state => state.Token) || localStorage.getItem('token');
+  const isListRender = useSelector(state => state.ListRender);
+
+  // console.log(token, isListRender)
 
   const logoutToken = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('targetCode');
+    localStorage.removeItem('ratio');
+    MySwalToast("登出成功", true);
     return {
       type: "LOGOUT",
     }
   }
+
+  useEffect(() => {
+    if (token === null) {
+      navigate("/");
+    }
+  }, [token]);
 
   const handleReset = () => {
     setMenuShow(false);
@@ -41,7 +56,6 @@ const Header = () => {
 
   useDocumentEventListener('click', (e) => {
     if (ref.current && ref.current.contains(e.target)) {
-
       if (e.target.nodeName === "A") {
         handleReset();
       }
@@ -52,8 +66,13 @@ const Header = () => {
     <>
       <nav className="bg-d1 " >
         <div className="max-w-[1296px] mx-auto flex items-baseline  justify-between px-5 py-[25px] md:px-10 md:py-7  text-[28px]">
-          <h1 className=" w-[140px] leading-10   font-black text-btn-primary">
-            <Link to="/" >ETF自由配</Link>
+          <h1 className=" w-[188px] leading-10   font-black text-btn-primary">
+            <Link className="flex gap-2 items-center h-[40px]" to="/" >
+            <img className="h-full p-1" src={logo_icon} alt="" />
+            <span style={{
+              textShadow: "-2px 3px 0px #703eff",
+              color: "#fff"
+            }}>ETF自由配</span></Link>
           </h1>
           <span className="text-L1 md:hidden order-last cursor-pointer"
           onClick={ () => {handleMenuShow()}}>
@@ -71,19 +90,22 @@ const Header = () => {
               <Link to="/" >ETF自由配</Link>
             </li>
             <li className="cursor-pointer relative " >  
-              <span className="hover:font-bold md:hover:text-L1 cursor-pointer "  onClick={()=>{ handleEtfListShow() }}>ETF專區</span>
+              <span className="  md:hover:text-L1 cursor-pointer "  onClick={()=>{ handleEtfListShow() }}>ETF專區</span>
               <ul className={`rounded-lg md:absolute p-5 w-36  z-20 md:top-10 md:left-0   md:bg-L2 text-d1   ${isEtfListShow} `} > 
-                <li className="hover:font-bold md:hover:text-L1"><Link to="/index" >指數型</Link></li>
-                <li className="hover:font-bold md:hover:text-L1"><Link to="/topic" >主題型</Link></li>
-                <li className="hover:font-bold md:hover:text-L1"><Link to="/dividend" >高股息</Link></li>
-                <li className="hover:font-bold md:hover:text-L1"><Link to="liker" >我的收藏</Link></li>
+                <li className=" md:hover:text-L1"><Link to="/index" >指數型</Link></li>
+                <li className=" md:hover:text-L1"><Link to="/topic" >主題型</Link></li>
+                <li className=" md:hover:text-L1"><Link to="/dividend" >高股息</Link></li>
+                <li className=" md:hover:text-L1"><Link to="liker" >我的收藏</Link></li>
               </ul>
             </li>
-            <li className="hover:font-bold md:hover:text-L1">
-              <Link to="/etfadddiy">自組ETF</Link>
+            <li className=" md:hover:text-L1">
+              <Link to="/etfdiy">自組ETF</Link>
             </li>
-            <li className="hover:font-bold md:hover:text-L1">
+            <li className=" md:hover:text-L1">
             <Link to= "/compare">績效比較</Link>
+            </li>
+            <li className=" md:hover:text-L1 md:hidden">
+              {token ? <Link to="/userinfo">會員專區</Link> : <Link to="/login">會員專區</Link>}
             </li>
           </ul>
           <div className="hidden md:block">

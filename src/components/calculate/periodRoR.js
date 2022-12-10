@@ -14,7 +14,7 @@ const periodRoR = (data) => {
   const period = [
     { name: "五年", daysToSubtract: 1200 },
     { name: "三年", daysToSubtract: 960 },
-    { name: "一年", daysToSubtract: 240 },
+    { name: "一年", daysToSubtract: 235 },
     { name: "半年", daysToSubtract: 120 },
     { name: "一個月", daysToSubtract: 20 },
   ];

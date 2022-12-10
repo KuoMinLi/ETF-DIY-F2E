@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// const url =  'https://etf-diy-kml.herokuapp.com' //dev
-const url =  'http://127.0.0.1:3085' // local
+const url =  'https://etf-diy-kml.herokuapp.com' //dev
+// const url =  'http://127.0.0.1:3085' // local
 
 const etfAPIetflist = axios.create({
   baseURL: `${url}/etflist`,
@@ -43,6 +43,19 @@ export const addETFLike = (token, id) => {
     }
    }, {
     headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((res) => res.data)
+    .catch((error) => console.log(error));
+}
+
+export const deleteETFLike = (token, id) => {
+  return etfAPIetflike.delete(`/`, {
+    data: {
+      ETFid : id
+    }
+    ,headers: {
       Authorization: `Bearer ${token}`,
     },
   })

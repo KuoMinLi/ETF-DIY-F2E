@@ -73,19 +73,24 @@ export const fugleAPIGetOneYear = (userId) => {
 export const fugleAPIGetFiveYear = async (userId) => {
   let ans = [];
   for (let i = 1; i < 6; i++) {
+    try{
     const formDate = FormatDate(nowDate - i * ONEYEAR);
     const toDate = FormatDate(nowDate - (i - 1) * ONEYEAR);
     const data = await fugleAPIGet(
       userId, formDate, toDate
     );
-
-    // 確認取得的資料有滿一年，沒有則先加入後跳出迴圈
-    if (data.length > 240) {
+    if (data.length > 235) {
       ans = [...ans, ...data];
     } else {
       ans = [...ans, ...data];
       break;
     }
+    } catch (error) {
+      console.log(error);
+      break;
+    }
+    // 確認取得的資料有滿一年，沒有則先加入後跳出迴圈
+    
   }
   return ans;
 };

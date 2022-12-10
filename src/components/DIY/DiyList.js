@@ -1,22 +1,101 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, Link, useNavigate, useParams } from "react-router-dom";
+import { apiDIYGet } from "../../api/diyAPI";
+import { useSelector, useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
+import MySwalChangePage from "../utilities/MySwalChangePage";
 
 const DiyList = () => {
+  const navigate = useNavigate();
+  const { etfId } = useParams();
+  const [diyList, setDiyList] = useState([]);
+  const token =
+    useSelector((state) => state.Token) || localStorage.getItem("token");
+
+  const isListRenderstate = useSelector((state) => state.ListRender);
+  const [isListRender, setIsListRender] = useState(isListRenderstate);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isListRender) {
+      const isListRenderfun = (value) => {
+        return {
+          type: "isLISTRENDER",
+          payload: value,
+        };
+      };
+      dispatch(isListRenderfun(false));
+    }
+  }, [isListRender, dispatch]);
+
+
+  useEffect(() => {
+    if (token === null) {
+      MySwalChangePage("請先登入會員", navigate);
+    }
+  }, [token, navigate]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const result = await apiDIYGet(token);
+        setDiyList(result.data);
+        setIsListRender(isListRenderstate);
+
+      } catch (err) {
+        console.log(err);
+      }
+    })();
+  }, [isListRenderstate]);
+
+useEffect(() => {
+  if (etfId === undefined) {
+    if (diyList.length > 0) {
+      navigate(`/etfdiy/${diyList[0]._id}`);
+    } else {
+      navigate(`/etfdiy/etfadddiy`);
+    }
+  }
+}, [token, diyList]);
+
+
+
   return (
     <>
-       <div className="lg:flex mx-auto justify-between mt-4  max-w-[1280px] ">
-        <div className=" md:w-1/3  lg:w-1/4">
-          <ul className="flex md:block -mx-1 flex-wrap">
-            <li className="w-1/2 md:w-full px-1">
-              <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-gray-600 dark:text-gray-400 text-sm">近一個月</span>
-                  <span className="font-bold text-xl text-red-500">+1.2% ▲</span>
+      <div className="lg:flex mx-auto justify-between mt-4 px-3  max-w-[1296px] min-h-[calc(100vh_-_23.5rem)]">
+        <div className="  lg:w-1/4">
+          <ul className="flex lg:block -mx-1 flex-wrap">
+            {diyList.map((item) => {
+              return (
+                <li key={item._id} className="px-1 py-2 w-1/3 lg:w-auto">
+                  <Link
+                    to={`${item._id}`}
+                    className={`block cursor-pointer  border-2  shadow-lg hover:shadow-xl text-d2 bg-gray-100 transition duration-300 rounded-lg  mx-auto max-w-[200px] 
+                      ${
+                        item._id === etfId
+                          ? "border-[#345FF8] font-bold text-d1 "
+                          : ""
+                      }`}
+                  >
+                    <div className="p-4 flex items-center gap-4 ">
+                      <h3 className=" uppercase">{item.name}</h3>
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
+            <li className="px-1 py-2 w-1/3 lg:w-auto">
+              <Link
+                to="etfadddiy"
+                className="block  bg-gray-100 rounded-lg shadow-lg hover:shadow-xl transition duration-300 mx-auto max-w-[200px]"
+              >
+                <div className="p-4 flex items-center   gap-4">
+                  <h3 className="text-gray-700 uppercase">新增</h3>
+                  <span className="text-gray-500 ">
+                    <i className="fa-solid fa-plus"></i>
+                  </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600 dark:text-gray-400 text-sm">近三個月</span>
-                  <span className="font-bold text-xl text-red-500">+1.2% ▲</span>
-                </div>
-              </div>
+              </Link>
             </li>
           </ul>
         </div>
@@ -24,7 +103,6 @@ const DiyList = () => {
       </div>
     </>
   );
-}
+};
 
 export default DiyList;
-

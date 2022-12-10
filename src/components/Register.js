@@ -2,10 +2,20 @@ import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { apiUserSignUp } from "../api/userAPI";
 import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import MySwalToast from "./utilities/MySwalToast";
 
 const Register = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.Token) || localStorage.getItem("token");
+ 
+  useEffect(() => {
+    if (token !== null) {
+      navigate("/etfdiy");
+    }
+  }, [token, navigate]);
+
 
   const {
     register,
@@ -29,22 +39,18 @@ const Register = () => {
         const response = await apiUserSignUp(body);
         dispatch(loginToken(response.token));
         localStorage.setItem('token', response.token);
-
-         // MySwal.fire({ 這邊要加個彈跳視窗!!!
-
-        // 成功登入後導回個人頁面
+        MySwalToast("註冊成功", true);
         navigate("/userinfo");
       } catch (error) {
-        console.log(error);
+        MySwalToast(error.response.data.message, false);
       }
     })();
-    // 成功註冊後導回登入頁面 (todo)
-    // navigate("/login");
+    navigate("/login");
   };
 
   return (
     <>
-      <div className=" h-[calc(100vh_-_8.6rem)] sm:p-8 flex items-center justify-center  max-w-[1200px] mx-auto">
+      <div className=" min-h-[calc(100vh_-_23.5rem)] sm:p-8 flex items-center justify-center  max-w-[1200px] mx-auto">
         <div className="md:shadow-lg flex justify-center items-center  rounded-xl px-4 sm:px-8  py-12 gap-8">
           <div className="outline outline-offset-2 outline-[#345FF8] p-8  rounded-lg shadow-lg md:w-1/2  md:p-12">
             <h1 className="h3 sm:h1 text-d1 mb-4 sm:mb-8">會員註冊</h1>

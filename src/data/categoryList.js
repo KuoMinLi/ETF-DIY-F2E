@@ -1,4 +1,4 @@
-export const categoryList = { //git rebase practice
+export const categoryList = { 
   index: "指數型",
   topic: "主題型",
   dividend: "高股息",

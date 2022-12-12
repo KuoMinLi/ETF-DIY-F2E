@@ -41,7 +41,6 @@ const DiyList = () => {
         const result = await apiDIYGet(token);
         setDiyList(result.data);
         setIsListRender(isListRenderstate);
-
       } catch (err) {
         console.log(err);
       }

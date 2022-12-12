@@ -10,7 +10,11 @@
     @apply text-transparent from-[#345FF8] to-[#703EFF] bg-gradient-97 bg-clip-text;
   }
   .btn {
-    @apply text-L1 bg-btn-primary py-3 px-6 sm:py-4 sm:px-10   rounded-full;
+    @apply text-L1 bg-btn-primary py-3 px-6 md:py-4 md:px-10   rounded-full;
+  }
+
+  .table-item {
+    @apply md:py-4 md:px-6 md:min-w-[180px] py-3 px-3 min-w-[100px];
   }
 
   .btn-sm {

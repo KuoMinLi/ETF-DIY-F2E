@@ -1,7 +1,6 @@
-import { useMemo } from "react";
+import { codeNameData } from "../../data/codeNameData";
 
-const PieChartDataFormat = (ETFData, codeNameData) => {
-  const pieChartData = useMemo(() => {
+const PieChartDataFormat = (ETFData) => {
     const { content } = ETFData;
     // 避免資料還沒回來就先render
     if (!content) {
@@ -35,9 +34,6 @@ const PieChartDataFormat = (ETFData, codeNameData) => {
     // 只取前五名
     const top5 = pieChartData.slice(0, 5);
     return top5;
-  }, [ETFData, codeNameData]);
-
-  return pieChartData;
 };
 
 export default PieChartDataFormat;

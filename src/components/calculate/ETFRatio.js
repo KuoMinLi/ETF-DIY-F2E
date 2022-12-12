@@ -1,8 +1,5 @@
-import { useMemo } from "react";
-
 const ETFRatio = (ETFData) => {
   
-  const ETFRatioData = useMemo(() => {
     const { content } = ETFData;
     
     // 避免資料還沒回來就先render
@@ -21,9 +18,7 @@ const ETFRatio = (ETFData) => {
       percentage: otherPercentage.toFixed(2),
     };
 
-    const ans = [...top5, other];
-    return ans;
-  }, [ETFData]);
+    const ETFRatioData= [...top5, other];
 
   return ETFRatioData;
 };

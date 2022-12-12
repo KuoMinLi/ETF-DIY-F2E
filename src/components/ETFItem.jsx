@@ -2,7 +2,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import LineChart from "./LineChart";
 import PieChart from "./PieChart";
-import { codeNameData } from "../data/codeNameData";
 import { apiDIYGet, apiDIYDelete } from "../api/diyAPI";
 import periodRoR from "./calculate/periodRoR";
 import { useSelector, useDispatch } from "react-redux";
@@ -230,7 +229,7 @@ const ETFIItem = () => {
         <div className=" md:flex mt-4">
           <div className="md:w-1/2 mb-4">
             <h1 className="font-bold h3 py-2 text-center"> 產業占比</h1>
-            <PieChart chartData={PieChartDataFormat(ETFData, codeNameData)} />
+            <PieChart chartData={PieChartDataFormat(ETFData)} />
           </div>
           <table className="table-auto text-center mx-auto">
             <thead>

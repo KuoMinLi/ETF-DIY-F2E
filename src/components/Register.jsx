@@ -40,7 +40,7 @@ const Register = () => {
         dispatch(loginToken(response.token));
         localStorage.setItem('token', response.token);
         MySwalToast("註冊成功", true);
-        navigate("/userinfo");
+        navigate("/etfdiy/add");
       } catch (error) {
         MySwalToast(error.response.data.message, false);
       }

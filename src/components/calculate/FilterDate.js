@@ -12,8 +12,7 @@ const filterDate = (Array) => {
     const diffDate = longETFDate.filter((item) => !shortETFDate.includes(item));
     diffDate.forEach((item) => {
       longETF.splice(
-        longETF.findIndex((index) => index.date === item),
-        1
+        longETF.findIndex((index) => index.date === item), 1
       );
     });
   }

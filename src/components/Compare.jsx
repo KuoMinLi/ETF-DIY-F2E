@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useState, useEffect } from "react";
 import periodRoR from "./calculate/periodRoR";
 import LineChartDataFormat from "./chart/LineChartDataFormat";
+import PieChartDataFormat from "./chart/PieChartDataFormat";
 import getETFData from "./getData/getETFData";
 import getDiyData from "./getData/getDiyData";
 import LineChart from "./LineChart";
@@ -10,6 +11,8 @@ import { borderColor, backgroundColor } from "../data/chartColor";
 import { getETFList } from "../api/etfAPI";
 import { apiDIYGet } from "../api/diyAPI";
 import { useSelector } from "react-redux";
+import { codeNameData } from "../data/codeNameData";
+import ETFRatio from "./calculate/ETFRatio";
 
 const Compare = () => {
   const [inputCode, setInputCode] = useState(""); // 輸入的ETF code
@@ -69,7 +72,7 @@ const Compare = () => {
               const FiveYearData = res.ETFAvgPriceArr.reverse();
               const RoRData = periodRoR(FiveYearData);
               const LineData = res.ETFAvgPriceArr;
-              const ContentData = diyData.content;
+              const ContentData = res.diyData;
               setAllData((prev) => [
                 ...prev,
                 { ETFName, code, RoRData, LineData, ContentData },
@@ -104,12 +107,19 @@ const Compare = () => {
     const allLineDataFormat = allLineData.map((item) =>
       LineChartDataFormat(item)
     );
+
     allLineDataFormat.map((item, index) => {
       item.datasets[0].label = allData[index].ETFName;
       item.datasets[0].borderColor = borderColor[index];
       item.datasets[0].backgroundColor = backgroundColor[index];
     });
-    const totalLabel = allLineDataFormat.map((itme) => itme.labels);
+
+    const totalLabel = filterDate(
+      [...allLineDataFormat].map((itme) => itme.labels)
+    );
+    // const new1 = totalLabel[0];
+    // console.log(new1?.slice(5));
+    const len = totalLabel[0]?.length;
 
     const ans = {
       labels: totalLabel[0],
@@ -119,7 +129,7 @@ const Compare = () => {
     return ans;
   }, [allData]);
 
-  console.log(totalLineData);
+  // console.log(totalLineData);
 
   const totalRoRData = useMemo(() => {
     const allRoRData = [...allData].map((item) => item.RoRData);
@@ -139,6 +149,33 @@ const Compare = () => {
 
     return totalRoR;
   }, [allData]);
+  console.log(totalRoRData);
+
+  const totalRatioData = useMemo(() => {
+    const allRatioData = [...allData].map((item) => item.ContentData);
+    const allRatioDataFormat = allRatioData.map((item) => ETFRatio(item));
+    console.log(allRatioDataFormat);
+
+    const totalRatioTitle = [1, 2, 3, 4, 5];
+    const totalRatio = totalRatioTitle?.map((item, index) => {
+      const itemRatio = allRatioDataFormat.map((i) => {
+        if (i[index] === undefined) {
+          return 0;
+        }
+        return i[index];
+      });
+      return [item, ...itemRatio];
+    });
+
+    return totalRatio;
+  }, [allData]);
+  console.log(totalRatioData);
+
+  const totalPieData = useMemo(() => {
+    const allPieData = [...allData].map((item) => item.ContentData);
+    const allPieDataFormat = allPieData.map((item) => PieChartDataFormat(item));
+    return allPieDataFormat;
+  }, [allData]);
 
   const handleAddCode = () => {
     setETFCodes([...ETFCodes, inputCode]);
@@ -149,6 +186,7 @@ const Compare = () => {
     setETFCodes(ETFCodes.filter((item) => item !== code));
   };
 
+  console.log(allData);
   return (
     <>
       <div className="max-w-[1232px] mt-7 px-8 pb-8 sm:px-[50px] mx-auto min-h-[calc(100vh_-_24.5rem)]">
@@ -244,12 +282,12 @@ const Compare = () => {
                   handleAddCode();
                 }}
               >
-                新增個股
+                新增比較項目
               </button>
             </div>
           </form>
 
-          <div className="overflow-x-auto relative   shadow-md sm:rounded-lg ">
+          { allData.length !== 0 &&<div className="overflow-x-auto relative   shadow-md sm:rounded-lg ">
             <table className="w-full h5 text-left text-gray-500 dark:text-gray-400">
               <thead className="h4 sm:h3 text-gray-700 uppercase dark:text-gray-400">
                 <tr>
@@ -264,9 +302,13 @@ const Compare = () => {
                           <i className="fa-solid fa-chart-simple"></i>
                           <div className="flex flex-wrap items-end gap-1 relative">
                             <span>{item.ETFName}</span>
-                            <span className="h5">[{item.code}]</span>
+                            <span className="h5">
+                              {item.code.split("")[0] === "0"
+                                ? "[" + item.code + "]"
+                                : ""}
+                            </span>
                             <span
-                              className="text-sm font-bold z-10 absolute -top-2 right-0 cursor-pointer"
+                              className="text-sm font-bold z-10 absolute -top-2 -right-1 cursor-pointer"
                               onClick={() => {
                                 handleDeleteCode(item.code);
                               }}
@@ -299,7 +341,7 @@ const Compare = () => {
                       {item.map((i, index) => {
                         return (
                           <td
-                            key={i}
+                            key={index}
                             className={`
                           py-4 px-6 min-w-[180px]
                           ${index === 0 && "text-d1 font-bold "}
@@ -318,97 +360,67 @@ const Compare = () => {
             <div className="h-full py-4">
               <LineChart chartData={totalLineData} />
             </div>
-
-            <table className="w-full h5 text-left text-gray-500 dark:text-gray-400">
-              <thead className="h4 sm:h3 text-gray-700 uppercase dark:text-gray-400">
+            <table className="w-full h5 text-left text-gray-500 ">
+              <thead className="h4 sm:h3 text-gray-700 uppercase ">
                 <tr>
                   <th
                     scope="col"
-                    colSpan="4"
+                    colSpan="5"
                     className="py-3 px-6 bg-L2  dark:bg-gray-800"
                   >
-                    績效數據
+                    持倉數據
                   </th>
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th
-                    scope="row"
-                    className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
-                  >
-                    一個月
-                  </th>
-                  <td className="py-4 px-6">14.66%</td>
-                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">
-                    20.66%
-                  </td>
-                </tr>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th
-                    scope="row"
-                    className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
-                  >
-                    三個月
-                  </th>
-                  <td className="py-4 px-6">14.66%</td>
-                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">
-                    20.66%
-                  </td>
-                </tr>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th
-                    scope="row"
-                    className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
-                  >
-                    六個月
-                  </th>
-                  <td className="py-4 px-6">14.66%</td>
-                  <td className="py-4 px-6 bg-gray-50 dark:bg-gray-800">
-                    20.66%{" "}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <table className="w-full h5 text-left text-gray-500 dark:text-gray-400">
-              <thead className="h4 sm:h3 text-gray-700 uppercase dark:text-gray-400">
-                <tr>
-                  <th
-                    scope="col"
-                    colSpan="4"
-                    className="py-3 px-6 bg-L2  dark:bg-gray-800"
-                  >
-                    績效數據
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {totalRoRData?.map((item) => {
-                  return (
-                    <tr
-                      key={item}
-                      className="border-b border-gray-200 dark:border-gray-700 text-d1"
-                    >
-                      {item.map((i, index) => {
-                        return (
-                          <td
-                            key={i}
-                            className={`
-                          py-4 px-6 min-w-[180px]
-                          ${index === 0 && "text-d1 font-bold "}
-                          ${item.length < 4 ? "text-left" : "text-center"}
-                          `}
-                          >
-                            {index === 0 ? i : i + "%"}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
+                {totalRatioData?.map((item) => {
+                    return (
+                      <tr
+                        key={item}
+                        className="border-b border-gray-200 dark:border-gray-700 text-d1"
+                      >
+                        {item.map((i, index) => {
+                          return (
+                            <td
+                              key={index}
+                              className={`
+                            py-4 px-6 min-w-[180px]
+                            ${index === 0 && "text-d1 font-bold "}
+                            ${item.length < 4 ? "text-left" : "text-center"}
+                            `}
+                            >
+                              {index === 0 ? '持倉 Top'+i : 
+                              i.name === undefined ? '' : i.name + '[' + i.code +  ']：' + i.percentage + '%'}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
+                  <tr className="border-b border-gray-200  text-d1">
+                    <th className="py-4 px-6 min-w-[180px]">產業占比 Top1</th>
+                    {totalPieData?.map((item, index) => {
+                      return (
+                        <td
+                          key={index}
+                          className={`
+                            py-4 px-6 min-w-[180px]
+                            ${
+                              totalPieData.length < 3
+                                ? "text-left"
+                                : "text-center"
+                            }
+                            `}
+                        >
+                          {item[0].name + "： " + item[0].value.toFixed(2) + "%"}
+                        </td>
+                      );
+                    })}
+                  </tr>
               </tbody>
             </table>
           </div>
+          }
         </div>
       </div>
     </>

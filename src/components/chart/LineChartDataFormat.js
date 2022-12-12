@@ -17,8 +17,6 @@ const LineChartDataFormat = (data) => {
         },
       ],
     };
-
-  console.log(chartData)
   return chartData;
 }
 

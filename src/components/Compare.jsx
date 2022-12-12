@@ -3,10 +3,11 @@ import { useState, useEffect } from "react";
 import periodRoR from "./calculate/periodRoR";
 import LineChartDataFormat from "./chart/LineChartDataFormat";
 import getETFData from "./getData/getETFData";
+import getDiyData from "./getData/getDiyData";
 import LineChart from "./LineChart";
 import filterDate from "./calculate/FilterDate";
 import { borderColor, backgroundColor } from "../data/chartColor";
-import { getETFList } from '../api/etfAPI';
+import { getETFList } from "../api/etfAPI";
 import { apiDIYGet } from "../api/diyAPI";
 import { useSelector } from "react-redux";
 
@@ -22,10 +23,10 @@ const Compare = () => {
   const [diyList, setDiyList] = useState([]); // DIY清單
 
   const token =
-  useSelector((state) => state.Token) || localStorage.getItem("token");
+    useSelector((state) => state.Token) || localStorage.getItem("token");
 
   useEffect(() => {
-    (async() => {
+    (async () => {
       try {
         const result = await getETFList();
         setEtfList(result.data);
@@ -33,7 +34,7 @@ const Compare = () => {
         console.log(error);
       }
     })();
-  }, [])
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -43,8 +44,9 @@ const Compare = () => {
           return {
             ...item,
             id: item._id,
-            code:'',
-        }});
+            code: "",
+          };
+        });
         setDiyList(data);
       } catch (err) {
         console.log(err);
@@ -55,28 +57,35 @@ const Compare = () => {
   useEffect(() => {
     setAllData([]);
     ETFCodes.map(async (code) => {
-      if (etfList.map(item=>item.code).indexOf(code) === -1) {
-        if (diyList.map(item=>item.name).indexOf(code) === -1) {
+      if (etfList.map((item) => item.code).indexOf(code) === -1) {
+        if (diyList.map((item) => item.name).indexOf(code) === -1) {
           return;
         } else {
-          const diyData = diyList.filter(item=>item.name === code)[0];
-          // const ETFName = diyData.name;
-          // const FiveYearData = diyData.data.reverse();
-          // const RoRData = periodRoR(FiveYearData);
-          // const LineData = diyData.data;
-          // const ContentData = diyData.data;
-          // setAllData((prev) => [
-          //   ...prev,
-          //   { ETFName, code, RoRData, LineData, ContentData },
-          // ]);
-          // return;
+          const diyData = diyList.filter((item) => item.name === code)[0];
+          (async () => {
+            try {
+              const res = await getDiyData(diyData.id, token);
+              const ETFName = res.diyData.name;
+              const FiveYearData = res.ETFAvgPriceArr.reverse();
+              const RoRData = periodRoR(FiveYearData);
+              const LineData = res.ETFAvgPriceArr;
+              const ContentData = diyData.content;
+              setAllData((prev) => [
+                ...prev,
+                { ETFName, code, RoRData, LineData, ContentData },
+              ]);
+            } catch (error) {
+              console.log(error);
+            }
+          })();
+          return;
         }
       }
-      
+
       try {
         const res = await getETFData(code);
         const ETFName = res.itemName;
-        const FiveYearData = res.resultAll.reverse();   
+        const FiveYearData = res.resultAll.reverse();
         const RoRData = periodRoR(FiveYearData);
         const LineData = res.resultAll;
         const ContentData = res.ETFResultData;
@@ -90,37 +99,36 @@ const Compare = () => {
     });
   }, [ETFCodes]);
 
-
   const totalLineData = useMemo(() => {
     const allLineData = [...allData].map((item) => item.LineData);
-    const allLineDataFormat = allLineData.map((item) => LineChartDataFormat(item));
-    allLineDataFormat.map((item,index) => {
+    const allLineDataFormat = allLineData.map((item) =>
+      LineChartDataFormat(item)
+    );
+    allLineDataFormat.map((item, index) => {
       item.datasets[0].label = allData[index].ETFName;
       item.datasets[0].borderColor = borderColor[index];
       item.datasets[0].backgroundColor = backgroundColor[index];
     });
-    console.log(allLineDataFormat.length)
-    const totalLabel =  allLineDataFormat.map(itme=>itme.labels);
+    const totalLabel = allLineDataFormat.map((itme) => itme.labels);
 
-    console.log(filterDate(totalLabel).length)
-    
     const ans = {
       labels: totalLabel[0],
-      datasets: allLineDataFormat.map(item=>item.datasets[0])
-    }
-    
-    return ans;
+      datasets: allLineDataFormat.map((item) => item.datasets[0]),
+    };
 
+    return ans;
   }, [allData]);
 
-  console.log(totalLineData)
+  console.log(totalLineData);
 
-
-
-  const totalRoRData = useMemo (() => {
+  const totalRoRData = useMemo(() => {
     const allRoRData = [...allData].map((item) => item.RoRData);
-    const RoRTitle = [...allRoRData].map((item) => item.map((item) => item.name))[0];
-    const RoRData = [...allRoRData].map((item) => item.map((item) => item.data));
+    const RoRTitle = [...allRoRData].map((item) =>
+      item.map((item) => item.name)
+    )[0];
+    const RoRData = [...allRoRData].map((item) =>
+      item.map((item) => item.data)
+    );
 
     const totalRoR = RoRTitle?.map((item, index) => {
       const itemRoR = RoRData.map((i) => {
@@ -130,14 +138,7 @@ const Compare = () => {
     });
 
     return totalRoR;
-
   }, [allData]);
-
- 
-
-
-
-
 
   const handleAddCode = () => {
     setETFCodes([...ETFCodes, inputCode]);
@@ -155,9 +156,30 @@ const Compare = () => {
           <h1 className="h2 font-bold mb-4">ETF 績效比較</h1>
           <h2 className="h3 mb-4">熱門選擇</h2>
           <div className="space-x-4 mb-8">
-            <button className="btn h4" onClick={() => {setETFCodes(['0050','0056'])}}>指數VS高股息</button>
-            <button className="btn h4" onClick={() => {setETFCodes(['0053','0055'])}}>電子VS金融</button>
-            <button className="btn h4" onClick={() => {setETFCodes(['0050','0051'])}}>台灣前百大公司</button>
+            <button
+              className="btn h4"
+              onClick={() => {
+                setETFCodes(["0050", "0056"]);
+              }}
+            >
+              指數VS高股息
+            </button>
+            <button
+              className="btn h4"
+              onClick={() => {
+                setETFCodes(["0053", "0055"]);
+              }}
+            >
+              電子VS金融
+            </button>
+            <button
+              className="btn h4"
+              onClick={() => {
+                setETFCodes(["0050", "0051"]);
+              }}
+            >
+              台灣前百大公司
+            </button>
           </div>
 
           <form className="my-8">
@@ -194,27 +216,25 @@ const Compare = () => {
                 value={inputCode}
                 onChange={(e) => setInputCode(e.target.value)}
               />
-               <datalist id="code-list">
-               {
-                diyList.filter((item) =>
-                    item.name.includes(inputCode) 
-                  )
-                .map((etf) => (
-                  <option key={etf.id} value={etf.name}>
-                    自組ETF
-                  </option>
-                ))
-               }
+              <datalist id="code-list">
+                {diyList
+                  .filter((item) => item.name.includes(inputCode))
+                  .map((etf) => (
+                    <option key={etf.id} value={etf.name}>
+                      自組ETF
+                    </option>
+                  ))}
                 {etfList
-                  .filter((item) =>
-                    item.name.includes(inputCode) ||
-                    item.code.toString().includes(inputCode)
+                  .filter(
+                    (item) =>
+                      item.name.includes(inputCode) ||
+                      item.code.toString().includes(inputCode)
                   )
-                .map((etf) => (
-                  <option key={etf.id} value={etf.code}>
-                    {etf.name}
-                  </option>
-                ))}
+                  .map((etf) => (
+                    <option key={etf.id} value={etf.code}>
+                      {etf.name}
+                    </option>
+                  ))}
               </datalist>
 
               <button
@@ -236,9 +256,7 @@ const Compare = () => {
                   <th
                     className="sr-only py-3 px-6 bg-L1  dark:bg-gray-800"
                     scope="col"
-                  >
-                    
-                  </th>
+                  ></th>
                   {allData.map((item) => {
                     return (
                       <td key={item.code} className="">
@@ -247,8 +265,14 @@ const Compare = () => {
                           <div className="flex flex-wrap items-end gap-1 relative">
                             <span>{item.ETFName}</span>
                             <span className="h5">[{item.code}]</span>
-                            <span className="text-sm font-bold z-10 absolute -top-2 right-0 cursor-pointer"
-                            onClick={()=> {handleDeleteCode(item.code)}}><i className="fa-solid fa-xmark"></i></span>
+                            <span
+                              className="text-sm font-bold z-10 absolute -top-2 right-0 cursor-pointer"
+                              onClick={() => {
+                                handleDeleteCode(item.code);
+                              }}
+                            >
+                              <i className="fa-solid fa-xmark"></i>
+                            </span>
                           </div>
                         </div>
                       </td>
@@ -274,14 +298,15 @@ const Compare = () => {
                     >
                       {item.map((i, index) => {
                         return (
-                          <td key= {i}
-                          className= {`
+                          <td
+                            key={i}
+                            className={`
                           py-4 px-6 min-w-[180px]
                           ${index === 0 && "text-d1 font-bold "}
                           ${item.length < 4 ? "text-left" : "text-center"}
                           `}
                           >
-                            {index === 0 ? i : i+'%'}
+                            {index === 0 ? i : i + "%"}
                           </td>
                         );
                       })}
@@ -293,7 +318,7 @@ const Compare = () => {
             <div className="h-full py-4">
               <LineChart chartData={totalLineData} />
             </div>
-             
+
             <table className="w-full h5 text-left text-gray-500 dark:text-gray-400">
               <thead className="h4 sm:h3 text-gray-700 uppercase dark:text-gray-400">
                 <tr>
@@ -366,14 +391,15 @@ const Compare = () => {
                     >
                       {item.map((i, index) => {
                         return (
-                          <td key= {i}
-                          className= {`
+                          <td
+                            key={i}
+                            className={`
                           py-4 px-6 min-w-[180px]
                           ${index === 0 && "text-d1 font-bold "}
                           ${item.length < 4 ? "text-left" : "text-center"}
                           `}
                           >
-                            {index === 0 ? i : i+'%'}
+                            {index === 0 ? i : i + "%"}
                           </td>
                         );
                       })}

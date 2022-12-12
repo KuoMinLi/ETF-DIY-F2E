@@ -11,16 +11,12 @@ import { borderColor, backgroundColor } from "../data/chartColor";
 import { getETFList } from "../api/etfAPI";
 import { apiDIYGet } from "../api/diyAPI";
 import { useSelector } from "react-redux";
-import { codeNameData } from "../data/codeNameData";
+import MySwalToast from "./utilities/MySwalToast";
 import ETFRatio from "./calculate/ETFRatio";
 
 const Compare = () => {
   const [inputCode, setInputCode] = useState(""); // 輸入的ETF code
   const [ETFCodes, setETFCodes] = useState([]); // ETF code 資料
-  const [ETFName, setETFName] = useState(""); // ETF名稱
-  const [contentData, setContentData] = useState([]); // ETF content 資料
-  const [fiveYearData, setFiveYearData] = useState([]); //取回的五年資料
-  const [lineData, setLineData] = useState([]); // 線圖資料
   const [allData, setAllData] = useState([]); // 選取個股資料
   const [etfList, setEtfList] = useState([]); // ETF清單
   const [diyList, setDiyList] = useState([]); // DIY清單
@@ -61,28 +57,24 @@ const Compare = () => {
     setAllData([]);
     ETFCodes.map(async (code) => {
       if (etfList.map((item) => item.code).indexOf(code) === -1) {
-        if (diyList.map((item) => item.name).indexOf(code) === -1) {
-          return;
-        } else {
-          const diyData = diyList.filter((item) => item.name === code)[0];
-          (async () => {
-            try {
-              const res = await getDiyData(diyData.id, token);
-              const ETFName = res.diyData.name;
-              const FiveYearData = res.ETFAvgPriceArr.reverse();
-              const RoRData = periodRoR(FiveYearData);
-              const LineData = res.ETFAvgPriceArr;
-              const ContentData = res.diyData;
-              setAllData((prev) => [
-                ...prev,
-                { ETFName, code, RoRData, LineData, ContentData },
-              ]);
-            } catch (error) {
-              console.log(error);
-            }
-          })();
-          return;
-        }
+        const diyData = diyList.filter((item) => item.name === code)[0];
+        (async () => {
+          try {
+            const res = await getDiyData(diyData.id, token);
+            const ETFName = res.diyData.name;
+            const FiveYearData = res.ETFAvgPriceArr.reverse();
+            const RoRData = periodRoR(FiveYearData);
+            const LineData = res.ETFAvgPriceArr;
+            const ContentData = res.diyData;
+            setAllData((prev) => [
+              ...prev,
+              { ETFName, code, RoRData, LineData, ContentData },
+            ]);
+          } catch (error) {
+            console.log(error);
+          }
+        })();
+        return;
       }
 
       try {
@@ -112,14 +104,12 @@ const Compare = () => {
       item.datasets[0].label = allData[index].ETFName;
       item.datasets[0].borderColor = borderColor[index];
       item.datasets[0].backgroundColor = backgroundColor[index];
+      return item;
     });
 
     const totalLabel = filterDate(
       [...allLineDataFormat].map((itme) => itme.labels)
     );
-    // const new1 = totalLabel[0];
-    // console.log(new1?.slice(5));
-    const len = totalLabel[0]?.length;
 
     const ans = {
       labels: totalLabel[0],
@@ -149,12 +139,10 @@ const Compare = () => {
 
     return totalRoR;
   }, [allData]);
-  console.log(totalRoRData);
 
   const totalRatioData = useMemo(() => {
     const allRatioData = [...allData].map((item) => item.ContentData);
     const allRatioDataFormat = allRatioData.map((item) => ETFRatio(item));
-    console.log(allRatioDataFormat);
 
     const totalRatioTitle = [1, 2, 3, 4, 5];
     const totalRatio = totalRatioTitle?.map((item, index) => {
@@ -169,7 +157,6 @@ const Compare = () => {
 
     return totalRatio;
   }, [allData]);
-  console.log(totalRatioData);
 
   const totalPieData = useMemo(() => {
     const allPieData = [...allData].map((item) => item.ContentData);
@@ -178,6 +165,22 @@ const Compare = () => {
   }, [allData]);
 
   const handleAddCode = () => {
+    if (inputCode === "") {
+      MySwalToast("請輸入查詢股票代碼", false);
+      return;
+    }
+
+    if (ETFCodes.indexOf(inputCode) !== -1) {
+      MySwalToast("股票代碼重複", false);
+      return;
+    }
+
+    if (etfList.map((item) => item.code).indexOf(inputCode) === -1) {
+      if (diyList.map((item) => item.name).indexOf(inputCode) === -1) {
+        MySwalToast("請輸入正確股票代碼", false);
+        return;
+      }
+    }
     setETFCodes([...ETFCodes, inputCode]);
     setInputCode("");
   };
@@ -186,7 +189,6 @@ const Compare = () => {
     setETFCodes(ETFCodes.filter((item) => item !== code));
   };
 
-  console.log(allData);
   return (
     <>
       <div className="max-w-[1232px] mt-7 px-8 pb-8 sm:px-[50px] mx-auto min-h-[calc(100vh_-_24.5rem)]">
@@ -287,93 +289,94 @@ const Compare = () => {
             </div>
           </form>
 
-          { allData.length !== 0 &&<div className="overflow-x-auto relative   shadow-md sm:rounded-lg ">
-            <table className="w-full h5 text-left text-gray-500 dark:text-gray-400">
-              <thead className="h4 sm:h3 text-gray-700 uppercase dark:text-gray-400">
-                <tr>
-                  <th
-                    className="sr-only py-3 px-6 bg-L1  dark:bg-gray-800"
-                    scope="col"
-                  ></th>
-                  {allData.map((item) => {
-                    return (
-                      <td key={item.code} className="">
-                        <div className="ml-4 flex items-center space-x-2 pb-2">
-                          <i className="fa-solid fa-chart-simple"></i>
-                          <div className="flex flex-wrap items-end gap-1 relative">
-                            <span>{item.ETFName}</span>
-                            <span className="h5">
-                              {item.code.split("")[0] === "0"
-                                ? "[" + item.code + "]"
-                                : ""}
-                            </span>
-                            <span
-                              className="text-sm font-bold z-10 absolute -top-2 -right-1 cursor-pointer"
-                              onClick={() => {
-                                handleDeleteCode(item.code);
-                              }}
-                            >
-                              <i className="fa-solid fa-xmark"></i>
-                            </span>
+          {allData.length !== 0 && (
+            <div className="overflow-x-auto relative   shadow-md sm:rounded-lg ">
+              <table className="w-full h5 text-left text-gray-500 dark:text-gray-400">
+                <thead className="h4 sm:h3 text-gray-700 uppercase dark:text-gray-400">
+                  <tr>
+                    <th
+                      className="sr-only py-3 px-6 bg-L1  dark:bg-gray-800"
+                      scope="col"
+                    ></th>
+                    {allData.map((item) => {
+                      return (
+                        <td key={item.code} className="">
+                          <div className="ml-4 flex items-center space-x-2 pb-2">
+                            <i className="fa-solid fa-chart-simple"></i>
+                            <div className="flex flex-wrap items-end gap-1 relative">
+                              <span>{item.ETFName}</span>
+                              <span className="h5">
+                                {item.code.split("")[0] === "0"
+                                  ? "[" + item.code + "]"
+                                  : ""}
+                              </span>
+                              <span
+                                className="text-sm font-bold z-10 absolute -top-2 -right-1 cursor-pointer"
+                                onClick={() => {
+                                  handleDeleteCode(item.code);
+                                }}
+                              >
+                                <i className="fa-solid fa-xmark"></i>
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                    );
-                  })}
-                </tr>
-                <tr>
-                  <th
-                    scope="col"
-                    colSpan="5"
-                    className="py-3 px-6 bg-L2  dark:bg-gray-800"
-                  >
-                    績效數據
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {totalRoRData?.map((item) => {
-                  return (
-                    <tr
-                      key={item}
-                      className="border-b border-gray-200 dark:border-gray-700 text-d1"
+                        </td>
+                      );
+                    })}
+                  </tr>
+                  <tr>
+                    <th
+                      scope="col"
+                      colSpan="5"
+                      className="py-3 px-6 bg-L2  dark:bg-gray-800"
                     >
-                      {item.map((i, index) => {
-                        return (
-                          <td
-                            key={index}
-                            className={`
+                      績效數據
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {totalRoRData?.map((item) => {
+                    return (
+                      <tr
+                        key={item}
+                        className="border-b border-gray-200 dark:border-gray-700 text-d1"
+                      >
+                        {item.map((i, index) => {
+                          return (
+                            <td
+                              key={index}
+                              className={`
                           py-4 px-6 min-w-[180px]
                           ${index === 0 && "text-d1 font-bold "}
                           ${item.length < 4 ? "text-left" : "text-center"}
                           `}
-                          >
-                            {index === 0 ? i : i + "%"}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            <div className="h-full py-4">
-              <LineChart chartData={totalLineData} />
-            </div>
-            <table className="w-full h5 text-left text-gray-500 ">
-              <thead className="h4 sm:h3 text-gray-700 uppercase ">
-                <tr>
-                  <th
-                    scope="col"
-                    colSpan="5"
-                    className="py-3 px-6 bg-L2  dark:bg-gray-800"
-                  >
-                    持倉數據
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {totalRatioData?.map((item) => {
+                            >
+                              {index === 0 ? i : i + "%"}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              <div className="h-full py-4">
+                <LineChart chartData={totalLineData} />
+              </div>
+              <table className="w-full h5 text-left text-gray-500 ">
+                <thead className="h4 sm:h3 text-gray-700 uppercase ">
+                  <tr>
+                    <th
+                      scope="col"
+                      colSpan="5"
+                      className="py-3 px-6 bg-L2  dark:bg-gray-800"
+                    >
+                      持倉數據
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {totalRatioData?.map((item) => {
                     return (
                       <tr
                         key={item}
@@ -389,8 +392,16 @@ const Compare = () => {
                             ${item.length < 4 ? "text-left" : "text-center"}
                             `}
                             >
-                              {index === 0 ? '持倉 Top'+i : 
-                              i.name === undefined ? '' : i.name + '[' + i.code +  ']：' + i.percentage + '%'}
+                              {index === 0
+                                ? "持倉 Top" + i
+                                : i.name === undefined
+                                ? ""
+                                : i.name +
+                                  "[" +
+                                  i.code +
+                                  "]：" +
+                                  i.percentage +
+                                  "%"}
                             </td>
                           );
                         })}
@@ -412,15 +423,18 @@ const Compare = () => {
                             }
                             `}
                         >
-                          {item[0].name + "： " + item[0].value.toFixed(2) + "%"}
+                          {item[0].name +
+                            "： " +
+                            item[0].value.toFixed(2) +
+                            "%"}
                         </td>
                       );
                     })}
                   </tr>
-              </tbody>
-            </table>
-          </div>
-          }
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </>

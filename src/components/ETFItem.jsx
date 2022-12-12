@@ -2,7 +2,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import LineChart from "./LineChart";
 import PieChart from "./PieChart";
-import { codeNameData } from "../data/codeNameData";
 import { apiDIYGet, apiDIYDelete } from "../api/diyAPI";
 import periodRoR from "./calculate/periodRoR";
 import { useSelector, useDispatch } from "react-redux";

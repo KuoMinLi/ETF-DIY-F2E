@@ -201,7 +201,7 @@ const ETFIItem = () => {
       </div>
       <div className="mt-5 ">
         <div className=" moverflow-x-scroll  my-8">
-          <table className="table-auto text-center w-full mx-auto shadow-sm px-8">
+          {/* <table className="table-auto text-center w-full mx-auto shadow-sm px-8">
             <thead>
               <tr>
                 <th className="px-4 py-2">期間</th>
@@ -224,7 +224,7 @@ const ETFIItem = () => {
                 })}
               </tr>
             </tbody>
-          </table>
+          </table> */}
         </div>
         <div className=" md:flex mt-4">
           <div className="md:w-1/2 mb-4">

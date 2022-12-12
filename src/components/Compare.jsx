@@ -181,6 +181,12 @@ const Compare = () => {
         return;
       }
     }
+    console.log(ETFCodes.length);
+    if (ETFCodes.length >= 4) {
+      MySwalToast("最多只能比較四支股票", false);
+      return;
+    }
+
     setETFCodes([...ETFCodes, inputCode]);
     setInputCode("");
   };
@@ -192,12 +198,12 @@ const Compare = () => {
   return (
     <>
       <div className="max-w-[1232px] mt-7 px-8 pb-8 sm:px-[50px] mx-auto min-h-[calc(100vh_-_24.5rem)]">
-        <div className="text-start  min-w-[900px] mx-auto ">
+        <div className="text-start   mx-auto ">
           <h1 className="h2 font-bold mb-4">ETF 績效比較</h1>
           <h2 className="h3 mb-4">熱門選擇</h2>
-          <div className="space-x-4 mb-8">
+          <div className="gap-4 flex flex-col items-start md:space-x-4 md:mb-8  md:inline">
             <button
-              className="btn h4"
+              className="btn h5 md:h4"
               onClick={() => {
                 setETFCodes(["0050", "0056"]);
               }}
@@ -205,7 +211,7 @@ const Compare = () => {
               指數VS高股息
             </button>
             <button
-              className="btn h4"
+              className="btn h5 md:h4"
               onClick={() => {
                 setETFCodes(["0053", "0055"]);
               }}
@@ -213,7 +219,7 @@ const Compare = () => {
               電子VS金融
             </button>
             <button
-              className="btn h4"
+              className="btn h5 md:h4"
               onClick={() => {
                 setETFCodes(["0050", "0051"]);
               }}
@@ -251,8 +257,8 @@ const Compare = () => {
                 type="search"
                 id="code-search"
                 list="code-list"
-                className="h-[68px] sm:h-[76px] rounded-full block w-full   p-4 pl-10 h4 sm:h3 text-gray-900 border border-gray-500  bg-gray-50 focus:ring-btn-primary focus:border-btn-primary "
-                placeholder="輸入關鍵字、股票代碼搜尋"
+                className="h-[54px] md:h-[76px] rounded-full block w-full   p-4 pl-10  h4 md:h3 text-gray-900 border border-gray-500  bg-gray-50  placeholder:h5 md:placeholder:h4"
+                placeholder="輸入股票代碼搜尋"
                 value={inputCode}
                 onChange={(e) => setInputCode(e.target.value)}
               />
@@ -279,7 +285,7 @@ const Compare = () => {
 
               <button
                 type="button"
-                className="absolute right-2.5 bottom-2.5 btn h4 "
+                className="absolute right-1.5 md:right-2.5 bottom-1.5 md:bottom-2.5 btn md:h4  h5"
                 onClick={() => {
                   handleAddCode();
                 }}
@@ -290,149 +296,151 @@ const Compare = () => {
           </form>
 
           {allData.length !== 0 && (
-            <div className="overflow-x-auto relative   shadow-md sm:rounded-lg ">
-              <table className="w-full h5 text-left text-gray-500 dark:text-gray-400">
-                <thead className="h4 sm:h3 text-gray-700 uppercase dark:text-gray-400">
-                  <tr>
-                    <th
-                      className="sr-only py-3 px-6 bg-L1  dark:bg-gray-800"
-                      scope="col"
-                    ></th>
-                    {allData.map((item) => {
-                      return (
-                        <td key={item.code} className="">
-                          <div className="ml-4 flex items-center space-x-2 pb-2">
-                            <i className="fa-solid fa-chart-simple"></i>
-                            <div className="flex flex-wrap items-end gap-1 relative">
-                              <span>{item.ETFName}</span>
-                              <span className="h5">
-                                {item.code.split("")[0] === "0"
-                                  ? "[" + item.code + "]"
-                                  : ""}
-                              </span>
-                              <span
-                                className="text-sm font-bold z-10 absolute -top-2 -right-1 cursor-pointer"
-                                onClick={() => {
-                                  handleDeleteCode(item.code);
-                                }}
-                              >
-                                <i className="fa-solid fa-xmark"></i>
-                              </span>
+            <div className="overflow-x-auto">
+              <div className=" relative   min-w-[550px] shadow-md sm:rounded-lg ">
+                <table className="w-full h5 text-left  text-gray-500 dark:text-gray-400">
+                  <thead className="h4 sm:h3 text-gray-700 uppercase dark:text-gray-400">
+                    <tr>
+                      <th
+                        className="sr-only py-3 px-6 bg-L1  dark:bg-gray-800"
+                        scope="col"
+                      ></th>
+                      {allData.map((item) => {
+                        return (
+                          <td key={item.code} className="">
+                            <div className="ml-4 flex items-center space-x-2 pb-2">
+                              <i className="fa-solid fa-chart-simple"></i>
+                              <div className="flex flex-wrap items-end gap-1 relative">
+                                <span>{item.ETFName}</span>
+                                <span className="h5">
+                                  {item.code.split("")[0] === "0"
+                                    ? "[" + item.code + "]"
+                                    : ""}
+                                </span>
+                                <span
+                                  className="text-sm font-bold z-10 absolute -top-2 -right-1 cursor-pointer"
+                                  onClick={() => {
+                                    handleDeleteCode(item.code);
+                                  }}
+                                >
+                                  <i className="fa-solid fa-xmark"></i>
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                      );
-                    })}
-                  </tr>
-                  <tr>
-                    <th
-                      scope="col"
-                      colSpan="5"
-                      className="py-3 px-6 bg-L2  dark:bg-gray-800"
-                    >
-                      績效數據
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {totalRoRData?.map((item) => {
-                    return (
-                      <tr
-                        key={item}
-                        className="border-b border-gray-200 dark:border-gray-700 text-d1"
+                          </td>
+                        );
+                      })}
+                    </tr>
+                    <tr>
+                      <th
+                        scope="col"
+                        colSpan="5"
+                        className="py-3 px-6 bg-L2  dark:bg-gray-800"
                       >
-                        {item.map((i, index) => {
-                          return (
-                            <td
-                              key={index}
-                              className={`
-                          py-4 px-6 min-w-[180px]
+                        績效數據
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {totalRoRData?.map((item) => {
+                      return (
+                        <tr
+                          key={item}
+                          className="border-b border-gray-200 dark:border-gray-700 text-d1"
+                        >
+                          {item.map((i, index) => {
+                            return (
+                              <td
+                                key={index}
+                                className={`
+                          table-item
                           ${index === 0 && "text-d1 font-bold "}
                           ${item.length < 4 ? "text-left" : "text-center"}
                           `}
-                            >
-                              {index === 0 ? i : i + "%"}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-              <div className="h-full py-4">
-                <LineChart chartData={totalLineData} />
-              </div>
-              <table className="w-full h5 text-left text-gray-500 ">
-                <thead className="h4 sm:h3 text-gray-700 uppercase ">
-                  <tr>
-                    <th
-                      scope="col"
-                      colSpan="5"
-                      className="py-3 px-6 bg-L2  dark:bg-gray-800"
-                    >
-                      持倉數據
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {totalRatioData?.map((item) => {
-                    return (
-                      <tr
-                        key={item}
-                        className="border-b border-gray-200 dark:border-gray-700 text-d1"
+                              >
+                                {index === 0 ? i : i + "%"}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                <div className="h-full py-4">
+                  <LineChart chartData={totalLineData} />
+                </div>
+                <table className="w-full h5 text-left text-gray-500 ">
+                  <thead className="h4 sm:h3 text-gray-700 uppercase ">
+                    <tr>
+                      <th
+                        scope="col"
+                        colSpan="5"
+                        className="py-3 px-6 bg-L2  dark:bg-gray-800"
                       >
-                        {item.map((i, index) => {
-                          return (
-                            <td
-                              key={index}
-                              className={`
-                            py-4 px-6 min-w-[180px]
+                        持倉數據
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {totalRatioData?.map((item) => {
+                      return (
+                        <tr
+                          key={item}
+                          className="border-b border-gray-200 dark:border-gray-700 text-d1"
+                        >
+                          {item.map((i, index) => {
+                            return (
+                              <td
+                                key={index}
+                                className={`
+                            table-item
                             ${index === 0 && "text-d1 font-bold "}
                             ${item.length < 4 ? "text-left" : "text-center"}
                             `}
-                            >
-                              {index === 0
-                                ? "持倉 Top" + i
-                                : i.name === undefined
-                                ? ""
-                                : i.name +
-                                  "[" +
-                                  i.code +
-                                  "]：" +
-                                  i.percentage +
-                                  "%"}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
-                  <tr className="border-b border-gray-200  text-d1">
-                    <th className="py-4 px-6 min-w-[180px]">產業占比 Top1</th>
-                    {totalPieData?.map((item, index) => {
-                      return (
-                        <td
-                          key={index}
-                          className={`
-                            py-4 px-6 min-w-[180px]
+                              >
+                                {index === 0
+                                  ? "持倉 Top" + i
+                                  : i.name === undefined
+                                  ? ""
+                                  : i.name +
+                                    "[" +
+                                    i.code +
+                                    "]：" +
+                                    i.percentage +
+                                    "%"}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })}
+                    <tr className="border-b border-gray-200  text-d1">
+                      <th className="table-item">產業占比 Top1</th>
+                      {totalPieData?.map((item, index) => {
+                        return (
+                          <td
+                            key={index}
+                            className={`
+                            table-item
                             ${
                               totalPieData.length < 3
                                 ? "text-left"
                                 : "text-center"
                             }
                             `}
-                        >
-                          {item[0].name +
-                            "： " +
-                            item[0].value.toFixed(2) +
-                            "%"}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                </tbody>
-              </table>
+                          >
+                            {item[0].name +
+                              "： " +
+                              item[0].value.toFixed(2) +
+                              "%"}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>

@@ -64,6 +64,7 @@ const AddDiyETF = () => {
   }, [etfId, myDIYETF]);
 
   const setContent = (data) => {
+    setAllData([]);
     setInputName(data.name);
     setTargetCode(data.content.map((item) => item.code));
     setRatio(
@@ -73,6 +74,8 @@ const AddDiyETF = () => {
       }, {})
     );
   };
+
+
 
   const handleClickPublicETF = (_id) => {
     const target = publicETF.find((item) => item._id === _id);
@@ -283,6 +286,8 @@ const AddDiyETF = () => {
     localStorage.removeItem("targetCode");
     localStorage.removeItem("ratio");
   };
+
+  console.log(1,tableData,totalRatio);
 
   return (
     <>

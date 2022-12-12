@@ -52,7 +52,7 @@ useEffect(() => {
     if (diyList.length > 0) {
       navigate(`/etfdiy/${diyList[0]._id}`);
     } else {
-      navigate(`/etfdiy/etfadddiy`);
+      navigate(`/etfdiy/add`);
     }
   }
 }, [token, diyList]);
@@ -85,7 +85,7 @@ useEffect(() => {
             })}
             <li className="px-1 py-2 w-1/3 lg:w-auto">
               <Link
-                to="etfadddiy"
+                to="add"
                 className="block  bg-gray-100 rounded-lg shadow-lg hover:shadow-xl transition duration-300 mx-auto max-w-[200px]"
               >
                 <div className="p-4 flex items-center   gap-4">

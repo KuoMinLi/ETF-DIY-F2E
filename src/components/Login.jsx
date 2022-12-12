@@ -47,7 +47,7 @@ const Login = () => {
         // dispatch(isListRender(true));
         localStorage.setItem('token', response.token);
         MySwalToast("登入成功", true);
-        navigate("/etfadddiy");
+        navigate("/etfdiy/add");
       } catch (error) {
         MySwalToast("登入失敗", false);
       }

@@ -27,13 +27,12 @@ const ETFIItem = () => {
   const token =
     useSelector((state) => state.Token) || localStorage.getItem("token");
 
-    const isListRender = (value) => {
-      return {
-        type: "isLISTRENDER",
-        payload: value,
-      };
+  const isListRender = (value) => {
+    return {
+      type: "isLISTRENDER",
+      payload: value,
     };
-
+  };
 
   // 監聽期間變化
   const changePeriod = (num) => {
@@ -197,24 +196,31 @@ const ETFIItem = () => {
             近三年
           </button>
         </div>
-        <LineChart className="h-full" chartData={LineChartDataFormat(data)} />
+        <div className="overflow-x-auto "></div>
       </div>
       <div className="mt-5 ">
-        <div className=" moverflow-x-scroll  my-8">
-          {/* <table className="table-auto text-center w-full mx-auto shadow-sm px-8">
+        <div className=" overflow-x-auto  py-8">
+          <div className="pb-5">
+            <LineChart
+              className="h-full"
+              chartData={LineChartDataFormat(data)}
+            />
+          </div>
+
+          <table className="table-auto text-center w-full mx-auto shadow-sm  px-8 min-w-[600px]  md:h4">
             <thead>
               <tr>
-                <th className="px-4 py-2">期間</th>
-                <th className="px-4 py-2">近五年</th>
-                <th className="px-4 py-2">近三年</th>
-                <th className="px-4 py-2">近一年</th>
-                <th className="px-4 py-2">近半年</th>
-                <th className="px-4 py-2">近一個月</th>
+                <th className="px-4 py-2 md:py-4">期間</th>
+                <th className="px-4 py-2 md:py-4">近五年</th>
+                <th className="px-4 py-2 md:py-4">近三年</th>
+                <th className="px-4 py-2 md:py-4">近一年</th>
+                <th className="px-4 py-2 md:py-4">近半年</th>
+                <th className="px-4 py-2 md:py-4">近一個月</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td className="border px-4 py-2">報酬率(%)</td>
+                <td className="border px-4 py-2 md:py-4">報酬率(%)</td>
                 {periodRoR(allData).map((item, index) => {
                   return (
                     <td key={`td_${index}`} className="border px-4 py-2">
@@ -224,7 +230,7 @@ const ETFIItem = () => {
                 })}
               </tr>
             </tbody>
-          </table> */}
+          </table>
         </div>
         <div className=" md:flex mt-4">
           <div className="md:w-1/2 mb-4">
@@ -241,8 +247,10 @@ const ETFIItem = () => {
             <tbody className="shadow-md ">
               {ETFRatio(ETFData)?.map((item) => {
                 return (
-                  <tr key={item.name} >
-                    <td className="border px-4 py-2 font-medium">{item.name}</td>
+                  <tr key={item.name}>
+                    <td className="border px-4 py-2 font-medium">
+                      {item.name}
+                    </td>
                     <td className="border px-4 py-2">{item.percentage}</td>
                   </tr>
                 );

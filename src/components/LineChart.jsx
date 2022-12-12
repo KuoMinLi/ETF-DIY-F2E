@@ -4,7 +4,7 @@ import { Chart as ChartJS } from "chart.js/auto";
 
 function LineChart({ chartData }) {
   return (
-    <div className=" md:max-w-[700px]  lg:max-w-[650px] xl:max-w-[750px] mx-auto">
+    <div className="min-w-[600px]  md:max-w-[700px]  lg:max-w-[650px] xl:max-w-[750px] mx-auto">
       <Line data={chartData} />
     </div>
   );

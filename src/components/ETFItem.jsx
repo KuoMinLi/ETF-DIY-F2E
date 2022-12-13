@@ -44,6 +44,7 @@ const ETFIItem = () => {
 
   // 取得ETF資料
   useEffect(() => {
+    window.scrollTo(0, 0);
     if (etfId.split("").length > 6) {
       return;
     }

@@ -15,9 +15,6 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const token = useSelector(state => state.Token) || localStorage.getItem('token');
-  const isListRender = useSelector(state => state.ListRender);
-
-  // console.log(token, isListRender)
 
   const logoutToken = () => {
     localStorage.removeItem('token');
@@ -44,7 +41,7 @@ const Header = () => {
   const handleMenuShow = () => {
     setMenuShow(!menushow);
   };
-  const isMenuShow = menushow ? "max-h-fit bg-L1 p-8" : "max-h-[0px]";
+  const isMenuShow = menushow ? "max-h-fit bg-L2 p-8" : "max-h-[0px]";
 
   const [etfListShow, setEtfListShow] = useState(false);
   const handleEtfListShow = () => {
@@ -65,7 +62,7 @@ const Header = () => {
   return (
     <>
       <nav className="bg-d1 " >
-        <div className="max-w-[1296px] mx-auto flex items-baseline  justify-between px-5 py-[25px] md:px-10 md:py-7  text-[28px]">
+        <div className="max-w-[1296px] mx-auto flex items-baseline  justify-between px-5 py-[25px] lg:px-10 md:py-7  text-[28px]">
           <h1 className=" w-[188px] leading-10   font-black text-btn-primary">
             <Link className="flex gap-2 items-center h-[40px]" to="/" >
             <img className="h-full p-1" src={logo_icon} alt="" />
@@ -81,7 +78,7 @@ const Header = () => {
           <ul className={`text-d1 md:text-L2 h3 md:flex  item-center 
           px-10 rounded-lg  md:space-x-5 overflow-hidden md:overflow-visible right-5 md:right-0
            top-24 md:-top-7  md:w-auto  z-20  absolute 
-          md:transition-all md:duration-300 w-[335px] 
+          md:transition-all md:duration-300 
           md:relative  ${isMenuShow} `} ref={ref}>
             <span>
               <i className="md:hidden fa-solid fa-times absolute right-10 top-10 cursor-pointer" onClick={ () => {handleMenuShow()}}></i>
@@ -105,7 +102,8 @@ const Header = () => {
             <Link to= "/compare">績效比較</Link>
             </li>
             <li className=" md:hover:text-L1 md:hidden">
-              {token ? <Link to="/userinfo">會員專區</Link> : <Link to="/login">會員專區</Link>}
+              {token ? <Link to="/" onClick={() => { dispatch(logoutToken()) }}>登出</Link> 
+              : <Link to="/login">登入/註冊</Link>}
             </li>
           </ul>
           <div className="hidden md:block">

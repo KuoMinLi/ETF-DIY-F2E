@@ -12,6 +12,7 @@ import LineChartDataFormat from "./chart/LineChartDataFormat";
 import PieChartDataFormat from "./chart/PieChartDataFormat";
 import getETFData from "./getData/getETFData";
 import ETFRatio from "./calculate/ETFRatio";
+import loadingSVG from "./icon/Loading.svg";
 
 const ETFIItem = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const ETFIItem = () => {
   const [ETFData, setETFData] = useState([]); // ETF content 資料
   const [isETFLike, setIsETFLike] = useState(false); // 是否已收藏
   const [isDIY, setIsDIY] = useState(false); // 是否為DIY
+  const [isLoad, setIsLoad] = useState(false); // 是否已載入
 
   const token =
     useSelector((state) => state.Token) || localStorage.getItem("token");
@@ -47,43 +49,55 @@ const ETFIItem = () => {
     }
     (async () => {
       try {
+        setIsLoad(true);
         const res = await getETFData(etfId);
         setETFName(res.itemName);
         setAllData(res.resultAll);
         setData(res.resultAll.reverse());
         setETFData(res.ETFResultData);
+        setIsLoad(false);
       } catch (error) {
         console.log(error);
       }
     })();
-  }, [etfId]);
+  }, [etfId, token]);
+
+  useEffect(() => {
+    if (token) {
+      (async () => {
+        const ETFLike = await getETFLike(token);
+        if (ETFLike.data.map((item) => item.ETFid).includes(ETFData._id)) {
+          setIsETFLike(true);
+        } else {
+          setIsETFLike(false);
+        }
+      })();
+    }
+  }, [token, ETFData._id]);
 
   // 將Token變化時，重新取得DIY資料
   useEffect(() => {
     if (token) {
       (async () => {
+        setIsLoad(true);
         const diyETF = await apiDIYGet(token);
         const isDiy = diyETF.data.map((item) => item._id).includes(etfId);
         setIsDIY(isDiy);
 
         if (isDiy) {
+          setIsLoad(true);
           const res = await getDiyData(etfId, token);
           setETFName(res.diyData.name);
           setAllData(res.ETFAvgPriceArr);
           setData(res.ETFAvgPriceArr.reverse());
           setETFData(res.diyData);
+          setIsLoad(false);
           return;
         } else {
           if (ETFName === undefined) {
             navigate("/error");
             return;
           }
-        }
-        const ETFLike = await getETFLike(token);
-        if (ETFLike.data.map((item) => item.ETFid).includes(ETFData._id)) {
-          setIsETFLike(true);
-        } else {
-          setIsETFLike(false);
         }
       })();
     }
@@ -139,7 +153,15 @@ const ETFIItem = () => {
   };
 
   return (
-    <div className=" pt-8  px-4 md:px-6 md:py-2  mx-auto w-full  max-w-[1000px] min-h-[calc(100vh_-_23.5rem)]">
+    <div className=" relative pt-8  px-4 md:px-6 md:py-2  mx-auto w-full  max-w-[1000px] min-h-[calc(100vh_-_23.5rem)]">
+      {isLoad && (
+        <>
+          <div className="absolute w-full bg-[#EFEFEF] h-full flex items-start justify-center">
+            <img className="pt-[20vh] w-[150px] " src={loadingSVG} alt="" />
+          </div>
+        </>
+      )}
+
       {!isDIY && (
         <h1 className="h4 sm:h2 mb-4 mx-auto">
           <span className="mx-4 font-bold ">{etfId}</span>

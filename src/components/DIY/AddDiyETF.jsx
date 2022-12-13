@@ -12,6 +12,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import MySwalToast from "../utilities/MySwalToast";
+import loadingSVG from "../icon/Loading.svg";
 
 const AddDiyETF = () => {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ const AddDiyETF = () => {
   const [allData, setAllData] = useState([]);
   const [publicETF, setPublicETF] = useState([]);
   const [myDIYETF, setMyDIYETF] = useState([]);
+  const [isLoad, setIsLoad] = useState(false); // 是否已載入
 
   const token =
     useSelector((state) => state.Token) || localStorage.getItem("token");
@@ -42,6 +44,7 @@ const AddDiyETF = () => {
   useEffect(() => {
     (async () => {
       try {
+        setIsLoad(true);
         const result = await apiDIYGet(token);
         setMyDIYETF(result.data);
         const resPublic = await apiDIYGetPublic();
@@ -49,13 +52,13 @@ const AddDiyETF = () => {
       } catch (err) {
         console.log(err);
       }
+      setIsLoad(false);
     })();
   }, [token]);
 
   useEffect(() => {
     if (etfId && myDIYETF.length > 0) {
       const target = myDIYETF.find((item) => item._id === etfId);
-      console.log(target);
       setContent(target);
     }
   }, [etfId, myDIYETF]);
@@ -283,7 +286,14 @@ const AddDiyETF = () => {
 
   return (
     <>
-      <div className="pt-8  px-4 md:px-6 md:py-2  mx-auto w-full  max-w-[1000px]  min-h-[calc(100vh_-_8.6rem)] ">
+      <div className="relative pt-8  px-4 md:px-6 md:py-2  mx-auto w-full  max-w-[1000px]  min-h-[calc(100vh_-_8.6rem)] ">
+        {isLoad && (
+          <>
+            <div className="absolute z-20 w-full bg-[#EFEFEF] h-full flex items-start justify-center">
+              <img className="pt-[20vh] w-[150px] " src={loadingSVG} alt="" />
+            </div>
+          </>
+        )}
         <div className="text-start ">
           <h1 className="h2 font-bold mb-4">
             {etfId ? "修改自組ETF" : "新增自組ETF"}

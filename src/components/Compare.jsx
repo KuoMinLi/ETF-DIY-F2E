@@ -13,6 +13,7 @@ import { apiDIYGet } from "../api/diyAPI";
 import { useSelector } from "react-redux";
 import MySwalToast from "./utilities/MySwalToast";
 import ETFRatio from "./calculate/ETFRatio";
+import loadingSVG from "./icon/Loading.svg";
 
 const Compare = () => {
   const [inputCode, setInputCode] = useState(""); // 輸入的ETF code
@@ -20,6 +21,7 @@ const Compare = () => {
   const [allData, setAllData] = useState([]); // 選取個股資料
   const [etfList, setEtfList] = useState([]); // ETF清單
   const [diyList, setDiyList] = useState([]); // DIY清單
+  const [isLoad, setIsLoad] = useState(false); // 是否已載入
 
   const token =
     useSelector((state) => state.Token) || localStorage.getItem("token");
@@ -54,6 +56,7 @@ const Compare = () => {
   }, [token]);
 
   useEffect(() => {
+    setIsLoad(true);
     setAllData([]);
     ETFCodes.map(async (code) => {
       if (etfList.map((item) => item.code).indexOf(code) === -1) {
@@ -91,7 +94,11 @@ const Compare = () => {
       } catch (error) {
         console.log(error);
       }
+      setIsLoad(false);
     });
+    if (!ETFCodes.length) {
+      setIsLoad(false);
+    }
   }, [ETFCodes]);
 
   const totalLineData = useMemo(() => {
@@ -181,7 +188,6 @@ const Compare = () => {
         return;
       }
     }
-    console.log(ETFCodes.length);
     if (ETFCodes.length >= 4) {
       MySwalToast("最多只能比較四支股票", false);
       return;
@@ -197,7 +203,14 @@ const Compare = () => {
 
   return (
     <>
-      <div className="max-w-[1232px] mt-7 px-8 pb-8 sm:px-[50px] mx-auto min-h-[calc(100vh_-_24.5rem)]">
+      <div className="relative max-w-[1232px] mt-7 px-8 pb-8 sm:px-[50px] mx-auto min-h-[calc(100vh_-_24.5rem)]">
+        {isLoad && (
+          <>
+            <div className="absolute z-20 w-full bg-[#EFEFEF] h-full flex items-start justify-center">
+              <img className="pt-[20vh] w-[150px] " src={loadingSVG} alt="" />
+            </div>
+          </>
+        )}
         <div className="text-start   mx-auto ">
           <h1 className="h2 font-bold mb-4">ETF 績效比較</h1>
           <h2 className="h3 mb-4">熱門選擇</h2>

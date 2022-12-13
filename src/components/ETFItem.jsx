@@ -12,6 +12,7 @@ import LineChartDataFormat from "./chart/LineChartDataFormat";
 import PieChartDataFormat from "./chart/PieChartDataFormat";
 import getETFData from "./getData/getETFData";
 import ETFRatio from "./calculate/ETFRatio";
+import loadingSVG from "./icon/Loading.svg";
 
 const ETFIItem = () => {
   const navigate = useNavigate();
@@ -23,17 +24,17 @@ const ETFIItem = () => {
   const [ETFData, setETFData] = useState([]); // ETF content 資料
   const [isETFLike, setIsETFLike] = useState(false); // 是否已收藏
   const [isDIY, setIsDIY] = useState(false); // 是否為DIY
+  const [isLoad, setIsLoad] = useState(false); // 是否已載入
 
   const token =
     useSelector((state) => state.Token) || localStorage.getItem("token");
 
-    const isListRender = (value) => {
-      return {
-        type: "isLISTRENDER",
-        payload: value,
-      };
+  const isListRender = (value) => {
+    return {
+      type: "isLISTRENDER",
+      payload: value,
     };
-
+  };
 
   // 監聽期間變化
   const changePeriod = (num) => {
@@ -48,38 +49,22 @@ const ETFIItem = () => {
     }
     (async () => {
       try {
+        setIsLoad(true);
         const res = await getETFData(etfId);
         setETFName(res.itemName);
         setAllData(res.resultAll);
         setData(res.resultAll.reverse());
         setETFData(res.ETFResultData);
+        setIsLoad(false);
       } catch (error) {
         console.log(error);
       }
     })();
-  }, [etfId]);
+  }, [etfId, token]);
 
-  // 將Token變化時，重新取得DIY資料
   useEffect(() => {
     if (token) {
       (async () => {
-        const diyETF = await apiDIYGet(token);
-        const isDiy = diyETF.data.map((item) => item._id).includes(etfId);
-        setIsDIY(isDiy);
-
-        if (isDiy) {
-          const res = await getDiyData(etfId, token);
-          setETFName(res.diyData.name);
-          setAllData(res.ETFAvgPriceArr);
-          setData(res.ETFAvgPriceArr.reverse());
-          setETFData(res.diyData);
-          return;
-        } else {
-          if (ETFName === undefined) {
-            navigate("/error");
-            return;
-          }
-        }
         const ETFLike = await getETFLike(token);
         if (ETFLike.data.map((item) => item.ETFid).includes(ETFData._id)) {
           setIsETFLike(true);
@@ -88,7 +73,35 @@ const ETFIItem = () => {
         }
       })();
     }
-  }, [token, etfId, ETFData._id, ETFName, navigate]);
+  }, [token, ETFData._id]);
+
+  // 將Token變化時，重新取得DIY資料
+  useEffect(() => {
+    if (token) {
+      (async () => {
+        setIsLoad(true);
+        const diyETF = await apiDIYGet(token);
+        const isDiy = diyETF.data.map((item) => item._id).includes(etfId);
+        setIsDIY(isDiy);
+
+        if (isDiy) {
+          setIsLoad(true);
+          const res = await getDiyData(etfId, token);
+          setETFName(res.diyData.name);
+          setAllData(res.ETFAvgPriceArr);
+          setData(res.ETFAvgPriceArr.reverse());
+          setETFData(res.diyData);
+          setIsLoad(false);
+          return;
+        } else {
+          if (ETFName === undefined) {
+            navigate("/error");
+            return;
+          }
+        }
+      })();
+    }
+  }, [token, etfId]);
 
   const handleAddLike = () => {
     if (token === null) {
@@ -140,7 +153,15 @@ const ETFIItem = () => {
   };
 
   return (
-    <div className=" pt-8  px-4 md:px-6 md:py-2  mx-auto w-full  max-w-[1000px] min-h-[calc(100vh_-_23.5rem)]">
+    <div className=" relative pt-8  px-4 md:px-6 md:py-2  mx-auto w-full  max-w-[1000px] min-h-[calc(100vh_-_23.5rem)]">
+      {isLoad && (
+        <>
+          <div className="absolute w-full bg-[#EFEFEF] h-full flex items-start justify-center">
+            <img className="pt-[20vh] w-[150px] " src={loadingSVG} alt="" />
+          </div>
+        </>
+      )}
+
       {!isDIY && (
         <h1 className="h4 sm:h2 mb-4 mx-auto">
           <span className="mx-4 font-bold ">{etfId}</span>
@@ -158,9 +179,9 @@ const ETFIItem = () => {
         </h1>
       )}
       {isDIY && (
-        <h1 className="h4 sm:h2 mb-4 mx-auto flex justify-between items-center">
+        <h1 className="h4 sm:h2 mb-4 mx-auto sm:flex justify-between items-center">
           <span className=" mx-4 font-bold "> {ETFName}</span>
-          <div className="">
+          <div className="mt-4 sm:mt-0">
             <button
               className=" btn-sm h5 mx-2 "
               onClick={() => {
@@ -197,24 +218,31 @@ const ETFIItem = () => {
             近三年
           </button>
         </div>
-        <LineChart className="h-full" chartData={LineChartDataFormat(data)} />
+        <div className="overflow-x-auto "></div>
       </div>
       <div className="mt-5 ">
-        <div className=" moverflow-x-scroll  my-8">
-          <table className="table-auto text-center w-full mx-auto shadow-sm px-8">
+        <div className=" overflow-x-auto  pb-8 sm:pb-4">
+          <div className="pb-5">
+            <LineChart
+              className="h-full"
+              chartData={LineChartDataFormat(data)}
+            />
+          </div>
+
+          <table className="table-auto text-center w-full mx-auto shadow-sm  px-8 min-w-[600px]  md:h4">
             <thead>
               <tr>
-                <th className="px-4 py-2">期間</th>
-                <th className="px-4 py-2">近五年</th>
-                <th className="px-4 py-2">近三年</th>
-                <th className="px-4 py-2">近一年</th>
-                <th className="px-4 py-2">近半年</th>
-                <th className="px-4 py-2">近一個月</th>
+                <th className="px-4 py-2 md:py-4">期間</th>
+                <th className="px-4 py-2 md:py-4">近五年</th>
+                <th className="px-4 py-2 md:py-4">近三年</th>
+                <th className="px-4 py-2 md:py-4">近一年</th>
+                <th className="px-4 py-2 md:py-4">近半年</th>
+                <th className="px-4 py-2 md:py-4">近一個月</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td className="border px-4 py-2">報酬率(%)</td>
+                <td className="border px-4 py-2 md:py-4">報酬率(%)</td>
                 {periodRoR(allData).map((item, index) => {
                   return (
                     <td key={`td_${index}`} className="border px-4 py-2">
@@ -241,8 +269,10 @@ const ETFIItem = () => {
             <tbody className="shadow-md ">
               {ETFRatio(ETFData)?.map((item) => {
                 return (
-                  <tr key={item.name} >
-                    <td className="border px-4 py-2 font-medium">{item.name}</td>
+                  <tr key={item.name}>
+                    <td className="border px-4 py-2 font-medium">
+                      {item.name}
+                    </td>
                     <td className="border px-4 py-2">{item.percentage}</td>
                   </tr>
                 );

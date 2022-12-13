@@ -61,12 +61,12 @@ useEffect(() => {
 
   return (
     <>
-      <div className="lg:flex mx-auto justify-between mt-4 px-3  max-w-[1296px] min-h-[calc(100vh_-_23.5rem)]">
-        <div className="  lg:w-1/4">
-          <ul className="flex lg:block -mx-1 flex-wrap">
+      <div className="xl:flex mx-auto justify-between mt-4 pb-4 px-3  max-w-[1296px] min-h-[calc(100vh_-_23.5rem)]">
+        <div className=" min-w-[150px]" >
+          <ul className="flex xl:block -mx-1 flex-wrap ">
             {diyList.map((item) => {
               return (
-                <li key={item._id} className="px-1 py-2 w-1/3 lg:w-auto">
+                <li key={item._id} className="px-1 py-2 w-1/2 sm:w-1/3 lg:w-auto">
                   <Link
                     to={`${item._id}`}
                     className={`block cursor-pointer  border-2  shadow-lg hover:shadow-xl text-d2 bg-gray-100 transition duration-300 rounded-lg  mx-auto max-w-[200px] 
@@ -83,7 +83,7 @@ useEffect(() => {
                 </li>
               );
             })}
-            <li className="px-1 py-2 w-1/3 lg:w-auto">
+            <li className="px-1 py-2 w-1/2 sm:w-1/3 lg:w-auto">
               <Link
                 to="add"
                 className="block  bg-gray-100 rounded-lg shadow-lg hover:shadow-xl transition duration-300 mx-auto max-w-[200px]"

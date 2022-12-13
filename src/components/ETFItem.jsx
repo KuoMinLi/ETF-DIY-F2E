@@ -87,7 +87,7 @@ const ETFIItem = () => {
         }
       })();
     }
-  }, [token, etfId, ETFData._id, ETFName, navigate]);
+  }, [token, etfId]);
 
   const handleAddLike = () => {
     if (token === null) {
@@ -157,9 +157,9 @@ const ETFIItem = () => {
         </h1>
       )}
       {isDIY && (
-        <h1 className="h4 sm:h2 mb-4 mx-auto flex justify-between items-center">
+        <h1 className="h4 sm:h2 mb-4 mx-auto sm:flex justify-between items-center">
           <span className=" mx-4 font-bold "> {ETFName}</span>
-          <div className="">
+          <div className="mt-4 sm:mt-0">
             <button
               className=" btn-sm h5 mx-2 "
               onClick={() => {
@@ -199,7 +199,7 @@ const ETFIItem = () => {
         <div className="overflow-x-auto "></div>
       </div>
       <div className="mt-5 ">
-        <div className=" overflow-x-auto  py-8">
+        <div className=" overflow-x-auto  pb-8 sm:pb-4">
           <div className="pb-5">
             <LineChart
               className="h-full"

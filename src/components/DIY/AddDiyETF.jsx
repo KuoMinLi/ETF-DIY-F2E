@@ -283,8 +283,8 @@ const AddDiyETF = () => {
 
   return (
     <>
-      <div className="max-w-[1232px] px-8 pb-8 sm:px-[50px] mx-auto min-h-[calc(100vh_-_8.6rem)]">
-        <div className="text-start  min-w-[900px] mx-auto mt-4">
+      <div className="pt-8  px-4 md:px-6 md:py-2  mx-auto w-full  max-w-[1000px]  min-h-[calc(100vh_-_8.6rem)] ">
+        <div className="text-start ">
           <h1 className="h2 font-bold mb-4">
             {etfId ? "修改自組ETF" : "新增自組ETF"}
           </h1>
@@ -301,13 +301,13 @@ const AddDiyETF = () => {
             <p className="text-red-500 px-8 pt-1"></p>
           </form>
           <h2 className="h3 mb-4">熱門選擇</h2>
-          <ul className="space-x-4 mb-8 flex">
+          <ul className=" mb-8 flex flex-wrap gap-2">
             {publicETF.map((item) => {
               const { name, _id } = item;
               return (
                 <li key={_id}>
                   <button
-                    className="btn h4"
+                    className="btn h5 md:h4 "
                     onClick={() => {
                       handleClickPublicETF(_id);
                     }}
@@ -348,7 +348,7 @@ const AddDiyETF = () => {
                 type="search"
                 id="code-search"
                 list="code-list"
-                className="h-[68px] sm:h-[76px] rounded-full block w-full   p-4 pl-10 h4 sm:h3 text-gray-900 border border-gray-500  bg-gray-50 focus:ring-btn-primary focus:border-btn-primary "
+                className="h-[54px] md:h-[76px] rounded-full block w-full   p-4 pl-10  h4 md:h3 text-gray-900 border border-gray-500  bg-gray-50  placeholder:h5 md:placeholder:h4"
                 placeholder="輸入關鍵字、股票代碼搜尋"
                 onChange={(e) => setInputCode(e.target.value)}
                 value={inputCode}
@@ -369,7 +369,7 @@ const AddDiyETF = () => {
 
               <button
                 type="button"
-                className="absolute right-2.5 bottom-2.5 btn h4 "
+                className="absolute right-1.5 md:right-2.5 bottom-1.5 md:bottom-2.5 btn md:h4  h5 "
                 onClick={() => handleTargetCode(inputCode)}
               >
                 新增個股
@@ -382,8 +382,8 @@ const AddDiyETF = () => {
                 <table className="min-w-[900px]  table-auto text-center h4 sm:h3 w-full mx-auto shadow-sm px-8">
                   <thead>
                     <tr>
-                      <th className="px-4 py-2 sr-only">股票名稱</th>
-                      <th className="px-4 py-2">近一個月</th>
+                      <th className="px-4 py-2  min-w-[140px]">股票名稱</th>
+                      <th className="px-4 py-2">近一月</th>
                       <th className="px-4 py-2">近半年</th>
                       <th className="px-4 py-2">近一年</th>
                       <th className="px-4 py-2">股票產業</th>

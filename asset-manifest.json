@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/ETF-DIY-F2E/static/css/main.ed23033b.css",
-    "main.js": "/ETF-DIY-F2E/static/js/main.9c714ad3.js",
+    "main.css": "/ETF-DIY-F2E/static/css/main.af2546d5.css",
+    "main.js": "/ETF-DIY-F2E/static/js/main.a2de93d8.js",
     "static/js/787.28cb0dcd.chunk.js": "/ETF-DIY-F2E/static/js/787.28cb0dcd.chunk.js",
     "static/media/logo_icon.png": "/ETF-DIY-F2E/static/media/logo_icon.45bbda4d95972509224c.png",
     "static/media/Loading.svg": "/ETF-DIY-F2E/static/media/Loading.f645f28cfcb09d2b0eb6bf814f77de70.svg",
     "index.html": "/ETF-DIY-F2E/index.html",
-    "main.ed23033b.css.map": "/ETF-DIY-F2E/static/css/main.ed23033b.css.map",
-    "main.9c714ad3.js.map": "/ETF-DIY-F2E/static/js/main.9c714ad3.js.map",
+    "main.af2546d5.css.map": "/ETF-DIY-F2E/static/css/main.af2546d5.css.map",
+    "main.a2de93d8.js.map": "/ETF-DIY-F2E/static/js/main.a2de93d8.js.map",
     "787.28cb0dcd.chunk.js.map": "/ETF-DIY-F2E/static/js/787.28cb0dcd.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.ed23033b.css",
-    "static/js/main.9c714ad3.js"
+    "static/css/main.af2546d5.css",
+    "static/js/main.a2de93d8.js"
   ]
 }

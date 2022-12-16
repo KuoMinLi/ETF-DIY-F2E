@@ -1,4 +1,4 @@
-const LineChartDataFormat = (data) => {
+const lineChartDataFormat = (data) => {
  
     const firstPrice = data[0]?.close;
 
@@ -20,4 +20,4 @@ const LineChartDataFormat = (data) => {
   return chartData;
 }
 
-export default LineChartDataFormat;
+export default lineChartDataFormat;

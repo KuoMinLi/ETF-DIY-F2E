@@ -1,18 +1,18 @@
 import { useMemo } from "react";
 import { useState, useEffect } from "react";
 import periodRoR from "./calculate/periodRoR";
-import LineChartDataFormat from "./chart/LineChartDataFormat";
-import PieChartDataFormat from "./chart/PieChartDataFormat";
+import lineChartDataFormat from "./chart/lineChartDataFormat";
+import pieChartDataFormat from "./chart/pieChartDataFormat";
 import getETFData from "./getData/getETFData";
 import getDiyData from "./getData/getDiyData";
 import LineChart from "./LineChart";
-import filterDate from "./calculate/FilterDate";
+import filterDate from "./calculate/filterDate";
 import { borderColor, backgroundColor } from "../data/chartColor";
 import { getETFList } from "../api/etfAPI";
 import { apiDIYGet } from "../api/diyAPI";
 import { useSelector } from "react-redux";
 import MySwalToast from "./utilities/MySwalToast";
-import ETFRatio from "./calculate/ETFRatio";
+import etfRatio from "./calculate/etfRatio";
 import loadingSVG from "./icon/Loading.svg";
 
 const Compare = () => {
@@ -58,116 +58,79 @@ const Compare = () => {
   useEffect(() => {
     setIsLoad(true);
     setAllData([]);
-    ETFCodes.map(async (code) => {
-      if (etfList.map((item) => item.code).indexOf(code) === -1) {
-        const diyData = diyList.filter((item) => item.name === code)[0];
-        (async () => {
-          try {
-            const res = await getDiyData(diyData.id, token);
-            const ETFName = res.diyData.name;
-            const FiveYearData = res.ETFAvgPriceArr.reverse();
-            const RoRData = periodRoR(FiveYearData);
-            const LineData = res.ETFAvgPriceArr;
-            const ContentData = res.diyData;
-            setAllData((prev) => [
-              ...prev,
-              { ETFName, code, RoRData, LineData, ContentData },
-            ]);
-          } catch (error) {
-            console.log(error);
-          }
-        })();
-        return;
-      }
 
+    const promises = ETFCodes.map(async (code) => {
       try {
-        const res = await getETFData(code);
-        const ETFName = res.itemName;
-        const FiveYearData = res.resultAll.reverse();
-        const RoRData = periodRoR(FiveYearData);
-        const LineData = res.resultAll;
-        const ContentData = res.ETFResultData;
-        setAllData((prev) => [
-          ...prev,
-          { ETFName, code, RoRData, LineData, ContentData },
-        ]);
+        const diyData = diyList.find((item) => item.name === code);
+
+        let res;
+        if (diyData) {
+          res = await getDiyData(diyData.id, token);
+          const ETFName = res.diyData.name;
+          const FiveYearData = res.ETFAvgPriceArr.reverse();
+          const RoRData = periodRoR(FiveYearData);
+          const LineData = res.ETFAvgPriceArr;
+          const ContentData = res.diyData;
+          return { ETFName, code, RoRData, LineData, ContentData };
+        } else {
+          res = await getETFData(code);
+          const ETFName = res.itemName;
+          const FiveYearData = res.resultAll.reverse();
+          const RoRData = periodRoR(FiveYearData);
+          const LineData = res.resultAll;
+          const ContentData = res.ETFResultData;
+          return { ETFName, code, RoRData, LineData, ContentData };
+        }
       } catch (error) {
         console.log(error);
       }
+    });
+
+    Promise.all(promises).then((results) => {
+      setAllData(results);
       setIsLoad(false);
     });
-    if (!ETFCodes.length) {
-      setIsLoad(false);
-    }
   }, [ETFCodes]);
 
   const totalLineData = useMemo(() => {
-    const allLineData = [...allData].map((item) => item.LineData);
-    const allLineDataFormat = allLineData.map((item) =>
-      LineChartDataFormat(item)
-    );
-
-    allLineDataFormat.map((item, index) => {
-      item.datasets[0].label = allData[index].ETFName;
-      item.datasets[0].borderColor = borderColor[index];
-      item.datasets[0].backgroundColor = backgroundColor[index];
-      return item;
+    const allLineDataFormat = allData.map((item, index) => {
+      const data = lineChartDataFormat(item.LineData);
+      data.datasets[0].label = item.ETFName;
+      data.datasets[0].borderColor = borderColor[index];
+      data.datasets[0].backgroundColor = backgroundColor[index];
+      return data;
     });
-
-    const totalLabel = filterDate(
-      [...allLineDataFormat].map((itme) => itme.labels)
-    );
-
-    const ans = {
-      labels: totalLabel[0],
+    
+    return {
+      labels: filterDate(allLineDataFormat.map((itme) => itme.labels))[0],
       datasets: allLineDataFormat.map((item) => item.datasets[0]),
     };
-
-    return ans;
   }, [allData]);
-
-  // console.log(totalLineData);
 
   const totalRoRData = useMemo(() => {
     const allRoRData = [...allData].map((item) => item.RoRData);
-    const RoRTitle = [...allRoRData].map((item) =>
-      item.map((item) => item.name)
-    )[0];
-    const RoRData = [...allRoRData].map((item) =>
-      item.map((item) => item.data)
-    );
+    const RoRTitle = allRoRData[0]?.map((item) => item.name);
+    const RoRData = allRoRData.map((item) => item.map((item) => item.data));
 
-    const totalRoR = RoRTitle?.map((item, index) => {
-      const itemRoR = RoRData.map((i) => {
-        return i[index];
-      });
-      return [item, ...itemRoR];
-    });
-
-    return totalRoR;
+    return RoRTitle?.map((item, index) => [
+      item,
+      ...RoRData.map((i) => i[index]),
+    ]);
   }, [allData]);
 
-  const totalRatioData = useMemo(() => {
-    const allRatioData = [...allData].map((item) => item.ContentData);
-    const allRatioDataFormat = allRatioData.map((item) => ETFRatio(item));
+  const totalRatio = useMemo(() => {
+    const allRatioData = [...allData].map((item) => etfRatio(item.ContentData));
 
     const totalRatioTitle = [1, 2, 3, 4, 5];
-    const totalRatio = totalRatioTitle?.map((item, index) => {
-      const itemRatio = allRatioDataFormat.map((i) => {
-        if (i[index] === undefined) {
-          return 0;
-        }
-        return i[index];
-      });
-      return [item, ...itemRatio];
-    });
-
-    return totalRatio;
+    return totalRatioTitle?.map((item, index) => [
+      item,
+      ...allRatioData.map((i) => i[index] || 0),
+    ]);
   }, [allData]);
 
   const totalPieData = useMemo(() => {
     const allPieData = [...allData].map((item) => item.ContentData);
-    const allPieDataFormat = allPieData.map((item) => PieChartDataFormat(item));
+    const allPieDataFormat = allPieData.map((item) => pieChartDataFormat(item));
     return allPieDataFormat;
   }, [allData]);
 
@@ -396,7 +359,7 @@ const Compare = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {totalRatioData?.map((item) => {
+                    {totalRatio?.map((item) => {
                       return (
                         <tr
                           key={item}
@@ -409,7 +372,7 @@ const Compare = () => {
                                 className={`
                             table-item
                             ${index === 0 && "text-d1 font-bold "}
-                            ${item.length < 4 ? "text-left" : "text-center"}
+                            ${item.length < 4 ? "text-left" : "text-center" }
                             `}
                               >
                                 {index === 0
@@ -428,8 +391,14 @@ const Compare = () => {
                         </tr>
                       );
                     })}
-                    <tr className="border-b border-gray-200  text-d1">
-                      <th className="table-item">產業占比 Top1</th>
+                    <tr className="border-b border-gray-200  text-d1 ">
+                      <th
+                        className={`table-item ${
+                          totalPieData.length < 3 ? "text-left" : "text-center"
+                        }`}
+                      >
+                        產業占比 Top1
+                      </th>
                       {totalPieData?.map((item, index) => {
                         return (
                           <td

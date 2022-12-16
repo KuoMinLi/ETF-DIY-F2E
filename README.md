@@ -1,4 +1,5 @@
 # ETF 自由配
+######  React.js Tailwind CSS Chart.js 
 
 ![](https://i.imgur.com/cKFLxfv.png)
 
@@ -32,7 +33,7 @@ ETF股票即時報酬率及持股資訊的網站，提供使用者快速掌握ET
 ## 使用工具
 
 * 使用 React 作為開發框架
-* 使用 TailwindCSS 作為CSS框架
+* 使用 Tailwind CSS 作為CSS框架
 * 使用 Chart.js / react-chartjs-2 作為圖表呈現
 * 使用 Redux 作為全域變數管理
 * 使用 SweetAlert2 作為提示訊息框

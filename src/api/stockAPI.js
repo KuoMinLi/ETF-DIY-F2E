@@ -19,6 +19,9 @@ const ONEYEAR = 364 * 24 * 60 * 60 * 1000;
 // 定義一個月的豪秒數
 const ONEMONTH = 30 * 24 * 60 * 60 * 1000;
 
+// 定義一年取得資料的數量
+const ONEYEARTIMES = 235;
+
 //取得目前時間
 const nowDate = new Date().getTime();
 
@@ -71,15 +74,16 @@ export const fugleAPIGetOneYear = (userId) => {
 
 // 一次取得五年資料
 export const fugleAPIGetFiveYear = async (userId) => {
+  const year = 5;
   let ans = [];
-  for (let i = 1; i < 6; i++) {
+  for (let i = 1; i < year + 1; i += 1) {
     try{
     const formDate = FormatDate(nowDate - i * ONEYEAR);
     const toDate = FormatDate(nowDate - (i - 1) * ONEYEAR);
     const data = await fugleAPIGet(
       userId, formDate, toDate
     );
-    if (data.length > 235) {
+    if (data.length > ONEYEARTIMES) {
       ans = [...ans, ...data];
     } else {
       ans = [...ans, ...data];
@@ -94,3 +98,5 @@ export const fugleAPIGetFiveYear = async (userId) => {
   }
   return ans;
 };
+
+

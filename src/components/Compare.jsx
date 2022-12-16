@@ -101,7 +101,6 @@ const Compare = () => {
       return data;
     });
     
-
     return {
       labels: filterDate(allLineDataFormat.map((itme) => itme.labels))[0],
       datasets: allLineDataFormat.map((item) => item.datasets[0]),

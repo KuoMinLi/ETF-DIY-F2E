@@ -8,10 +8,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { getETFLike, addETFLike, deleteETFLike } from "../api/etfAPI";
 import getDiyData from "./getData/getDiyData";
 import MySwalToast from "./utilities/MySwalToast";
-import LineChartDataFormat from "./chart/LineChartDataFormat";
-import PieChartDataFormat from "./chart/PieChartDataFormat";
+import lineChartDataFormat from "./chart/lineChartDataFormat";
+import pieChartDataFormat from "./chart/pieChartDataFormat";
 import getETFData from "./getData/getETFData";
-import ETFRatio from "./calculate/ETFRatio";
+import etfRatio from "./calculate/etfRatio";
 import loadingSVG from "./icon/Loading.svg";
 
 const ETFIItem = () => {
@@ -226,7 +226,7 @@ const ETFIItem = () => {
           <div className="pb-5">
             <LineChart
               className="h-full"
-              chartData={LineChartDataFormat(data)}
+              chartData={lineChartDataFormat(data)}
             />
           </div>
 
@@ -258,7 +258,7 @@ const ETFIItem = () => {
         <div className=" md:flex mt-4">
           <div className="md:w-1/2 mb-4">
             <h1 className="font-bold h3 py-2 text-center"> 產業占比</h1>
-            <PieChart chartData={PieChartDataFormat(ETFData)} />
+            <PieChart chartData={pieChartDataFormat(ETFData)} />
           </div>
           <table className="table-auto text-center mx-auto">
             <thead>
@@ -268,7 +268,7 @@ const ETFIItem = () => {
               </tr>
             </thead>
             <tbody className="shadow-md ">
-              {ETFRatio(ETFData)?.map((item) => {
+              {etfRatio(ETFData)?.map((item) => {
                 return (
                   <tr key={item.name}>
                     <td className="border px-4 py-2 font-medium">

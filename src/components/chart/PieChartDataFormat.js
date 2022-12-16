@@ -1,6 +1,6 @@
 import { codeNameData } from "../../data/codeNameData";
 
-const PieChartDataFormat = (ETFData) => {
+const pieChartDataFormat = (ETFData) => {
     const { content } = ETFData;
     // 避免資料還沒回來就先render
     if (!content) {
@@ -36,4 +36,4 @@ const PieChartDataFormat = (ETFData) => {
     return top5;
 };
 
-export default PieChartDataFormat;
+export default pieChartDataFormat;

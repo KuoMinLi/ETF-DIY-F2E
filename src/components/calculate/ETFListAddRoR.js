@@ -12,7 +12,7 @@ import { fugleAPIGetOneMonth } from "../../api/stockAPI";
 //   ]
 // }
 
-const ETFListAddRoR = async (data) => {
+const etfListAddRoR = async (data) => {
 
   if (!data) {
     return;
@@ -41,4 +41,4 @@ const ETFListAddRoR = async (data) => {
   return ans;
 };
 
-export default ETFListAddRoR;
+export default etfListAddRoR;

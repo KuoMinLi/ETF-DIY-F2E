@@ -1,4 +1,4 @@
-const ETFRatio = (ETFData) => {
+const etfRatio = (ETFData) => {
   
     const { content } = ETFData;
     
@@ -23,4 +23,4 @@ const ETFRatio = (ETFData) => {
   return ETFRatioData;
 };
 
-export default ETFRatio;
+export default etfRatio;

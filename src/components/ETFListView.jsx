@@ -1,7 +1,7 @@
 import { Outlet, useNavigate, useParams, Link } from "react-router-dom";
 import { getETFList } from "../api/etfAPI";
 import { useEffect, useState } from "react";
-import ETFListAddRoR from "./calculate/ETFListAddRoR";
+import etfListAddRoR from "./calculate/etfListAddRoR";
 import { categoryList } from "../data/categoryList";
 import { useSelector, useDispatch } from "react-redux";
 import { getETFLike } from "../api/etfAPI";
@@ -112,7 +112,7 @@ const ETFListView = () => {
   useEffect(() => {
     (async () => {
       try {
-        const categoryRoR = await ETFListAddRoR(categoryData);
+        const categoryRoR = await etfListAddRoR(categoryData);
         setCategoryRoR(categoryRoR);
       } catch (error) {
         console.log(error);

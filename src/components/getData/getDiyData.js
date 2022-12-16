@@ -1,6 +1,6 @@
 import { apiDIYGet } from "../../api/diyAPI";
 import { fugleAPIGetFiveYear } from "../../api/stockAPI";
-import filterDate from "../calculate/FilterDate";
+import filterDate from "../calculate/filterDate";
 
 const getDiyData = async (etfId, token) => {
   const diyAllData = await apiDIYGet(token);

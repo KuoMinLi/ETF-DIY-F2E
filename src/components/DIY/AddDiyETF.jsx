@@ -154,6 +154,8 @@ const AddDiyETF = () => {
     localStorage.setItem("ratio", JSON.stringify(newData));
   };
 
+
+
   // 監聽個股刪除按鈕
   const handleDelete = (code) => {
     const newCode = targetCode.filter((item) => item !== code);
@@ -204,7 +206,12 @@ const AddDiyETF = () => {
       const { name, industry } = codeNameData.filter(
         (i) => i.code === parseInt(code)
       )[0];
-      const percentage = ratio[code]; //預設比例
+      let percentage = ratio[code]; //預設比例
+      
+      if (typeof percentage === "object") {
+        percentage = percentage[0];
+      };
+
       const codeRoR = periodRoR(codeData);
       return {
         name,
@@ -283,6 +290,9 @@ const AddDiyETF = () => {
     localStorage.removeItem("targetCode");
     localStorage.removeItem("ratio");
   };
+
+  console.log(ratio);
+  console.log(tableData)
 
   return (
     <>

@@ -1,18 +1,18 @@
 import { useMemo } from "react";
 import { useState, useEffect } from "react";
 import periodRoR from "./calculate/periodRoR";
-import LineChartDataFormat from "./chart/LineChartDataFormat";
-import PieChartDataFormat from "./chart/PieChartDataFormat";
+import lineChartDataFormat from "./chart/lineChartDataFormat";
+import pieChartDataFormat from "./chart/pieChartDataFormat";
 import getETFData from "./getData/getETFData";
 import getDiyData from "./getData/getDiyData";
 import LineChart from "./LineChart";
-import filterDate from "./calculate/FilterDate";
+import filterDate from "./calculate/filterDate";
 import { borderColor, backgroundColor } from "../data/chartColor";
 import { getETFList } from "../api/etfAPI";
 import { apiDIYGet } from "../api/diyAPI";
 import { useSelector } from "react-redux";
 import MySwalToast from "./utilities/MySwalToast";
-import ETFRatio from "./calculate/ETFRatio";
+import etfRatio from "./calculate/etfRatio";
 import loadingSVG from "./icon/Loading.svg";
 
 const Compare = () => {
@@ -66,22 +66,21 @@ const Compare = () => {
         let res;
         if (diyData) {
           res = await getDiyData(diyData.id, token);
+          const ETFName = res.diyData.name;
+          const FiveYearData = res.ETFAvgPriceArr.reverse();
+          const RoRData = periodRoR(FiveYearData);
+          const LineData = res.ETFAvgPriceArr;
+          const ContentData = res.diyData;
+          return { ETFName, code, RoRData, LineData, ContentData };
         } else {
           res = await getETFData(code);
+          const ETFName = res.itemName;
+          const FiveYearData = res.resultAll.reverse();
+          const RoRData = periodRoR(FiveYearData);
+          const LineData = res.resultAll;
+          const ContentData = res.ETFResultData;
+          return { ETFName, code, RoRData, LineData, ContentData };
         }
-
-        // 利用 res.diyData, res.ETFAvgPriceArr 判斷是否為 DIY ，並取得資料
-        const ETFName = res.diyData ? res.diyData.name : res.itemName;
-        const FiveYearData = res.ETFAvgPriceArr
-          ? res.ETFAvgPriceArr.reverse()
-          : res.resultAll.reverse();
-        const RoRData = periodRoR(FiveYearData);
-        const LineData = res.ETFAvgPriceArr
-          ? res.ETFAvgPriceArr
-          : res.resultAll;
-        const ContentData = res.diyData ? res.diyData : res.ETFResultData;
-
-        return { ETFName, code, RoRData, LineData, ContentData };
       } catch (error) {
         console.log(error);
       }
@@ -94,14 +93,14 @@ const Compare = () => {
   }, [ETFCodes]);
 
   const totalLineData = useMemo(() => {
-    const allLineDataFormat = allData.reduce((acc, item) => {
-      const data = LineChartDataFormat(item.LineData);
+    const allLineDataFormat = allData.map((item, index) => {
+      const data = lineChartDataFormat(item.LineData);
       data.datasets[0].label = item.ETFName;
-      data.datasets[0].borderColor = borderColor[acc.length];
-      data.datasets[0].backgroundColor = backgroundColor[acc.length];
-      acc.push(data);
-      return acc;
-    }, []);
+      data.datasets[0].borderColor = borderColor[index];
+      data.datasets[0].backgroundColor = backgroundColor[index];
+      return data;
+    });
+    
 
     return {
       labels: filterDate(allLineDataFormat.map((itme) => itme.labels))[0],
@@ -121,7 +120,7 @@ const Compare = () => {
   }, [allData]);
 
   const totalRatio = useMemo(() => {
-    const allRatioData = [...allData].map((item) => ETFRatio(item.ContentData));
+    const allRatioData = [...allData].map((item) => etfRatio(item.ContentData));
 
     const totalRatioTitle = [1, 2, 3, 4, 5];
     return totalRatioTitle?.map((item, index) => [
@@ -132,7 +131,7 @@ const Compare = () => {
 
   const totalPieData = useMemo(() => {
     const allPieData = [...allData].map((item) => item.ContentData);
-    const allPieDataFormat = allPieData.map((item) => PieChartDataFormat(item));
+    const allPieDataFormat = allPieData.map((item) => pieChartDataFormat(item));
     return allPieDataFormat;
   }, [allData]);
 
@@ -374,7 +373,7 @@ const Compare = () => {
                                 className={`
                             table-item
                             ${index === 0 && "text-d1 font-bold "}
-                            ${item.length < 4 ? "text-left" : "text-center"}
+                            ${item.length < 4 ? "text-left" : "text-center" }
                             `}
                               >
                                 {index === 0
@@ -393,7 +392,7 @@ const Compare = () => {
                         </tr>
                       );
                     })}
-                    <tr className="border-b border-gray-200  text-d1">
+                    <tr className="border-b border-gray-200  text-d1 ">
                       <th
                         className={`table-item ${
                           totalPieData.length < 3 ? "text-left" : "text-center"

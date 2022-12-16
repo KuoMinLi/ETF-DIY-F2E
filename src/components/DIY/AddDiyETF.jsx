@@ -208,9 +208,10 @@ const AddDiyETF = () => {
       )[0];
       let percentage = ratio[code]; //預設比例
       
-      if (typeof percentage === "object") {
-        percentage = percentage[0];
-      };
+       // 將比例從陣列轉換成數字
+       if (typeof percentage === "object") {
+        percentage = parseInt(percentage.join());
+      }
 
       const codeRoR = periodRoR(codeData);
       return {
@@ -290,9 +291,6 @@ const AddDiyETF = () => {
     localStorage.removeItem("targetCode");
     localStorage.removeItem("ratio");
   };
-
-  console.log(ratio);
-  console.log(tableData)
 
   return (
     <>
@@ -402,11 +400,11 @@ const AddDiyETF = () => {
                 <table className="min-w-[900px]  table-auto text-center h4 sm:h3 w-full mx-auto shadow-sm px-8">
                   <thead>
                     <tr>
-                      <th className="px-4 py-2  min-w-[140px]">股票名稱</th>
-                      <th className="px-4 py-2">近一月</th>
-                      <th className="px-4 py-2">近半年</th>
-                      <th className="px-4 py-2">近一年</th>
-                      <th className="px-4 py-2">股票產業</th>
+                      <th className="px-4 py-2 min-w-[140px]">股票名稱</th>
+                      <th className="px-4 py-2 min-w-[120px]">近一月</th>
+                      <th className="px-4 py-2 min-w-[120px]">近半年</th>
+                      <th className="px-4 py-2 min-w-[120px]">近一年</th>
+                      <th className="px-4 py-2 min-w-[140px]">股票產業</th>
                       <th width="30%" className="px-4 py-2 min-w-[250px]">
                         股票佔比
                       </th>

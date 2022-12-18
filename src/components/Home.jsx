@@ -207,7 +207,7 @@ const Home = () => {
             <li className='flex flex-col items-center px-7 sm:px-9'>
               <img className='w-32 h-32 rounded-full object-cover outline outline-offset-4 outline-3 outline-[#345FF8]'
               src="https://images.unsplash.com/photo-1507591064344-4c6ce005b128?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="" />
-              <h4 className='mt-[14px] sm:mt-4  h4 text-d2'>dian3403</h4>
+              <h4 className='mt-[14px] sm:mt-4  h4 text-d2'>Kevin</h4>
               <div className="mt-[14px] sm:mt-5  flex">
                 <img src={star} alt="" />
                 <img src={star} alt="" />
@@ -215,7 +215,7 @@ const Home = () => {
                 <img src={star} alt="" />
                 <img src={star} alt="" />
               </div>
-              <p className='mt-[14px] sm:mt-4  h5 sm:h4 text-d3'>平常都是別人給我五星好評，今天換我給人五星好評，是股市新手小白小萌新菜雞都應該用一下，了解各個ETF到底包什麼，也順便回測自己的持股</p>
+              <p className='mt-[14px] sm:mt-4  h5 sm:h4 text-d3'>這個產品真的很好用，讓我可以快速地了解市場上的 ETF，還有自己的投資組合表現情況。我很推薦這個產品！ </p>
             </li>
             <li className='flex flex-col items-center px-7 sm:px-9'>
               <img className='w-32 h-32 rounded-full object-cover outline outline-offset-4 outline-3 outline-[#345FF8]'
@@ -228,7 +228,7 @@ const Home = () => {
                 <img src={star} alt="" />
                 <img src={star} alt="" />
               </div>
-              <p className='mt-[14px] sm:mt-4  h5 sm:h4 text-d3'>平常都是別人給我五星好評，今天換我給人五星好評，是股市新手小白小萌新菜雞都應該用一下，了解各個ETF到底包什麼，也順便回測自己的持股</p>
+              <p className='mt-[14px] sm:mt-4  h5 sm:h4 text-d3'>我喜歡這個產品的註冊/登入功能，讓我可以方便地管理我的 ETF。此外，還有自主 ETF 配置比例的功能，讓我可以根據自己的喜好和投資策略來調整。</p>
             </li>
             
           </ul>

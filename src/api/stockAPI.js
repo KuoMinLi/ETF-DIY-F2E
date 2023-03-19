@@ -45,7 +45,7 @@ const fugleAPIGet = (userId, from, to) => {
       to,
     },
   })
-    .then((res) => res.data.candles)
+    .then((res) => res.data.data)
     .catch((error) => console.log(error));
 };
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url =  'https://etf-diy-kml.herokuapp.com' //dev
+const url =  'https://example-etf-diy.onrender.com' //dev
 // const url =  'http://127.0.0.1:3085' // local
 
 
